@@ -1,4 +1,4 @@
-#EXTM3U url-tvg="https://exemplo.com/guia.xml"
+#EXTM3U url-tvg="https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/EPG.xml"
 
 #EXTINF:-1 tvg-id="globo.br" tvg-name="Globo HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/3/3f/Globo_logo_2022.svg" group-title="Canais Abertos", Globo HD
 https://stream.exemplo.com/globo/index.m3u8
