@@ -1,0 +1,19 @@
+#EXTM3U url-tvg="https://exemplo.com/guia.xml"
+
+#EXTINF:-1 tvg-id="globo.br" tvg-name="Globo HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/3/3f/Globo_logo_2022.svg" group-title="Canais Abertos", Globo HD
+https://stream.exemplo.com/globo/index.m3u8
+
+#EXTINF:-1 tvg-id="sbt.br" tvg-name="SBT HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/3/3a/SBT_logo_2014.png" group-title="Canais Abertos", SBT HD
+https://stream.exemplo.com/sbt/index.m3u8
+
+#EXTINF:-1 tvg-id="record.br" tvg-name="Record TV HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/8/8b/RecordTV_logo_2016.png" group-title="Canais Abertos", Record TV HD
+https://stream.exemplo.com/record/index.m3u8
+
+#EXTINF:-1 tvg-id="sportv.br" tvg-name="SporTV" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/3/3d/SporTV_logo_2021.png" group-title="Esportes", SporTV
+https://stream.exemplo.com/sportv/index.m3u8
+
+#EXTINF:-1 tvg-id="cartoon.br" tvg-name="Cartoon Network" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/2/2e/Cartoon_Network_2010_logo.svg" group-title="Infantil", Cartoon Network
+https://stream.exemplo.com/cartoon/index.m3u8
+
+#EXTINF:-1 tvg-id="discovery.br" tvg-name="Discovery Channel" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/0/08/Discovery_Channel_-_Logo_2019.svg" group-title="Documentários", Discovery Channel
+https://stream.exemplo.com/discovery/index.m3u8
