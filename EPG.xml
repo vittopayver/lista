@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv generator-info-name="VeebgTv EPG Generator">
+
+  <!-- Globo HD -->
+  <channel id="globo.br">
+    <display-name>Globo HD</display-name>
+    <icon src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Globo_logo_2022.svg" />
+  </channel>
+
+  <programme start="20251013060000 -0300" stop="20251013080000 -0300" channel="globo.br">
+    <title>Bom Dia Brasil</title>
+    <desc>Noticiário matinal com as principais notícias do país.</desc>
+  </programme>
+  <programme start="20251013080000 -0300" stop="20251013100000 -0300" channel="globo.br">
+    <title>Encontro com Patrícia Poeta</title>
+    <desc>Debates e entrevistas sobre temas do cotidiano e comportamento.</desc>
+  </programme>
+  <programme start="20251013120000 -0300" stop="20251013140000 -0300" channel="globo.br">
+    <title>Jornal Hoje</title>
+    <desc>Noticiário com as principais notícias do Brasil e do mundo.</desc>
+  </programme>
+  <programme start="20251013140000 -0300" stop="20251013170000 -0300" channel="globo.br">
+    <title>Sessão da Tarde</title>
+    <desc>Filme de sucesso exibido nas tardes da Globo.</desc>
+  </programme>
+
+  <!-- SBT HD -->
+  <channel id="sbt.br">
+    <display-name>SBT HD</display-name>
+    <icon src="https://upload.wikimedia.org/wikipedia/commons/3/3a/SBT_logo_2014.png" />
+  </channel>
+
+  <programme start="20251013070000 -0300" stop="20251013093000 -0300" channel="sbt.br">
+    <title>Primeiro Impacto</title>
+    <desc>Noticiário matinal com as principais notícias do Brasil e do mundo.</desc>
+  </programme>
+  <programme start="20251013130000 -0300" stop="20251013143000 -0300" channel="sbt.br">
+    <title>Fofocalizando</title>
+    <desc>Programa de entretenimento com notícias dos famosos e bastidores da TV.</desc>
+  </programme>
+  <programme start="20251013143000 -0300" stop="20251013180000 -0300" channel="sbt.br">
+    <title>Novela Mexicana</title>
+    <desc>Capítulo inédito da novela mexicana do SBT.</desc>
+  </programme>
+
+  <!-- Record TV HD -->
+  <channel id="record.br">
+    <display-name>Record TV HD</display-name>
+    <icon src="https://upload.wikimedia.org/wikipedia/commons/8/8b/RecordTV_logo_2016.png" />
+  </channel>
+
+  <programme start="20251013070000 -0300" stop="20251013100000 -0300" channel="record.br">
+    <title>Fala Brasil</title>
+    <desc>Noticiário com as principais informações do dia.</desc>
+  </programme>
+  <programme start="20251013120000 -0300" stop="20251013150000 -0300" channel="record.br">
+    <title>Balanço Geral</title>
+    <desc>Programa jornalístico e de entretenimento com notícias e curiosidades.</desc>
+  </programme>
+  <programme start="20251013150000 -0300" stop="20251013170000 -0300" channel="record.br">
+    <title>A Hora da Venenosa</title>
+    <desc>Quadro de fofocas e curiosidades sobre o mundo dos famosos.</desc>
+  </programme>
+
+  <!-- SporTV -->
+  <channel id="sportv.br">
+    <display-name>SporTV</display-name>
+    <icon src="https://upload.wikimedia.org/wikipedia/commons/3/3d/SporTV_logo_2021.png" />
+  </channel>
+
+  <programme start="20251013090000 -0300" stop="20251013110000 -0300" channel="sportv.br">
+    <title>Redação SporTV</title>
+    <desc>Análises e notícias sobre o esporte no Brasil e no mundo.</desc>
+  </programme>
+  <programme start="20251013120000 -0300" stop="20251013140000 -0300" channel="sportv.br">
+    <title>Seleção SporTV</title>
+    <desc>Debates e comentários sobre futebol brasileiro.</desc>
+  </programme>
+  <programme start="20251013140000 -0300" stop="20251013160000 -0300" channel="sportv.br">
+    <title>Troca de Passes</title>
+    <desc>Resumo e comentários sobre as partidas do dia.</desc>
+  </programme>
+
+  <!-- Cartoon Network -->
+  <channel id="cartoon.br">
+    <display-name>Cartoon Network</display-name>
+    <icon src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Cartoon_Network_2010_logo.svg" />
+  </channel>
+
+  <programme start="20251013130000 -0300" stop="20251013133000 -0300" channel="cartoon.br">
+    <title>Hora de Aventura</title>
+    <desc>Finn e Jake vivem aventuras incríveis no mundo de Ooo.</desc>
+  </programme>
+  <programme start="20251013133000 -0300" stop="20251013140000 -0300" channel="cartoon.br">
+    <title>Os Jovens Titãs em Ação!</title>
+    <desc>As aventuras malucas dos super-heróis adolescentes.</desc>
+  </programme>
+  <programme start="20251013140000 -0300" stop="20251013143000 -0300" channel="cartoon.br">
+    <title>O Incrível Mundo de Gumball</title>
+    <desc>As confusões de Gumball e Darwin em Elmore.</desc>
+  </programme>
+
+</tv>
