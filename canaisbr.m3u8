@@ -1,0 +1,28 @@
+#EXTM3U url-tvg="https://epg.pw/xmltv/epg_BR.xml"
+
+#EXTINF:-1 tvg-id="globo.br" tvg-name="Globo HD" group-title="Abertos", Globo HD
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="sbt.br" tvg-name="SBT HD" group-title="Abertos", SBT HD
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="record.br" tvg-name="Record HD" group-title="Abertos", Record HD
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="band.br" tvg-name="Band HD" group-title="Abertos", Band HD
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="redeTV.br" tvg-name="RedeTV! HD" group-title="Abertos", RedeTV! HD
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="globo.sportv" tvg-name="SporTV" group-title="Esportes", SporTV
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="globo.globonews" tvg-name="GloboNews" group-title="Notícias", GloboNews
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="globo.gnt" tvg-name="GNT" group-title="Entretenimento", GNT
+https://iptv-org.github.io/iptv/countries/BR.m3u8
+
+#EXTINF:-1 tvg-id="globo.globoplay" tvg-name="Globoplay" group-title="Entretenimento", Globoplay
+https://iptv-org.github.io/iptv/countries/BR.m3u8
