@@ -1,5 +1,4 @@
-#EXTM3U url-tvg="https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/EPG.xml"
-
+#EXTM3U url-tvg="https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/guia.xml"
 Canais###################################################################### Canais| ABERTO
 
 #EXTINF:-1 tvg-id="GLOBO SÃO PAULO" tvg-name="GLOBO SÃO PAULO" tvg-logo="https://i.imgur.com/waZJG1M.png" group-title="Canais | GLOBO",Globo RJ HD
