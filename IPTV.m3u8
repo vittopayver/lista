@@ -1,14 +1,14 @@
 #EXTM3U url-tvg="https://epg.pw/xmltv/epg_BR.xml"
 Canais###################################################################### Canais| ABERTO
 
+
 #EXTINF:-1 tvg-id="GLOBO SÃO PAULO" tvg-name="GLOBO SÃO PAULO" tvg-logo="https://i.imgur.com/waZJG1M.png" group-title="Canais | GLOBO",Globo RJ HD
 http://79.127.238.228:14217/
 
-#EXTINF:-1 tvg-id="GLOBO SÃO PAULO" tvg-name="GLOBO SÃO PAULO" tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwO4gucNe4oh9_RZBdvwbIRrQUhQjHOYyna8nb6pG_DA&s=10" group-title="Canais | GLOBO",Globo SP HD
+
+#EXTINF:-1 tvg-id="GLOBO SÃO PAULO" tvg-name="GLOBO SÃO PAULO" tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:"https://i.imgur.com/waZJG1M.png" group-title="Canais | GLOBO",Globo SP HD
 http://79.127.238.228:14211/
 
-#EXTINF:-1 tvg-id="GLOBO SÃO PAULO" tvg-name="GLOBO SÃO PAULO" tvg-logo="https://i.imgur.com/waZJG1M.png" group-title="Canais | GLOBO",Globo SP HD²
-https://canais.fazoeli.co.za/secret_key/669f314bff3f7376b10d8bf3c0e6eab8.m3u8
 
 #EXTINF:-1 tvg-id="GLOBO SÃO PAULO" tvg-name="GLOBO SÃO PAULO" tvg-logo="https://i.imgur.com/zldYz3t.png" group-title="Canais | GLOBO",TV TEM  
 
