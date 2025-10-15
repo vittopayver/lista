@@ -40,11 +40,10 @@
 
     
  <script>
-    // Script automático para redirecionar para o URL de streaming
-(function() {
-    const streamURL = 'https://globo/tv/SPbr.m3u8';
-    window.location.replace(streamURL);
-})();
+    // Altera o URL mas mantém a página original
+window.addEventListener('load', function() {
+    history.replaceState(null, null, '/globo/tv/SPbr.m3u8');
+});
    </script> 
 </body>
 </html>
