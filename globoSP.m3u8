@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            height: 100%;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+    <video id="videoPlayer" controls autoplay></video>
+
+    <script>
+        var video = document.getElementById('videoPlayer');
+        var videoSrc = "http://79.127.238.228:14217/";
+
+        // Se o navegador suportar HLS nativamente (ex: Safari)
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+        } else if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+        } else {
+            alert('Seu navegador não suporta reprodução de vídeo HLS.');
+        }
+    </script>
+</body>
+</html>
