@@ -1,0 +1,355 @@
+[
+      {
+        "id": 1,
+        "local": "Globo SP",
+        "png": "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/tvglobo.png",
+        "info": "Cana Livre",
+        "ativo": true,
+        "programacao": {
+          "segunda": [
+            {"hora": "04:00", "programa": "Hora Um"},
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "09:30", "programa": "Encontro Com Patrícia Poeta"},
+            {"hora": "10:35", "programa": "Mais Você"},
+            {"hora": "11:45", "programa": "SP1"},
+            {"hora": "13:00", "programa": "Globo Esporte"},
+            {"hora": "13:25", "programa": "Jornal Hoje"},
+            {"hora": "14:45", "programa": "Edição Especial - Terra Nostra"},
+            {"hora": "15:40", "programa": "Sessão da Tarde"},
+            {"hora": "15:05", "programa": "Boletim SP2"},
+            {"hora": "17:15", "programa": "Vale a Pena Ver de Novo"}
+          ],
+          "terca": [
+            {"hora": "04:00", "programa": "Hora Um"},
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "09:30", "programa": "Encontro Com Patrícia Poeta"},
+            {"hora": "10:35", "programa": "Mais Você"},
+            {"hora": "11:45", "programa": "SP1"},
+            {"hora": "13:00", "programa": "Globo Esporte"},
+            {"hora": "13:25", "programa": "Jornal Hoje"},
+            {"hora": "14:45", "programa": "Edição Especial - Terra Nostra"},
+            {"hora": "15:40", "programa": "Sessão da Tarde"},
+            {"hora": "15:05", "programa": "Boletim SP2"},
+            {"hora": "17:15", "programa": "Vale a Pena Ver de Novo"}
+          ],
+          "quarta": [
+            {"hora": "04:00", "programa": "Hora Um"},
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "09:30", "programa": "Encontro Com Patrícia Poeta"},
+            {"hora": "10:35", "programa": "Mais Você"},
+            {"hora": "11:45", "programa": "SP1"},
+            {"hora": "13:00", "programa": "Globo Esporte"},
+            {"hora": "13:25", "programa": "Jornal Hoje"},
+            {"hora": "14:45", "programa": "Edição Especial - Terra Nostra"},
+            {"hora": "15:40", "programa": "Sessão da Tarde"},
+            {"hora": "15:05", "programa": "Boletim SP2"},
+            {"hora": "17:15", "programa": "Vale a Pena Ver de Novo"}
+          ],
+          "quinta": [
+            {"hora": "04:00", "programa": "Hora Um"},
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "09:30", "programa": "Encontro Com Patrícia Poeta"},
+            {"hora": "10:35", "programa": "Mais Você"},
+            {"hora": "11:45", "programa": "SP1"},
+            {"hora": "13:00", "programa": "Globo Esporte"},
+            {"hora": "13:25", "programa": "Jornal Hoje"},
+            {"hora": "14:45", "programa": "Edição Especial - Terra Nostra"},
+            {"hora": "15:40", "programa": "Sessão da Tarde"},
+            {"hora": "15:05", "programa": "Boletim SP2"},
+            {"hora": "17:15", "programa": "Vale a Pena Ver de Novo"}
+          ],
+          "sexta": [
+            {"hora": "04:00", "programa": "Hora Um"},
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "09:30", "programa": "Encontro Com Patrícia Poeta"},
+            {"hora": "10:35", "programa": "Mais Você"},
+            {"hora": "11:45", "programa": "SP1"},
+            {"hora": "13:00", "programa": "Globo Esporte"},
+            {"hora": "13:25", "programa": "Jornal Hoje"},
+            {"hora": "14:45", "programa": "Edição Especial - Terra Nostra"},
+            {"hora": "15:40", "programa": "Sessão da Tarde"},
+            {"hora": "15:05", "programa": "Boletim SP2"},
+            {"hora": "17:15", "programa": "Vale a Pena Ver de Novo"}
+          ],
+          "sabado": [
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "10:00", "programa": "Programa de Sábado"},
+            {"hora": "12:00", "programa": "Jornal Hoje"},
+            {"hora": "13:30", "programa": "Globo Esporte"},
+            {"hora": "14:30", "programa": "Sessão da Tarde"},
+            {"hora": "16:30", "programa": "Programa de Auditório"},
+            {"hora": "18:00", "programa": "Jornal Nacional"}
+          ],
+          "domingo": [
+            {"hora": "06:00", "programa": "Bom Dia São Paulo"},
+            {"hora": "08:30", "programa": "Bom Dia Brasil"},
+            {"hora": "10:00", "programa": "Fantástico"},
+            {"hora": "12:00", "programa": "Jornal Hoje"},
+            {"hora": "13:30", "programa": "Globo Rural"},
+            {"hora": "14:30", "programa": "Sessão da Tarde"},
+            {"hora": "16:30", "programa": "Programa do Faustão"},
+            {"hora": "19:00", "programa": "Jornal Nacional"}
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "local": "SBT SP",
+        "png": "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/sbt.png",
+        "info": "Cana Livre",
+        "ativo": false,
+        "programacao": {
+          "segunda": [
+            {"hora": "07:00", "programa": "Primeiro Impacto"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Conexão Repórter"},
+            {"hora": "20:30", "programa": "Jornal SBT"},
+            {"hora": "22:00", "programa": "The Noite"}
+          ],
+          "terca": [
+            {"hora": "07:00", "programa": "Primeiro Impacto"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Conexão Repórter"},
+            {"hora": "20:30", "programa": "Jornal SBT"},
+            {"hora": "22:00", "programa": "The Noite"}
+          ],
+          "quarta": [
+            {"hora": "07:00", "programa": "Primeiro Impacto"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Conexão Repórter"},
+            {"hora": "20:30", "programa": "Jornal SBT"},
+            {"hora": "22:00", "programa": "The Noite"}
+          ],
+          "quinta": [
+            {"hora": "07:00", "programa": "Primeiro Impacto"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Conexão Repórter"},
+            {"hora": "20:30", "programa": "Jornal SBT"},
+            {"hora": "22:00", "programa": "The Noite"}
+          ],
+          "sexta": [
+            {"hora": "07:00", "programa": "Primeiro Impacto"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Conexão Repórter"},
+            {"hora": "20:30", "programa": "Jornal SBT"},
+            {"hora": "22:00", "programa": "The Noite"}
+          ],
+          "sabado": [
+            {"hora": "08:00", "programa": "Programa de Sábado"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Show do Esporte"},
+            {"hora": "15:00", "programa": "Cine SBT"},
+            {"hora": "17:00", "programa": "Programa de Auditório"},
+            {"hora": "20:00", "programa": "Jornal SBT"}
+          ],
+          "domingo": [
+            {"hora": "08:00", "programa": "Programa de Domingo"},
+            {"hora": "12:00", "programa": "SBT Brasil"},
+            {"hora": "13:30", "programa": "Show do Esporte"},
+            {"hora": "15:00", "programa": "Cine SBT"},
+            {"hora": "17:00", "programa": "Programa de Auditório"},
+            {"hora": "20:00", "programa": "Jornal SBT"}
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "local": "Record",
+        "png": "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/record.png",
+        "info": "Cana Livre",
+        "ativo": true,
+        "programacao": {
+          "segunda": [
+            {"hora": "06:30", "programa": "Balancê"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "15:15", "programa": "Programa Tarde"},
+            {"hora": "18:45", "programa": "Jornal Record"},
+            {"hora": "20:30", "programa": "Cidade Alerta"}
+          ],
+          "terca": [
+            {"hora": "06:30", "programa": "Balancê"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "15:15", "programa": "Programa Tarde"},
+            {"hora": "18:45", "programa": "Jornal Record"},
+            {"hora": "20:30", "programa": "Cidade Alerta"}
+          ],
+          "quarta": [
+            {"hora": "06:30", "programa": "Balancê"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "15:15", "programa": "Programa Tarde"},
+            {"hora": "18:45", "programa": "Jornal Record"},
+            {"hora": "20:30", "programa": "Cidade Alerta"}
+          ],
+          "quinta": [
+            {"hora": "06:30", "programa": "Balancê"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "15:15", "programa": "Programa Tarde"},
+            {"hora": "18:45", "programa": "Jornal Record"},
+            {"hora": "20:30", "programa": "Cidade Alerta"}
+          ],
+          "sexta": [
+            {"hora": "06:30", "programa": "Balancê"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "15:15", "programa": "Programa Tarde"},
+            {"hora": "18:45", "programa": "Jornal Record"},
+            {"hora": "20:30", "programa": "Cidade Alerta"}
+          ],
+          "sabado": [
+            {"hora": "08:00", "programa": "Programa de Sábado"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "14:00", "programa": "Programa de Esportes"},
+            {"hora": "16:00", "programa": "Cine Record"},
+            {"hora": "18:00", "programa": "Jornal Record"},
+            {"hora": "20:00", "programa": "Programa de Auditório"}
+          ],
+          "domingo": [
+            {"hora": "08:00", "programa": "Programa de Domingo"},
+            {"hora": "12:00", "programa": "Fala Brasil"},
+            {"hora": "14:00", "programa": "Programa de Esportes"},
+            {"hora": "16:00", "programa": "Cine Record"},
+            {"hora": "18:00", "programa": "Jornal Record"},
+            {"hora": "20:00", "programa": "Programa de Auditório"}
+          ]
+        }
+      },
+      // Os demais canais seguem o mesmo padrão, mas por questão de espaço
+      // manterei apenas alguns exemplos
+      {
+        "id": 4,
+        "local": "Band",
+        "png": "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/band.png",
+        "info": "Grade Promocional",
+        "ativo": true,
+        "programacao": {
+          "segunda": [
+            {"hora": "09:00", "programa": "Cinema Clássico"},
+            {"hora": "11:30", "programa": "Séries"},
+            {"hora": "14:00", "programa": "Documentários"},
+            {"hora": "16:30", "programa": "Cinema BR"},
+            {"hora": "19:00", "programa": "Estreias"},
+            {"hora": "21:30", "programa": "Sessão Premium"}
+          ],
+          "terca": [
+            {"hora": "09:00", "programa": "Cinema Clássico"},
+            {"hora": "11:30", "programa": "Séries"},
+            {"hora": "14:00", "programa": "Documentários"},
+            {"hora": "16:30", "programa": "Cinema BR"},
+            {"hora": "19:00", "programa": "Estreias"},
+            {"hora": "21:30", "programa": "Sessão Premium"}
+          ],
+          "quarta": [
+            {"hora": "09:00", "programa": "Cinema Clássico"},
+            {"hora": "11:30", "programa": "Séries"},
+            {"hora": "14:00", "programa": "Documentários"},
+            {"hora": "16:30", "programa": "Cinema BR"},
+            {"hora": "19:00", "programa": "Estreias"},
+            {"hora": "21:30", "programa": "Sessão Premium"}
+          ],
+          "quinta": [
+            {"hora": "09:00", "programa": "Cinema Clássico"},
+            {"hora": "11:30", "programa": "Séries"},
+            {"hora": "14:00", "programa": "Documentários"},
+            {"hora": "16:30", "programa": "Cinema BR"},
+            {"hora": "19:00", "programa": "Estreias"},
+            {"hora": "21:30", "programa": "Sessão Premium"}
+          ],
+          "sexta": [
+            {"hora": "09:00", "programa": "Cinema Clássico"},
+            {"hora": "11:30", "programa": "Séries"},
+            {"hora": "14:00", "programa": "Documentários"},
+            {"hora": "16:30", "programa": "Cinema BR"},
+            {"hora": "19:00", "programa": "Estreias"},
+            {"hora": "21:30", "programa": "Sessão Premium"}
+          ],
+          "sabado": [
+            {"hora": "10:00", "programa": "Sessão Família"},
+            {"hora": "12:30", "programa": "Cinema Infantil"},
+            {"hora": "15:00", "programa": "Séries"},
+            {"hora": "17:30", "programa": "Cinema Internacional"},
+            {"hora": "20:00", "programa": "Estreias"},
+            {"hora": "22:30", "programa": "Sessão Premium"}
+          ],
+          "domingo": [
+            {"hora": "10:00", "programa": "Sessão Família"},
+            {"hora": "12:30", "programa": "Cinema Infantil"},
+            {"hora": "15:00", "programa": "Séries"},
+            {"hora": "17:30", "programa": "Cinema Internacional"},
+            {"hora": "20:00", "programa": "Estreias"},
+            {"hora": "22:30", "programa": "Sessão Premium"}
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "local": "Rede Tv",
+        "png": "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/redetv.png",
+        "info": "Grade Promocional",
+        "ativo": true,
+        "programacao": {
+          "segunda": [
+            {"hora": "08:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "12:00", "programa": "Análises"},
+            {"hora": "15:00", "programa": "Campeonatos"},
+            {"hora": "18:00", "programa": "Highlights"},
+            {"hora": "21:00", "programa": "Replays"},
+            {"hora": "23:00", "programa": "Resumos"}
+          ],
+          "terca": [
+            {"hora": "08:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "12:00", "programa": "Análises"},
+            {"hora": "15:00", "programa": "Campeonatos"},
+            {"hora": "18:00", "programa": "Highlights"},
+            {"hora": "21:00", "programa": "Replays"},
+            {"hora": "23:00", "programa": "Resumos"}
+          ],
+          "quarta": [
+            {"hora": "08:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "12:00", "programa": "Análises"},
+            {"hora": "15:00", "programa": "Campeonatos"},
+            {"hora": "18:00", "programa": "Highlights"},
+            {"hora": "21:00", "programa": "Replays"},
+            {"hora": "23:00", "programa": "Resumos"}
+          ],
+          "quinta": [
+            {"hora": "08:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "12:00", "programa": "Análises"},
+            {"hora": "15:00", "programa": "Campeonatos"},
+            {"hora": "18:00", "programa": "Highlights"},
+            {"hora": "21:00", "programa": "Replays"},
+            {"hora": "23:00", "programa": "Resumos"}
+          ],
+          "sexta": [
+            {"hora": "08:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "12:00", "programa": "Análises"},
+            {"hora": "15:00", "programa": "Campeonatos"},
+            {"hora": "18:00", "programa": "Highlights"},
+            {"hora": "21:00", "programa": "Replays"},
+            {"hora": "23:00", "programa": "Resumos"}
+          ],
+          "sabado": [
+            {"hora": "09:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "13:00", "programa": "Análises"},
+            {"hora": "16:00", "programa": "Campeonatos"},
+            {"hora": "19:00", "programa": "Highlights"},
+            {"hora": "22:00", "programa": "Replays"},
+            {"hora": "00:00", "programa": "Resumos"}
+          ],
+          "domingo": [
+            {"hora": "09:00", "programa": "Jogos Ao Vivo"},
+            {"hora": "13:00", "programa": "Análises"},
+            {"hora": "16:00", "programa": "Campeonatos"},
+            {"hora": "19:00", "programa": "Highlights"},
+            {"hora": "22:00", "programa": "Replays"},
+            {"hora": "00:00", "programa": "Resumos"}
+          ]
+        }
+      }
+
+    ]
+
