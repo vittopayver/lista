@@ -1,9 +1,9 @@
     {
-        "id": 1,
+        "id": "1",
         "local": "Globo SP",
         "png": "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/tvglobo.png",
         "info": "Cana Livre",
-        "ativo": true
+        "ativo": "true"
     }
                                           {"hora": "14:00", "programa": "Documentários"},
                         
