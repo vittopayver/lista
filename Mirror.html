@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f5f5" id="theme-color-meta">
+    <title>Mirror Editor</title>
+  
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/nord.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/solarized.min.css">
+
+    <!-- CodeMirror Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <!-- Modos de linguagem -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/css/css.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/php/php.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/ruby/ruby.js"></script>
+    <!-- Addons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/closetag.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/closebrackets.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/matchbrackets.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/html-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/javascript-hint.js"></script>
+    
+<!-- Temas Originais -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/nord.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/solarized.min.css">
+
+<!-- Temas Adicionais -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/3024-day.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/3024-night.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/ambiance.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/base16-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/base16-light.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/blackboard.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/cobalt.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/eclipse.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/elegant.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/erlang-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/hopscotch.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/icecoder.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/idea.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/isotope.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/lesser-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/liquibyte.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/lucario.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/mbo.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/mdn-like.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/midnight.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/night.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/oceanic-next.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/panda-syntax.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/paraiso-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/paraiso-light.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/pastel-on-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/railscasts.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/rubyblue.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/seti.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/shadowfox.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/the-matrix.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/tomorrow-night-bright.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/tomorrow-night-eighties.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/vibrant-ink.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/xq-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/xq-light.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/yeti.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/zenburn.min.css">
+    <!-- Feather Icons -->
+    
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+/* ===== CODEMIRROR EDITOR STYLES ===== */
+.CodeMirror {
+    top: 50px;
+    height: calc(100vh - 60px);
+    width: 100vw;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    padding-bottom: 60px; /* Adiciona espaço abaixo do editor */
+}
+  
+
+.CodeMirror-scroll {
+    transition: opacity 0.3s ease;
+}
+
+.CodeMirror-scroll.fade-out {
+    opacity: 0.3;
+}
+
+/* ===== TOP MENU STYLES ===== */
+.top-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.top-menu .file-name {
+    color: white;
+    font-size: 18px;
+    margin-right: auto;
+    margin-left: 15px;
+}
+
+.top-menu button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.top-menu button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+
+    .top-menu {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1000;
+    }
+
+    .file-name {
+        color: white;
+        font-size: 18px;
+        margin-right: auto;
+    }
+
+    
+/* ===== BUTTON STYLES ===== */
+button {
+    position: relative;
+    padding:  10px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    min-width: 40px;
+    width: auto;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    
+    z-index: 2; /* Acima da alça de arrastar */
+}
+
+button:hover {
+    background-color: transparent;
+    transform: scale(1.1);
+    
+}
+    
+    
+       /* ===== SUBMENU STYLES ===== */
+.subMenu {
+    display: none;
+    position: fixed;
+    top: 50px;
+    right: 0;
+    width: 110px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 5px 10px;
+    border-radius: 0 0 0 30px;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.subMenu .file-name {
+    color: white;
+    font-size: 14px;
+    margin-right: auto;
+    
+}
+
+.subMenu button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s, transform 0.2s;
+}
+  
+ 
+/* ===== FLOATING CONTROLS STYLES ===== */
+.floating-controls {
+    position: absolute;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 50px;
+    padding: 10px 30px;
+    margin: 0 10px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+    cursor: grab;
+    touch-action: none; /* Melhora o suporte para toque */
+}
+
+.floating-controls:active {
+    cursor: grabbing;
+}
+
+.floating-controls:hover {
+    background-color: rgba(0, 0, 0, 0.65);
+}
+
+  
+/* ===== DRAG HANDLE STYLES ===== */
+.drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    cursor: grab;
+    z-index: 1; /* Abaixo dos controles, mas acima do resto */
+    padding: 0 20px; /* Aumenta o espaço para arrastar */
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.drag-indicator.left {
+    left: 15px; /* Posiciona o ícone à esquerda */
+}
+
+.drag-indicator.right {
+    right: 15px; /* Posiciona o ícone à direita */
+}
+
+
+
+  
+.nome-btn {
+    padding: 10px;
+  }
+  
+  
+
+.maisBTN {
+    background-color: white;
+    border: none;
+    font-size: 24px;
+    transition: transform 0.2s;
+}
+
+.maisBTN:active {
+    transform: scale(0.9);
+}
+
+/* ===== THEME SELECT STYLES ===== */
+.theme-select {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 2px 5px;
+    margin: 5px 0;
+    height: 35px;
+    width: 80px;
+    outline: none;
+    font-size: 14px;
+    z-index: 1; /* Acima da alça de arrastar */
+}
+
+.theme-select option {
+    background-color: #333;
+    color: white;
+}
+
+/* ===== ICON STYLES ===== */
+.icon {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+
+.icon-olho {
+    width: 21px;
+    height: 21px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.add {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    
+}
+  
+.square {
+    stroke-width: 4.7; /* Largura da borda do quadrado */
+}
+
+svg {
+    stroke: white; /* Define a cor dos ícones para branco */
+}
+
+.copiar {
+    margin: 0 0 0 -3px;
+  }
+  
+.copiar-nome {
+    margin: 0 0 0 4px;
+  }
+  
+
+  
+/* ===== NOTIFICATION STYLES ===== */
+.notification {
+    position: fixed;
+    top: 80px; /* Posiciona no topo */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 999;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* ===== FILE LIST STYLES ===== */
+.file-list {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 200px;
+    height: calc(100vh - 60px);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    overflow-y: auto;
+    z-index: 999;
+    display: none;
+}
+
+.file-list.visible {
+    display: block;
+}
+
+.file-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-list li {
+    padding: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.file-list li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== TEXT STYLES ===== */
+.file-name {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+       	 
+        <span class="file-name" id="fileName">Index.html</span>
+
+
+        <button id="toggleWrap" title="Linhas">     
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+</svg>
+        </button>
+
+        
+        <button class="maisBTN" id="maisBTN">
+            <svg id="iconOpen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h18M12 3v18"/>
+            </svg>
+
+            <svg id="iconClose" xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+  
+  
+  
+    <!-- Sub Menu superior -->
+    <div class="subMenu" id="subMenu">
+      
+      
+     
+      
+        <button id="openFile" title="Adicionar">
+            <svg class="add" width="20" height="20" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"></path>
+                <path d="M14 3v5h5M12 18v-6m-3 3h6"></path>
+            </svg>
+            <p class="nome-btn">Add</p>
+        </button>  
+        
+        
+                <button id="save-btn" title="Salvar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3V16M12 16L7 11M12 16L17 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 20H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg><p class="nome-btn">Baixar</p>
+        </button>   
+        
+        
+        <button id="copy-btn" title="Copiar">
+            <svg class="copiar" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="10" height="10" rx="2" ry="2"/>
+                <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>
+            </svg><p class="copiar-nome">Copiar</p>
+        </button>   
+        
+        
+        
+        
+        
+        
+        <button id="deleteBtn" title="Limpar código salvo">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+          </svg><p class="nome-btn">Limpar</p>
+        </button>
+ 
+    
+    
+
+    
+        
+        <select class="theme-select" id="theme-select">
+    <option value="default">Padrão</option>
+    <!-- Temas Originais -->
+    <option value="dracula">Dracula</option>
+    <option value="monokai">Monokai</option>
+    <option value="material">Material</option>
+    <option value="nord">Nord</option>
+    <option value="solarized">Solarized</option>
+    
+        <option value="3024-day">3024 Day</option>
+        <option value="base16-light">Base16 Light</option>
+        <option value="eclipse">Eclipse</option>
+        <option value="elegant">Elegant</option>
+        <option value="idea">Idea</option>
+        <option value="mdn-like">MDN-Like</option>
+        <option value="paraiso-light">Paraiso Light</option>
+        <option value="xq-light">XQ Light</option>
+        <option value="yeti">Yeti</option>
+    </optgroup>
+   
+        <option value="3024-night">3024 Night</option>
+        <option value="ambiance">Ambiance</option>
+        <option value="base16-dark">Base16 Dark</option>
+        <option value="blackboard">Blackboard</option>
+        <option value="cobalt">Cobalt</option>
+        <option value="erlang-dark">Erlang Dark</option>
+        <option value="hopscotch">Hopscotch</option>
+        <option value="icecoder">IceCoder</option>
+        <option value="isotope">Isotope</option>
+        <option value="lesser-dark">Lesser Dark</option>
+        <option value="liquibyte">Liquibyte</option>
+        <option value="lucario">Lucario</option>
+        <option value="mbo">MBO</option>
+        <option value="midnight">Midnight</option>
+        <option value="night">Night</option>
+        <option value="oceanic-next">Oceanic Next</option>
+        <option value="panda-syntax">Panda Syntax</option>
+        <option value="paraiso-dark">Paraiso Dark</option>
+        <option value="pastel-on-dark">Pastel on Dark</option>
+        <option value="railscasts">Railscasts</option>
+        <option value="rubyblue">Ruby Blue</option>
+        <option value="seti">Seti</option>
+        <option value="shadowfox">Shadowfox</option>
+        <option value="the-matrix">The Matrix</option>
+        <option value="tomorrow-night-bright">Tomorrow Night Bright</option>
+        <option value="tomorrow-night-eighties">Tomorrow Night Eighties</option>
+        <option value="vibrant-ink">Vibrant Ink</option>
+        <option value="xq-dark">XQ Dark</option>
+        <option value="zenburn">Zenburn</option>
+    </optgroup>
+</select>
+      
+      
+    </div>
+
+    <!-- Lista de arquivos -->
+    <div class="file-list" id="file-list">
+        <ul id="file-list-ul"></ul>
+    </div>
+
+
+    <!-- Painel de botões flutuantes -->
+    <div class="floating-controls" id="floating-controls">
+        <!-- Alça para arrastar -->
+        <div class="drag-handle" id="drag-handle"></div>
+        <div class="drag-indicator left">⋮⋮</div> <!-- Ícone à esquerda -->
+        
+      
+
+           <button id="voltar" title="Voltar"> 
+   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M6 5L2 10L6 15" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M2 10H12C15 10 18 12 18 15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+
+    </button>
+
+      
+
+
+
+
+
+
+        </button>
+      
+      <button id="fullscreen-btn" title="Tela cheia">
+            <svg class="icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"></path>
+            </svg>
+        </button>
+        
+        
+
+        <button id="play-btn" title="Executar">
+<svg class="icon-olho" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+     stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- contorno do olho -->
+  <path d="M1.5 12s4.5-7 10.5-7S22.5 12 22.5 12s-4.5 7-10.5 7S1.5 12 1.5 12z"
+        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- íris -->
+  <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+</svg>
+
+        </button>
+        
+        <div class="drag-indicator right">⋮⋮</div> <!-- Ícone à direita -->
+    </div>
+    
+
+    <textarea id="editor"></textarea>
+
+    <script>
+    /*************************************************************************
+     * Código consolidado: inicializa CodeMirror uma vez e adiciona todos os
+     * handlers (salvar, baixar, renomear, tema, persistência em localStorage,
+     * arrastar/soltar, abrir arquivo, limpar, executar, copiar, fullscreen,
+     * salvar posição do painel flutuante, etc).
+     *************************************************************************/
+
+    // --- Conteúdo HTML padrão (aparece somente se não houver conteúdo salvo) ---
+    const defaultHTML = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Página Web</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        .icon {
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#2C3E50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <path d="M7 13l4-4 4 4"></path>
+            <path d="M10 9l2-2 2 2"></path>
+        </svg>
+    </div>
+    <h1>Título Principal</h1>
+    <h2>Subtítulo Descritivo</h2>
+</body>
+</html>`;
+
+
+    // --- Utilitários ---
+    function showNotification(message, duration = 2000) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
+    }
+
+    function debounce(fn, wait = 200) {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), wait);
+        };
+    }
+
+    // --- Elementos DOM globais ---
+    const themeSelect = document.getElementById("theme-select");
+    const playBtn = document.getElementById("play-btn");
+    const themeColorMeta = document.getElementById("theme-color-meta");
+    const floatingControls = document.getElementById("floating-controls");
+    const dragHandle = document.getElementById("drag-handle");
+    const fileNameSpan = document.getElementById("fileName");
+    const copyBtn = document.getElementById("copy-btn");
+    const saveBtn = document.getElementById("save-btn");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    const fileList = document.getElementById("file-list");
+    const fileListUl = document.getElementById("file-list-ul");
+    const button = document.getElementById('maisBTN');
+    const subMenu = document.getElementById('subMenu');
+    const iconOpen = document.getElementById('iconOpen');
+    const iconClose = document.getElementById('iconClose');
+    const openFileBtn = document.getElementById('openFile');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const toggleWrapBtn = document.getElementById('toggleWrap');
+    const voltarBtn = document.getElementById('voltar');
+
+    // --- Map de modos por extensão ---
+    const modeMap = {
+        'js': 'javascript',
+        'html': 'htmlmixed',
+        'htm': 'htmlmixed',
+        'css': 'css',
+        'py': 'python',
+        'java': 'text/x-java',
+        'cpp': 'text/x-c++src',
+        'c': 'text/x-csrc',
+        'php': 'php',
+        'rb': 'ruby',
+        'json': {name: 'application/json'}
+    };
+
+    function detectMode(filename) {
+        if(!filename) return 'htmlmixed';
+        const ext = filename.split('.').pop().toLowerCase();
+        return modeMap[ext] || 'htmlmixed';
+    }
+
+    // --- Atualiza meta theme-color e background do body conforme tema ---
+    function updateThemeColor(theme) {
+        let themeColor;
+        switch (theme) {
+            case "dracula": themeColor = "#282a36"; break;
+            case "monokai": themeColor = "#272822"; break;
+            case "material": themeColor = "#263238"; break;
+            case "nord": themeColor = "#2E3440"; break;
+            case "solarized": themeColor = "#002b36"; break;
+            case "3024-day": themeColor = "#f7f7f7"; break;
+            case "3024-night": themeColor = "#090300"; break;
+            case "ambiance": themeColor = "#3b3b3b"; break;
+            case "base16-dark": themeColor = "#151515"; break;
+            case "base16-light": themeColor = "#f5f5f5"; break;
+            case "blackboard": themeColor = "#0c1021"; break;
+            case "cobalt": themeColor = "#193549"; break;
+            case "eclipse": themeColor = "#ffffff"; break;
+            case "elegant": themeColor = "#f4f4f4"; break;
+            case "erlang-dark": themeColor = "#2c3e50"; break;
+            case "hopscotch": themeColor = "#322931"; break;
+            case "icecoder": themeColor = "#1b2b34"; break;
+            case "idea": themeColor = "#ffffff"; break;
+            case "isotope": themeColor = "#000000"; break;
+            case "lesser-dark": themeColor = "#262626"; break;
+            case "liquibyte": themeColor = "#000000"; break;
+            case "lucario": themeColor = "#1f2229"; break;
+            case "mbo": themeColor = "#2c2c2c"; break;
+            case "mdn-like": themeColor = "#ffffff"; break;
+            case "midnight": themeColor = "#000000"; break;
+            case "night": themeColor = "#0c0c0c"; break;
+            case "oceanic-next": themeColor = "#1b2b34"; break;
+            case "panda-syntax": themeColor = "#292a2b"; break;
+            case "paraiso-dark": themeColor = "#2f1e2e"; break;
+            case "paraiso-light": themeColor = "#e7e9db"; break;
+            case "pastel-on-dark": themeColor = "#2c2c2c"; break;
+            case "railscasts": themeColor = "#2b2b2b"; break;
+            case "rubyblue": themeColor = "#112435"; break;
+            case "seti": themeColor = "#151718"; break;
+            case "shadowfox": themeColor = "#171c1f"; break;
+            case "the-matrix": themeColor = "#000000"; break;
+            case "tomorrow-night-bright": themeColor = "#000000"; break;
+            case "tomorrow-night-eighties": themeColor = "#2d2d2d"; break;
+            case "vibrant-ink": themeColor = "#000000"; break;
+            case "xq-dark": themeColor = "#1a1a1a"; break;
+            case "xq-light": themeColor = "#ffffff"; break;
+            case "yeti": themeColor = "#ffffff"; break;
+            case "zenburn": themeColor = "#3f3f3f"; break;
+            default: themeColor = "#f5f5f5";
+        }
+        if (themeColorMeta) themeColorMeta.setAttribute("content", themeColor);
+        document.body.style.backgroundColor = themeColor;
+    }
+
+    // --- Persistência keys ---
+    const KEY_CONTENT = 'editorContent';
+    const KEY_THEME = 'editorTheme';
+    const KEY_FILENAME = 'editorFileName';
+    const KEY_FLOAT_X = 'floatingX';
+    const KEY_FLOAT_Y = 'floatingY';
+
+    // --- Inicialização do CodeMirror (APENAS UMA VEZ) ---
+    const savedTheme = localStorage.getItem(KEY_THEME) || 'default';
+
+    const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        lineNumbers: true,
+        theme: savedTheme,
+        mode: 'htmlmixed',
+        autoCloseTags: true,
+        matchBrackets: true,
+        lineWrapping: false,
+        extraKeys: {
+            "Ctrl-S": function(cm) { saveFile(); },
+            "Ctrl-O": function() { openFileInput(); },
+            "Ctrl-A": "selectAll",
+            "Ctrl-Z": function(cm) { cm.undo(); showNotification('Alteração desfeita', 1000); }
+        }
+    });
+
+    // Carrega conteúdo salvo ou padrão (aparece o HTML de amostra somente na primeira vez)
+    const savedContent = localStorage.getItem(KEY_CONTENT);
+    if (savedContent) {
+        editor.setValue(savedContent);
+    } else {
+        editor.setValue(defaultHTML);
+        // não gravar automaticamente o default até que o usuário mexa (mantemos o default para 1ª vez)
+    }
+
+    // Carrega nome salvo do arquivo
+    const savedFileName = localStorage.getItem(KEY_FILENAME) || 'Index.html';
+    fileNameSpan.textContent = savedFileName;
+
+    // Aplica tema salvo
+    themeSelect.value = savedTheme;
+    updateThemeColor(savedTheme);
+    editor.setOption('theme', savedTheme);
+
+
+    // --- Salva automaticamente conteúdo e filename no localStorage (com debounce) ---
+    editor.on('change', debounce(() => {
+        localStorage.setItem(KEY_CONTENT, editor.getValue());
+    }, 300));
+
+    // --- Manipulação do tema ---
+    themeSelect.addEventListener("change", function() {
+        const t = this.value || 'default';
+        editor.setOption('theme', t);
+        updateThemeColor(t);
+        localStorage.setItem(KEY_THEME, t);
+        showNotification('Tema alterado: ' + t, 900);
+    });
+
+    // --- Renomear arquivo: clicar no título abre prompt ---
+    fileNameSpan.addEventListener('click', () => {
+        const current = fileNameSpan.textContent || 'index.html';
+        const newName = prompt('Digite o novo nome do arquivo:', current);
+        if (newName && newName.trim() !== '') {
+            fileNameSpan.textContent = newName.trim();
+            localStorage.setItem(KEY_FILENAME, newName.trim());
+            showNotification('Nome atualizado: ' + newName.trim(), 900);
+        }
+    });
+
+    // --- Função auxiliar para garantir extensão (adiciona .html se não houver extensão) ---
+    function ensureFileNameHasExt(name) {
+        if (!name) return 'index.html';
+        if (name.indexOf('.') === -1) return name + '.html';
+        return name;
+    }
+
+    // --- Função de salvar/baixar (usada pelo botão e por Ctrl-S) ---
+    function saveFile() {
+        // solicita nome editável antes de salvar
+        const currentName = fileNameSpan.textContent || 'index.html';
+        const inputName = prompt('Nome do arquivo para salvar (incluir extensão se quiser):', currentName);
+        if (!inputName) { showNotification('Download cancelado'); return; }
+        const filename = ensureFileNameHasExt(inputName.trim());
+        fileNameSpan.textContent = filename;
+        localStorage.setItem(KEY_FILENAME, filename);
+
+        const content = editor.getValue();
+        const blob = new Blob([content], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showNotification('Arquivo baixado: ' + filename, 1500);
+    }
+
+    // Evento do botão Baixar (subMenu)
+    saveBtn.addEventListener('click', saveFile);
+
+    // --- Abrir / Adicionar arquivo (substitui código atual) ---
+    function handleFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const text = e.target.result;
+            editor.setValue(text);
+            // tenta definir modo com base no nome do arquivo
+            const mode = detectMode(file.name);
+            editor.setOption('mode', mode);
+            fileNameSpan.textContent = file.name;
+            localStorage.setItem(KEY_FILENAME, file.name);
+            localStorage.setItem(KEY_CONTENT, text);
+            showNotification('Arquivo carregado: ' + file.name, 1400);
+        };
+        reader.readAsText(file);
+    }
+
+    function openFileInput() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.html,.htm,.js,.css,.py,.java,.cpp,.php,.rb,.txt';
+        input.onchange = (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        };
+        input.click();
+    }
+
+    openFileBtn.addEventListener('click', openFileInput);
+
+    // Drag & Drop abrir arquivo (substitui o conteúdo atual)
+    document.addEventListener('dragover', e => e.preventDefault());
+    document.addEventListener('drop', e => {
+        e.preventDefault();
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    // --- Limpar / excluir conteúdo salvo ---
+    deleteBtn.addEventListener('click', function() {
+        const selection = editor.getSelection();
+        if (selection && selection.length > 0) {
+            editor.replaceSelection('');
+            localStorage.setItem(KEY_CONTENT, editor.getValue());
+            showNotification('Texto selecionado excluído', 1200);
+        } else {
+            // limpa todo o conteúdo e remove do localStorage
+            editor.setValue('');
+            localStorage.removeItem(KEY_CONTENT);
+            // também restaura nome padrão
+            fileNameSpan.textContent = 'Index.html';
+            localStorage.setItem(KEY_FILENAME, 'Index.html');
+            showNotification('Conteúdo e projeto limpos', 1200);
+        }
+    });
+
+    // --- Botão Executar: abre nova aba com o HTML atual ---
+    playBtn.addEventListener('click', function() {
+        const htmlCode = editor.getValue();
+        const newTab = window.open('', '_blank');
+        if (!newTab) { showNotification('Pop-up bloqueado. Permita pop-ups.', 1800); return; }
+        newTab.document.open();
+        newTab.document.write(htmlCode);
+        newTab.document.close();
+    });
+
+    // --- Copiar para clipboard ---
+    copyBtn.addEventListener('click', function() {
+        const htmlCode = editor.getValue();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(htmlCode).then(() => showNotification('Conteúdo copiado', 1000));
+        } else {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = htmlCode;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); showNotification('Conteúdo copiado', 1000); } catch(e){ showNotification('Falha ao copiar'); }
+            ta.remove();
+        }
+    });
+
+    // --- Fullscreen ---
+    fullscreenBtn.addEventListener('click', function() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => showNotification('Erro: ' + err.message));
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    // --- Toggle line wrapping ---
+    toggleWrapBtn.addEventListener('click', function() {
+        const current = editor.getOption('lineWrapping');
+        editor.setOption('lineWrapping', !current);
+        showNotification('Line wrapping: ' + (!current ? 'ON' : 'OFF'), 900);
+    });
+
+    // --- Desfazer com botão 'voltar' (undo simples) ---
+    voltarBtn.addEventListener('click', function() {
+        if (editor.historySize().undo > 0) {
+            editor.undo();
+            showNotification('Alteração desfeita', 900);
+        } else {
+            showNotification('Nada para desfazer', 900);
+        }
+    });
+
+    // --- Submenu abrir/fechar ---
+    button.addEventListener('click', () => {
+        if (subMenu.style.display === 'none' || subMenu.style.display === '') {
+            subMenu.style.display = 'block';
+            if (iconOpen) iconOpen.style.display = 'none';
+            if (iconClose) iconClose.style.display = 'inline';
+        } else {
+            subMenu.style.display = 'none';
+            if (iconOpen) iconOpen.style.display = 'inline';
+            if (iconClose) iconClose.style.display = 'none';
+        }
+    });
+
+    // fechar subMenu ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!subMenu.contains(e.target) && !button.contains(e.target)) {
+            subMenu.style.display = 'none';
+            if (iconOpen) iconOpen.style.display = 'inline';
+            if (iconClose) iconClose.style.display = 'none';
+        }
+    });
+
+    // quando clicar no editor, fecha subMenu (mobile/desktop) - será reforçado mais abaixo via wrapper do editor
+
+
+    // --- Painel flutuante arrastável (touch + mouse) ---
+    let isDragging = false;
+    let offsetX = 0, offsetY = 0;
+
+    dragHandle.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button, select')) return;
+        isDragging = true;
+        const rect = floatingControls.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        floatingControls.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const newX = e.clientX - offsetX;
+        const newY = e.clientY - offsetY;
+        const maxX = window.innerWidth - floatingControls.offsetWidth;
+        const maxY = window.innerHeight - floatingControls.offsetHeight;
+        floatingControls.style.left = `${Math.max(0, Math.min(newX, maxX))}px`;
+        floatingControls.style.top = `${Math.max(0, Math.min(newY, maxY))}px`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        floatingControls.style.cursor = 'grab';
+        savePosition(floatingControls.style.left, floatingControls.style.top);
+    });
+
+    // touch
+    dragHandle.addEventListener('touchstart', (e) => {
+        if (e.target.closest('button, select')) return;
+        isDragging = true;
+        const touch = e.touches[0];
+        const rect = floatingControls.getBoundingClientRect();
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        const newX = touch.clientX - offsetX;
+        const newY = touch.clientY - offsetY;
+        const maxX = window.innerWidth - floatingControls.offsetWidth;
+        const maxY = window.innerHeight - floatingControls.offsetHeight;
+        floatingControls.style.left = `${Math.max(0, Math.min(newX, maxX))}px`;
+        floatingControls.style.top = `${Math.max(0, Math.min(newY, maxY))}px`;
+    });
+
+    document.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        savePosition(floatingControls.style.left, floatingControls.style.top);
+    });
+
+    function savePosition(left, top) {
+        if (left) localStorage.setItem(KEY_FLOAT_X, left);
+        if (top) localStorage.setItem(KEY_FLOAT_Y, top);
+    }
+
+    function loadPosition() {
+        const savedX = localStorage.getItem(KEY_FLOAT_X);
+        const savedY = localStorage.getItem(KEY_FLOAT_Y);
+        if (savedX && savedY) {
+            floatingControls.style.left = savedX;
+            floatingControls.style.top = savedY;
+        } else {
+            // posição inicial centralizada na parte inferior
+            const initialX = (window.innerWidth - floatingControls.offsetWidth) / 2;
+            const initialY = window.innerHeight - floatingControls.offsetHeight - 35; // 35px do fundo
+            floatingControls.style.left = `${initialX}px`;
+            floatingControls.style.top = `${initialY}px`;
+        }
+    }
+
+    loadPosition();
+
+    // --- Fechar subMenu ao tocar no editor (mobile) já tratado acima ---
+
+    // --- Pequenas melhorias: salvar nome atual ao atualizar conteúdo (evita perda do nome) ---
+    window.addEventListener('beforeunload', () => {
+        // garante que filename e conteúdo estejam salvos
+        localStorage.setItem(KEY_FILENAME, fileNameSpan.textContent || 'Index.html');
+        localStorage.setItem(KEY_CONTENT, editor.getValue());
+    });
+
+    // --- Inicialização final ---
+    (function init() {
+        // se não houver conteúdo salvo, mantemos o default (não sobrescrevemos)
+        if (!localStorage.getItem(KEY_CONTENT)) {
+            // mantém defaultHTML até que o usuário altere
+        }
+
+        // garantir that theme meta and body background is set
+        updateThemeColor(localStorage.getItem(KEY_THEME) || savedTheme);
+
+        // aplica modo baseado no filename salvo (caso necessário)
+        const currentName = localStorage.getItem(KEY_FILENAME);
+        if (currentName) {
+            fileNameSpan.textContent = currentName;
+            const mode = detectMode(currentName);
+            editor.setOption('mode', mode);
+        }
+
+        // renderizar ícones feather (se usado)
+        if (window.feather) {
+            try { feather.replace(); } catch(e) {}
+        }
+    })();
+
+    /*************************************************************************
+     * NOVAS FUNÇÕES ADICIONADAS:
+     * - adjustLayout(): detecta desktop e move os botões do painel flutuante
+     *   para o topo (e esconde o painel). Em mobile, retorna os botões para o
+     *   painel flutuante.
+     * - fechamento reforçado do subMenu quando o editor for clicado/focado.
+     *************************************************************************/
+
+    // Move controles do painel flutuante para o topo (ou devolve)
+    function moveControlsToTop() {
+        const topMenu = document.querySelector('.top-menu');
+        if (!floatingControls || !topMenu) return;
+        // Pegamos apenas botões e selects (ignora drag-handle / indicadores)
+        const items = Array.from(floatingControls.children).filter(node => {
+            const tag = node.tagName && node.tagName.toLowerCase();
+            return (tag === 'button' || tag === 'select') && node.id !== 'drag-handle';
+        });
+        if (items.length === 0) {
+            // nothing to move
+        } else {
+            items.forEach(item => {
+                // marca como movido para evitar duplicar
+                if (!item.dataset.moved) {
+                    item.dataset.moved = 'true';
+                    // adiciona uma classe para facilitar customizações (opcional)
+                    item.classList.add('moved-to-top');
+                    topMenu.appendChild(item);
+                }
+            });
+        }
+        // esconde o painel flutuante (só a "caixa" - os botões já foram movidos)
+        floatingControls.style.display = 'none';
+    }
+
+    function moveControlsBackToFloating() {
+        const topMenu = document.querySelector('.top-menu');
+        if (!floatingControls || !topMenu) return;
+        const movedItems = Array.from(topMenu.querySelectorAll('[data-moved="true"]'));
+        if (movedItems.length === 0) {
+            // nothing to move back
+        } else {
+            // insere antes do indicador direito (ou simplesmente apenda ao painel)
+            movedItems.forEach(item => {
+                item.dataset.moved = ''; // remove flag
+                item.classList.remove('moved-to-top');
+                floatingControls.appendChild(item);
+            });
+        }
+        floatingControls.style.display = 'flex';
+        // garante posição carregada
+        loadPosition();
+    }
+
+    function adjustLayout() {
+        // considera desktop quando largura > 1024px (ajuste conforme desejar)
+        const isDesktop = window.innerWidth > 1024;
+        if (isDesktop) {
+            moveControlsToTop();
+        } else {
+            moveControlsBackToFloating();
+        }
+    }
+
+    // Executa no load e resize
+    window.addEventListener('load', () => {
+        // chamar com pequeno timeout para garantir que CodeMirror já tenha renderizado
+        setTimeout(adjustLayout, 50);
+    });
+    window.addEventListener('resize', debounce(() => {
+        adjustLayout();
+    }, 120));
+
+    // --- Fechar subMenu ao clicar/focar no editor (uso da API do CodeMirror) ---
+    try {
+        // wrapper do CodeMirror
+        const cmWrapper = editor.getWrapperElement();
+        if (cmWrapper) {
+            cmWrapper.addEventListener('mousedown', () => {
+                if (subMenu && subMenu.style.display === 'block') {
+                    subMenu.style.display = 'none';
+                    if (iconOpen) iconOpen.style.display = 'inline';
+                    if (iconClose) iconClose.style.display = 'none';
+                }
+            });
+            // também no clique
+            cmWrapper.addEventListener('click', () => {
+                if (subMenu && subMenu.style.display === 'block') {
+                    subMenu.style.display = 'none';
+                    if (iconOpen) iconOpen.style.display = 'inline';
+                    if (iconClose) iconClose.style.display = 'none';
+                }
+            });
+        }
+
+        // e quando o editor ganha foco (por teclado)
+        editor.on('focus', () => {
+            if (subMenu && subMenu.style.display === 'block') {
+                subMenu.style.display = 'none';
+                if (iconOpen) iconOpen.style.display = 'inline';
+                if (iconClose) iconClose.style.display = 'none';
+            }
+        });
+    } catch (e) {
+        // se algo falhar, não bloqueia a aplicação
+        console.warn('Não foi possível anexar listener ao wrapper do CodeMirror', e);
+    }
+
+    // caso o usuário já clique no textarea "cru" (antes do CodeMirror)
+    const rawTa = document.getElementById('editor');
+    if (rawTa) {
+        rawTa.addEventListener('click', () => {
+            if (subMenu && subMenu.style.display === 'block') {
+                subMenu.style.display = 'none';
+                if (iconOpen) iconOpen.style.display = 'inline';
+                if (iconClose) iconClose.style.display = 'none';
+            }
+        });
+    }
+
+    </script>
+    
+    
+</body>
+</html>
