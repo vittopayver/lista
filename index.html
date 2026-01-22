@@ -1,128 +1,574 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>TV Player</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-html, body {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    overflow: hidden;
-}
-
-/* FORÇA PORTRAIT (em pé) */
-@media screen and (orientation: landscape) {
-    body {
-        transform: rotate(-90deg);
-        transform-origin: top left;
-        width: 100vh;
-        height: 100vw;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-}
-
-.app {
-    display: flex;
-    width: 100%;
-    height: 100%;
-}
-
-/* ESCONDE MENU LATERAL */
-.sidebar {
-    display: none;
-}
-
-/* PLAYER OCUPA TELA TODA */
-.player-area {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-video {
-    width: 100%;
-    height: 100%;
-    background: black;
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-    <!-- MENU OCULTO -->
-    <div class="sidebar">
-        <div class="channels" id="channels"></div>
-    </div>
-
-    <!-- PLAYER -->
-    <div class="player-area">
-        <video id="video" controls autoplay></video>
-    </div>
-</div>
-
-<script>
-const playlistUrl = "https://raw.githubusercontent.com/vittopayver/lista/refs/heads/main/tv.m3u8";
-const channelsDiv = document.getElementById("channels");
-const video = document.getElementById("video");
-
-fetch(playlistUrl)
-.then(res => res.text())
-.then(data => {
-    const lines = data.split("\n");
-    let canais = [];
-
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith("#EXTINF")) {
-            const nome = lines[i].split(",").pop();
-            const logoMatch = lines[i].match(/tvg-logo="([^"]+)"/);
-            const logo = logoMatch ? logoMatch[1] : "";
-            const url = lines[i + 1];
-
-            canais.push({ nome, logo, url });
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player IPTV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-    }
+        
+        body {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .url-input-section {
+            display: none;
+        }
+        
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .player-container {
+                flex-direction: row;
+            }
+        }
+        
+        .video-section {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            border: 1px solid #1a1a1a;
+        }
+        
+        #video-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-info {
+            background: #141414;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #222;
+        }
+        
+        .channel-title {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        
+        .channel-description {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .channels-section {
+            flex: 1;
+            background: #141414;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+            border: 1px solid #222;
+        }
+        
+        @media (min-width: 768px) {
+            .channels-section {
+                height: calc(56.25vw * 3 / 4 + 100px);
+                max-height: calc(900px * 0.5625 + 100px);
+            }
+        }
+        
+        .channels-header {
+            display: none;
+        }
+        
+        .channels-title {
+            font-size: 1.3rem;
+            color: #feb47b;
+        }
+        
+        .channels-count {
+            background: #ff7e5f;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .channels-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .channel-item {
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            outline: none;
+            border: 1px solid #2a2a2a;
+        }
+        
+        .channel-item:hover,
+        .channel-item:focus {
+            background: #252525;
+            transform: translateX(5px);
+            border-color: #333;
+        }
+        
+        .channel-item.active {
+            background: #2a2a2a;
+            border-left: 4px solid #e50914;
+            border-color: #e50914;
+        }
+        
+        .channel-item.focused {
+            background: #1a1a1a;
+            border: 2px solid #e50914;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+        }
+        
+        .channel-logo {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #e50914;
+        }
+        
+        .channel-name {
+            font-weight: 100;
+            color: #e0e0e0;
+            font-size: 12px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #e50914;
+            background: #1a0000;
+            border-radius: 8px;
+            border: 1px solid #3a0000;
+        }
+        
+        .info-message {
+            text-align: center;
+            padding: 15px;
+            color: #888;
+            background: #1a1a1a;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #2a2a2a;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="url-input-section">
+            <form class="url-form" id="url-form">
+                <div class="input-row">
+                    <input type="text" class="url-input" id="playlist-url" 
+                           placeholder="Cole a URL da playlist M3U ou URL direta do stream..." 
+                           value="https://raw.githubusercontent.com/ManoLimah/Manoteste/refs/heads/main/ManoTV.m3u">
+                    <div class="btn-group">
+                        <button type="submit" class="load-btn">Carregar Playlist</button>
+                        <button type="button" class="direct-btn" id="direct-play-btn">Reproduzir Direto</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="player-container">
+            <div class="video-section">
+                <div class="video-wrapper">
+                    <video id="video-player" controls></video>
+                </div>
+                
+                <div class="video-info">
+                    <h2 class="channel-title">Selecione um canal para começar</h2>
+                    <p class="channel-description">Navegue pela lista de canais à direita ou reproduza uma URL direta</p>
+                </div>
+            </div>
+            
+            <div class="channels-section">
+                <div class="channels-header">
+                    <h3 class="channels-title">Lista de Canais</h3>
+                    <span class="channels-count" id="channel-count">0 canais</span>
+                </div>
+                <div class="channels-list" id="channels-list">
+                    <div class="loading">Carregando canais...</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Player IPTV Personalizado &copy; 2026 - Desenvolvido por Vitto Payver</p>
+        </footer>
+    </div>
 
-    // REPRODUZ automaticamente o primeiro canal
-    if (canais.length > 0) {
-        video.src = canais[0].url;
-        video.play();
-    }
-});
-</script>
-
-<script>
-function entrarTelaCheia() {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-    }
-}
-
-// tenta entrar em tela cheia ao carregar
-document.addEventListener("DOMContentLoaded", entrarTelaCheia);
-</script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoPlayer = document.getElementById('video-player');
+            const channelsList = document.getElementById('channels-list');
+            const channelCount = document.getElementById('channel-count');
+            const channelTitle = document.querySelector('.channel-title');
+            const channelDescription = document.querySelector('.channel-description');
+            const urlForm = document.getElementById('url-form');
+            const playlistUrlInput = document.getElementById('playlist-url');
+            const directPlayBtn = document.getElementById('direct-play-btn');
+            
+            let channels = [];
+            let currentChannelIndex = -1;
+            let isDirectStream = false;
+            let focusedIndex = 0; // Índice do item focado para navegação por controle
+            let channelElements = []; // Array para armazenar elementos dos canais
+            
+            // Carregar playlist quando o formulário for enviado
+            urlForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const playlistUrl = playlistUrlInput.value.trim();
+                
+                if (!playlistUrl) {
+                    showError('Por favor, insira uma URL válida');
+                    return;
+                }
+                
+                isDirectStream = false;
+                loadPlaylist(playlistUrl);
+            });
+            
+            // Reproduzir diretamente quando clicar no botão
+            directPlayBtn.addEventListener('click', function() {
+                const streamUrl = playlistUrlInput.value.trim();
+                
+                if (!streamUrl) {
+                    showError('Por favor, insira uma URL válida');
+                    return;
+                }
+                
+                playDirectStream(streamUrl);
+            });
+            
+            // Função para reproduzir stream direto
+            function playDirectStream(url) {
+                isDirectStream = true;
+                
+                // Limpar lista de canais
+                channels = [];
+                channelCount.textContent = '0 canais';
+                channelsList.innerHTML = '<div class="info-message">Reproduzindo stream direto</div>';
+                
+                // Remover classe ativa de todos os canais
+                document.querySelectorAll('.channel-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Atualizar informações
+                channelTitle.textContent = 'Stream Direto';
+                channelDescription.textContent = `URL: ${url}`;
+                
+                // Configurar e reproduzir o vídeo
+                videoPlayer.src = url;
+                videoPlayer.load();
+                
+                // Tentar reproduzir automaticamente
+                videoPlayer.play().catch(e => {
+                    console.log('Reprodução automática bloqueada:', e);
+                    showError('Clique no player para iniciar a reprodução');
+                });
+                
+                currentChannelIndex = -1;
+            }
+            
+            // Função para carregar a playlist
+            function loadPlaylist(playlistUrl) {
+                channelsList.innerHTML = '<div class="loading">Carregando lista de canais...</div>';
+                
+                fetch(playlistUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao carregar a playlist');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        parsePlaylist(data);
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        showError(`Erro ao carregar a playlist: ${error.message}`);
+                    });
+            }
+            
+            // Função para analisar a playlist M3U
+            function parsePlaylist(data) {
+                const lines = data.split('\n');
+                channels = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    
+                    if (line.startsWith('#EXTINF:')) {
+                        const info = line.substring(8);
+                        const parts = info.split(',');
+                        const attributes = parts[0];
+                        const name = parts.slice(1).join(',').trim();
+                        
+                        const url = lines[i + 1] ? lines[i + 1].trim() : '';
+                        
+                        if (url && !url.startsWith('#')) {
+                            let logo = '';
+                            const logoMatch = attributes.match(/tvg-logo="([^"]*)"/);
+                            if (logoMatch) {
+                                logo = logoMatch[1];
+                            }
+                            
+                            let group = '';
+                            const groupMatch = attributes.match(/group-title="([^"]*)"/);
+                            if (groupMatch) {
+                                group = groupMatch[1];
+                            }
+                            
+                            channels.push({
+                                name: name,
+                                url: url,
+                                logo: logo,
+                                group: group
+                            });
+                        }
+                    }
+                }
+                
+                renderChannels();
+            }
+            
+            // Renderizar a lista de canais (ocultando os 4 primeiros)
+            function renderChannels() {
+                if (channels.length === 0) {
+                    channelsList.innerHTML = '<div class="error">Nenhum canal encontrado na playlist</div>';
+                    return;
+                }
+                
+                // Mostrar contagem total mas ocultar os 4 primeiros
+                const visibleChannels = channels.slice(4);
+                channelsList.innerHTML = '';
+                channelElements = []; // Resetar array de elementos
+                
+                visibleChannels.forEach((channel, displayIndex) => {
+                    const actualIndex = displayIndex + 4; // Índice real no array original
+                    const channelItem = document.createElement('div');
+                    channelItem.className = 'channel-item';
+                    channelItem.setAttribute('tabindex', '0'); // Tornar focável
+                    channelItem.innerHTML = `
+                        <div class="channel-logo">
+                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : channel.name.charAt(0)}
+                        </div>
+                        <div class="channel-name">${channel.name}</div>
+                    `;
+                    
+                    channelItem.addEventListener('click', () => {
+                        playChannel(actualIndex);
+                    });
+                    
+                    // Adicionar evento para Enter/OK do controle remoto
+                    channelItem.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            playChannel(actualIndex);
+                        }
+                    });
+                    
+                    channelsList.appendChild(channelItem);
+                    channelElements.push(channelItem); // Armazenar referência
+                });
+                
+                // Reproduzir automaticamente o primeiro canal visível
+                if (visibleChannels.length > 0) {
+                    playChannel(4); // Índice 4 = primeiro canal visível
+                    focusedIndex = 0;
+                    updateFocus();
+                }
+            }
+            
+            // Reproduzir um canal
+            function playChannel(index) {
+                if (index < 0 || index >= channels.length) return;
+                
+                isDirectStream = false;
+                
+                // Remover classe ativa de todos os canais
+                document.querySelectorAll('.channel-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Adicionar classe ativa ao canal selecionado (ajustando para o índice visual)
+                const visualIndex = index - 4;
+                if (visualIndex >= 0) {
+                    const channelItems = document.querySelectorAll('.channel-item');
+                    if (channelItems[visualIndex]) {
+                        channelItems[visualIndex].classList.add('active');
+                    }
+                }
+                
+                // Atualizar informações do canal
+                const channel = channels[index];
+                channelTitle.textContent = channel.name;
+                channelDescription.textContent = channel.group ? ` ${channel.group}` : 'Informações do canal indisponíveis';
+                
+                // Configurar e reproduzir o vídeo
+                videoPlayer.src = channel.url;
+                videoPlayer.load();
+                
+                // Tentar reproduzir automaticamente
+                videoPlayer.play().catch(e => {
+                    console.log('Reprodução automática bloqueada:', e);
+                });
+                
+                currentChannelIndex = index;
+            }
+            
+            // Mostrar mensagem de erro
+            function showError(message) {
+                channelsList.innerHTML = `<div class="error">${message}</div>`;
+            }
+            
+            // Função para atualizar o foco visual
+            function updateFocus() {
+                channelElements.forEach((el, index) => {
+                    el.classList.remove('focused');
+                    if (index === focusedIndex) {
+                        el.classList.add('focused');
+                        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            }
+            
+            // Navegação por controle remoto (setas do teclado)
+            document.addEventListener('keydown', function(e) {
+                if (channelElements.length === 0) return;
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        focusedIndex = Math.min(focusedIndex + 1, channelElements.length - 1);
+                        updateFocus();
+                        break;
+                        
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        focusedIndex = Math.max(focusedIndex - 1, 0);
+                        updateFocus();
+                        break;
+                        
+                    case 'Enter':
+                    case 'OK': // Alguns controles remotos usam 'OK'
+                        e.preventDefault();
+                        const actualIndex = focusedIndex + 4;
+                        playChannel(actualIndex);
+                        break;
+                        
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        // Canal anterior
+                        const prevIndex = currentChannelIndex - 1;
+                        if (prevIndex >= 4) {
+                            playChannel(prevIndex);
+                            focusedIndex = prevIndex - 4;
+                            updateFocus();
+                        }
+                        break;
+                        
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        // Próximo canal
+                        const nextIndex = currentChannelIndex + 1;
+                        if (nextIndex < channels.length) {
+                            playChannel(nextIndex);
+                            focusedIndex = nextIndex - 4;
+                            updateFocus();
+                        }
+                        break;
+                        
+                    case 'Back':
+                    case 'Backspace':
+                        // Voltar para o canal anterior
+                        e.preventDefault();
+                        if (currentChannelIndex > 4) {
+                            playChannel(currentChannelIndex - 1);
+                        }
+                        break;
+                }
+            });
+            
+            // Carregar a playlist padrão ao iniciar
+            loadPlaylist(playlistUrlInput.value);
+        });
+    </script>
 </body>
 </html>
