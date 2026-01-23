@@ -52,7 +52,7 @@
             left: 0;
             right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 40px 30px 20px;
+            padding: 60px 40px 30px;
             z-index: 5;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -63,15 +63,15 @@
         }
         
         .channel-title {
-            font-size: 2rem;
-            margin-bottom: 5px;
+            font-size: 3rem;
+            margin-bottom: 10px;
             color: #ffffff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
         
         .channel-description {
             color: #ccc;
-            font-size: 1rem;
+            font-size: 1.4rem;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
         
@@ -80,15 +80,15 @@
             top: 0;
             left: 0;
             bottom: 0;
-            width: auto;
-            background: rgba(10,10,10,0.85);
+            width: 450px;
+            background: rgba(10,10,10,0.92);
             backdrop-filter: blur(10px);
-            padding: 20px 15px 20px 20px;
+            padding: 30px 20px 30px 30px;
             overflow-y: auto;
             z-index: 10;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
-            border-right: 1px solid rgba(229,9,20,0.3);
+            border-right: 2px solid rgba(229,9,20,0.4);
         }
         
         .channels-overlay.show {
@@ -96,49 +96,48 @@
         }
         
         .channels-header {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e50914;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #e50914;
         }
         
         .channels-title {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         
         .channels-count {
             background: #e50914;
             color: white;
-            padding: 4px 12px;
+            padding: 6px 16px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 1rem;
             display: inline-block;
         }
         
         .channels-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            width: 300px;
+            gap: 10px;
         }
         
         .channel-item {
             background: transparent;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 18px 16px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             outline: none;
-            border: 2px solid transparent;
+            border: 3px solid transparent;
         }
         
         .channel-item:hover {
             background: rgba(37,37,37,0.9);
-            transform: translateX(5px);
+            transform: translateX(8px);
         }
         
         .channel-item.active {
@@ -149,20 +148,20 @@
         .channel-item.focused {
             background: rgba(37,37,37,0.95);
             border-color: #e50914;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(229,9,20,0.5);
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(229,9,20,0.6);
         }
         
         .channel-logo {
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
-            background: rgba(229,9,20,0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1.3rem;
             color: #e50914;
             flex-shrink: 0;
         }
@@ -170,21 +169,23 @@
         .channel-logo img {
             width: 100%;
             height: 100%;
-            border-radius: 6px;
+            border-radius: 8px;
             object-fit: cover;
         }
         
         .channel-name {
             font-weight: 400;
             color: #e0e0e0;
-            font-size: 0.95rem;
+            font-size: 1.3rem;
             flex: 1;
+            line-height: 1.4;
         }
         
         .loading, .error, .info-message {
             text-align: center;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 1.2rem;
         }
         
         .loading {
@@ -203,13 +204,13 @@
         
         .toggle-hint {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
+            top: 30px;
+            left: 30px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 20px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 1.2rem;
             z-index: 4;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -242,9 +243,9 @@
         }
         
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(229,9,20,0.2);
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(229,9,20,0.2);
             border-top-color: #e50914;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -255,17 +256,17 @@
         }
         
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
         
         ::-webkit-scrollbar-track {
             background: rgba(10,10,10,0.5);
-            border-radius: 4px;
+            border-radius: 5px;
         }
         
         ::-webkit-scrollbar-thumb {
             background: rgba(229,9,20,0.6);
-            border-radius: 4px;
+            border-radius: 5px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
@@ -279,6 +280,10 @@
             
             .channel-title {
                 font-size: 1.5rem;
+            }
+            
+            .channel-name {
+                font-size: 1rem;
             }
         }
     </style>
@@ -335,9 +340,72 @@
             let overlayVisible = false;
             let hideOverlayTimeout = null;
             let hideInfoTimeout = null;
-            let isFirstLoad = true; // Controla se é o primeiro carregamento
+            let isFirstLoad = true;
+            let wakeLock = null;
             
-            // Mostrar overlay ao iniciar e ocultar após 5 segundos
+            // ===== OCULTAR BARRA DE NAVEGAÇÃO =====
+            function enterFullscreen() {
+                const elem = document.documentElement;
+                
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log('Erro ao entrar em fullscreen:', err);
+                    });
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            }
+            
+            function exitFullscreen() {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+            
+            // Entrar em fullscreen ao carregar
+            setTimeout(() => {
+                enterFullscreen();
+            }, 500);
+            
+            // ===== WAKE LOCK (Manter tela ligada - Modo Loja) =====
+            async function requestWakeLock() {
+                try {
+                    if ('wakeLock' in navigator) {
+                        wakeLock = await navigator.wakeLock.request('screen');
+                        console.log('Wake Lock ativado');
+                        
+                        wakeLock.addEventListener('release', () => {
+                            console.log('Wake Lock liberado');
+                        });
+                    } else {
+                        console.log('Wake Lock não suportado neste navegador');
+                    }
+                } catch (err) {
+                    console.error('Erro ao ativar Wake Lock:', err);
+                }
+            }
+            
+            // Reativar Wake Lock se a página voltar a ficar visível
+            document.addEventListener('visibilitychange', async () => {
+                if (wakeLock !== null && document.visibilityState === 'visible') {
+                    await requestWakeLock();
+                }
+            });
+            
+            // Ativar Wake Lock ao iniciar
+            requestWakeLock();
+            
+            // ===== FUNÇÕES DO PLAYER =====
             function showOverlayInitial() {
                 overlayVisible = true;
                 channelsOverlay.classList.add('show');
@@ -347,7 +415,6 @@
                 }, 5000);
             }
             
-            // Alternar visibilidade do overlay
             function toggleOverlay() {
                 if (hideOverlayTimeout) {
                     clearTimeout(hideOverlayTimeout);
@@ -358,7 +425,6 @@
                 
                 if (overlayVisible) {
                     channelsOverlay.classList.add('show');
-                    // Atualizar foco para o canal atual tocando
                     if (currentChannelIndex >= 4 && channelElements.length > 0) {
                         focusedIndex = currentChannelIndex - 4;
                         updateFocus();
@@ -368,13 +434,11 @@
                 }
             }
             
-            // Ocultar overlay
             function hideOverlay() {
                 overlayVisible = false;
                 channelsOverlay.classList.remove('show');
             }
             
-            // Mostrar informações do vídeo temporariamente
             function showVideoInfo() {
                 if (hideInfoTimeout) {
                     clearTimeout(hideInfoTimeout);
@@ -387,17 +451,14 @@
                 }, 3000);
             }
             
-            // Clique na overlay para alternar lista
             clickOverlay.addEventListener('click', function(e) {
                 toggleOverlay();
             });
             
-            // Prevenir que cliques na lista fechem ela
             channelsOverlay.addEventListener('click', function(e) {
                 e.stopPropagation();
             });
             
-            // Carregar playlist
             function loadPlaylist(url) {
                 channelsList.innerHTML = '<div class="loading">Carregando lista de canais...</div>';
                 
@@ -417,7 +478,6 @@
                     });
             }
             
-            // Analisar playlist M3U
             function parsePlaylist(data) {
                 const lines = data.split('\n');
                 channels = [];
@@ -459,7 +519,6 @@
                 renderChannels();
             }
             
-            // Renderizar canais (ocultando os 4 primeiros)
             function renderChannels() {
                 if (channels.length === 0) {
                     channelsList.innerHTML = '<div class="error">Nenhum canal encontrado na playlist</div>';
@@ -494,20 +553,17 @@
                     channelElements.push(channelItem);
                 });
                 
-                // Reproduzir primeiro canal (sem mostrar overlay ainda)
                 if (visibleChannels.length > 0) {
                     playChannel(4);
                     focusedIndex = 0;
                 }
             }
             
-            // Reproduzir canal
             function playChannel(index) {
                 if (index < 0 || index >= channels.length) return;
                 
                 const channel = channels[index];
                 
-                // Mostrar tela de carregamento
                 loadingScreen.classList.add('show');
                 
                 document.querySelectorAll('.channel-item').forEach(item => {
@@ -525,7 +581,6 @@
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
                 
-                // Eventos do player para controlar o loading
                 const onCanPlay = () => {
                     loadingScreen.classList.remove('show');
                     videoPlayer.play().catch(e => {
@@ -533,7 +588,6 @@
                         loadingScreen.classList.remove('show');
                     });
                     
-                    // Mostrar overlay apenas no primeiro carregamento
                     if (isFirstLoad) {
                         isFirstLoad = false;
                         showOverlayInitial();
@@ -555,7 +609,6 @@
                 
                 currentChannelIndex = index;
                 
-                // Mostrar info após carregar
                 setTimeout(() => {
                     if (!loadingScreen.classList.contains('show')) {
                         showVideoInfo();
@@ -563,7 +616,6 @@
                 }, 500);
             }
             
-            // Atualizar foco
             function updateFocus() {
                 channelElements.forEach((el, index) => {
                     el.classList.remove('focused');
@@ -574,53 +626,84 @@
                 });
             }
             
-            // Mostrar erro
             function showError(message) {
                 channelsList.innerHTML = `<div class="error">${message}</div>`;
             }
             
-            // Navegação por teclado/controle remoto
+            // ===== NAVEGAÇÃO POR TECLADO =====
             document.addEventListener('keydown', function(e) {
-                // OK ou Enter para alternar overlay
+                // Back/Escape sai do fullscreen
+                if (e.key === 'Back' || e.key === 'Backspace' || e.key === 'Escape') {
+                    if (overlayVisible) {
+                        e.preventDefault();
+                        hideOverlay();
+                    } else {
+                        exitFullscreen();
+                    }
+                    return;
+                }
+                
                 if ((e.key === 'Enter' || e.key === 'OK') && !overlayVisible) {
                     e.preventDefault();
                     toggleOverlay();
                     return;
                 }
                 
-                if (!overlayVisible || channelElements.length === 0) return;
+                // Navegar canais quando overlay está FECHADO
+                if (!overlayVisible && channelElements.length > 0) {
+                    if (e.key === 'ArrowDown' || e.key === 'Down') {
+                        e.preventDefault();
+                        const nextIndex = currentChannelIndex + 1;
+                        if (nextIndex < channels.length) {
+                            playChannel(nextIndex);
+                        } else {
+                            // Volta para o primeiro canal visível
+                            playChannel(4);
+                        }
+                        return;
+                    }
+                    
+                    if (e.key === 'ArrowUp' || e.key === 'Up') {
+                        e.preventDefault();
+                        const prevIndex = currentChannelIndex - 1;
+                        if (prevIndex >= 4) {
+                            playChannel(prevIndex);
+                        } else {
+                            // Vai para o último canal
+                            playChannel(channels.length - 1);
+                        }
+                        return;
+                    }
+                }
                 
-                switch(e.key) {
-                    case 'ArrowDown':
-                        e.preventDefault();
-                        focusedIndex = Math.min(focusedIndex + 1, channelElements.length - 1);
-                        updateFocus();
-                        break;
-                        
-                    case 'ArrowUp':
-                        e.preventDefault();
-                        focusedIndex = Math.max(focusedIndex - 1, 0);
-                        updateFocus();
-                        break;
-                        
-                    case 'Enter':
-                    case 'OK':
-                        e.preventDefault();
-                        const actualIndex = focusedIndex + 4;
-                        playChannel(actualIndex);
-                        hideOverlay();
-                        break;
-                        
-                    case 'Back':
-                    case 'Backspace':
-                    case 'Escape':
-                        e.preventDefault();
-                        hideOverlay();
-                        break;
+                // Navegar na lista quando overlay está ABERTO
+                if (overlayVisible && channelElements.length > 0) {
+                    switch(e.key) {
+                        case 'ArrowDown':
+                        case 'Down':
+                            e.preventDefault();
+                            focusedIndex = Math.min(focusedIndex + 1, channelElements.length - 1);
+                            updateFocus();
+                            break;
+                            
+                        case 'ArrowUp':
+                        case 'Up':
+                            e.preventDefault();
+                            focusedIndex = Math.max(focusedIndex - 1, 0);
+                            updateFocus();
+                            break;
+                            
+                        case 'Enter':
+                        case 'OK':
+                            e.preventDefault();
+                            const actualIndex = focusedIndex + 4;
+                            playChannel(actualIndex);
+                            hideOverlay();
+                            break;
+                    }
                 }
             });
             
-            // Iniciar carregamento
             loadPlaylist(playlistUrl);
         });
     </script>
