@@ -10,204 +10,248 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
         }
         
         body {
-            background: #0a0a0a;
+            background: #000;
             color: #e0e0e0;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .url-input-section {
-            display: none;
+            overflow: hidden;
+            height: 100vh;
         }
         
         .player-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        @media (min-width: 768px) {
-            .player-container {
-                flex-direction: row;
-            }
-        }
-        
-        .video-section {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .video-wrapper {
             position: relative;
-            width: 100%;
-            padding-top: 56.25%;
+            width: 100vw;
+            height: 100vh;
             background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-            border: 1px solid #1a1a1a;
         }
         
         #video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        
+        .click-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            z-index: 3;
+            cursor: pointer;
         }
         
         .video-info {
-            background: #141414;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #222;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 40px 30px 20px;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .video-info.show {
+            opacity: 1;
         }
         
         .channel-title {
-            font-size: 1.5rem;
+            font-size: 2rem;
             margin-bottom: 5px;
             color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
         
         .channel-description {
-            color: #999;
-            font-size: 0.9rem;
+            color: #ccc;
+            font-size: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
         
-        .channels-section {
-            flex: 1;
-            background: #141414;
-            border-radius: 8px;
-            padding: 15px;
+        .channels-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: auto;
+            background: rgba(10,10,10,0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px 15px 20px 20px;
             overflow-y: auto;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
-            border: 1px solid #222;
+            z-index: 10;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            border-right: 1px solid rgba(229,9,20,0.3);
         }
         
-        @media (min-width: 768px) {
-            .channels-section {
-                height: calc(56.25vw * 3 / 4 + 100px);
-                max-height: calc(900px * 0.5625 + 100px);
-            }
+        .channels-overlay.show {
+            transform: translateX(0);
         }
         
         .channels-header {
-            display: none;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e50914;
         }
         
         .channels-title {
-            font-size: 1.3rem;
-            color: #feb47b;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 5px;
         }
         
         .channels-count {
-            background: #ff7e5f;
+            background: #e50914;
             color: white;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            display: inline-block;
         }
         
         .channels-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            width: 300px;
         }
         
         .channel-item {
-            background: #1a1a1a;
+            background: transparent;
             padding: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             outline: none;
-            border: 1px solid #2a2a2a;
+            border: 2px solid transparent;
         }
         
-        .channel-item:hover,
-        .channel-item:focus {
-            background: #252525;
+        .channel-item:hover {
+            background: rgba(37,37,37,0.9);
             transform: translateX(5px);
-            border-color: #333;
         }
         
         .channel-item.active {
-            background: #2a2a2a;
-            border-left: 4px solid #e50914;
+            background: rgba(229,9,20,0.3);
             border-color: #e50914;
         }
         
         .channel-item.focused {
-            background: #1a1a1a;
-            border: 2px solid #e50914;
+            background: rgba(37,37,37,0.95);
+            border-color: #e50914;
             transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+            box-shadow: 0 0 20px rgba(229,9,20,0.5);
         }
         
         .channel-logo {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 6px;
-            background: transparent;
+            background: rgba(229,9,20,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: #e50914;
+            flex-shrink: 0;
+        }
+        
+        .channel-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
         }
         
         .channel-name {
-            font-weight: 100;
+            font-weight: 400;
             color: #e0e0e0;
-            font-size: 12px;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+        
+        .loading, .error, .info-message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
         }
         
         .loading {
-            text-align: center;
-            padding: 20px;
             color: #888;
         }
         
         .error {
-            text-align: center;
-            padding: 20px;
             color: #e50914;
-            background: #1a0000;
-            border-radius: 8px;
-            border: 1px solid #3a0000;
+            background: rgba(229,9,20,0.1);
         }
         
         .info-message {
-            text-align: center;
-            padding: 15px;
             color: #888;
-            background: #1a1a1a;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #2a2a2a;
+            background: rgba(26,26,26,0.8);
         }
         
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            color: #555;
+        .toggle-hint {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #fff;
             font-size: 0.9rem;
+            z-index: 4;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toggle-hint.show {
+            opacity: 1;
+        }
+        
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(229,9,20,0.2);
+            border-top-color: #e50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         ::-webkit-scrollbar {
@@ -215,62 +259,58 @@
         }
         
         ::-webkit-scrollbar-track {
-            background: #0a0a0a;
+            background: rgba(10,10,10,0.5);
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #333;
+            background: rgba(229,9,20,0.6);
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #444;
+            background: rgba(229,9,20,0.8);
+        }
+
+        @media (max-width: 768px) {
+            .channels-overlay {
+                width: 80%;
+            }
+            
+            .channel-title {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="url-input-section">
-            <form class="url-form" id="url-form">
-                <div class="input-row">
-                    <input type="text" class="url-input" id="playlist-url" 
-                           placeholder="Cole a URL da playlist M3U ou URL direta do stream..." 
-                           value="https://raw.githubusercontent.com/ManoLimah/Manoteste/refs/heads/main/ManoTV.m3u">
-                    <div class="btn-group">
-                        <button type="submit" class="load-btn">Carregar Playlist</button>
-                        <button type="button" class="direct-btn" id="direct-play-btn">Reproduzir Direto</button>
-                    </div>
-                </div>
-            </form>
+    <div class="player-container">
+        <video id="video-player"></video>
+        
+        <div class="click-overlay" id="click-overlay"></div>
+        
+        <div class="video-info" id="video-info">
+            <h2 class="channel-title">Selecione um canal para começar</h2>
+            <p class="channel-description">Clique na tela ou pressione OK para abrir a lista</p>
         </div>
         
-        <div class="player-container">
-            <div class="video-section">
-                <div class="video-wrapper">
-                    <video id="video-player" controls></video>
-                </div>
-                
-                <div class="video-info">
-                    <h2 class="channel-title">Selecione um canal para começar</h2>
-                    <p class="channel-description">Navegue pela lista de canais à direita ou reproduza uma URL direta</p>
-                </div>
-            </div>
-            
-            <div class="channels-section">
-                <div class="channels-header">
-                    <h3 class="channels-title">Lista de Canais</h3>
-                    <span class="channels-count" id="channel-count">0 canais</span>
-                </div>
-                <div class="channels-list" id="channels-list">
-                    <div class="loading">Carregando canais...</div>
-                </div>
-            </div>
+        <div class="toggle-hint" id="toggle-hint">
+            Pressione OK ou clique para abrir/fechar a lista
         </div>
         
-        <footer>
-            <p>Player IPTV Personalizado &copy; 2026 - Desenvolvido por Vitto Payver</p>
-        </footer>
+        <div class="loading-screen" id="loading-screen">
+            <div class="spinner"></div>
+        </div>
+        
+        <div class="channels-overlay" id="channels-overlay">
+            <div class="channels-header">
+                <h3 class="channels-title">Lista de Canais</h3>
+                <span class="channels-count" id="channel-count">0 canais</span>
+            </div>
+            <div class="channels-list" id="channels-list">
+                <div class="loading">Carregando canais...</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -280,78 +320,88 @@
             const channelCount = document.getElementById('channel-count');
             const channelTitle = document.querySelector('.channel-title');
             const channelDescription = document.querySelector('.channel-description');
-            const urlForm = document.getElementById('url-form');
-            const playlistUrlInput = document.getElementById('playlist-url');
-            const directPlayBtn = document.getElementById('direct-play-btn');
+            const channelsOverlay = document.getElementById('channels-overlay');
+            const videoInfo = document.getElementById('video-info');
+            const toggleHint = document.getElementById('toggle-hint');
+            const clickOverlay = document.getElementById('click-overlay');
+            const loadingScreen = document.getElementById('loading-screen');
+            
+            const playlistUrl = 'https://raw.githubusercontent.com/ManoLimah/Manoteste/refs/heads/main/ManoTV.m3u';
             
             let channels = [];
             let currentChannelIndex = -1;
-            let isDirectStream = false;
-            let focusedIndex = 0; // Índice do item focado para navegação por controle
-            let channelElements = []; // Array para armazenar elementos dos canais
+            let focusedIndex = 0;
+            let channelElements = [];
+            let overlayVisible = false;
+            let hideOverlayTimeout = null;
+            let hideInfoTimeout = null;
+            let isFirstLoad = true; // Controla se é o primeiro carregamento
             
-            // Carregar playlist quando o formulário for enviado
-            urlForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const playlistUrl = playlistUrlInput.value.trim();
+            // Mostrar overlay ao iniciar e ocultar após 5 segundos
+            function showOverlayInitial() {
+                overlayVisible = true;
+                channelsOverlay.classList.add('show');
                 
-                if (!playlistUrl) {
-                    showError('Por favor, insira uma URL válida');
-                    return;
-                }
-                
-                isDirectStream = false;
-                loadPlaylist(playlistUrl);
-            });
-            
-            // Reproduzir diretamente quando clicar no botão
-            directPlayBtn.addEventListener('click', function() {
-                const streamUrl = playlistUrlInput.value.trim();
-                
-                if (!streamUrl) {
-                    showError('Por favor, insira uma URL válida');
-                    return;
-                }
-                
-                playDirectStream(streamUrl);
-            });
-            
-            // Função para reproduzir stream direto
-            function playDirectStream(url) {
-                isDirectStream = true;
-                
-                // Limpar lista de canais
-                channels = [];
-                channelCount.textContent = '0 canais';
-                channelsList.innerHTML = '<div class="info-message">Reproduzindo stream direto</div>';
-                
-                // Remover classe ativa de todos os canais
-                document.querySelectorAll('.channel-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                
-                // Atualizar informações
-                channelTitle.textContent = 'Stream Direto';
-                channelDescription.textContent = `URL: ${url}`;
-                
-                // Configurar e reproduzir o vídeo
-                videoPlayer.src = url;
-                videoPlayer.load();
-                
-                // Tentar reproduzir automaticamente
-                videoPlayer.play().catch(e => {
-                    console.log('Reprodução automática bloqueada:', e);
-                    showError('Clique no player para iniciar a reprodução');
-                });
-                
-                currentChannelIndex = -1;
+                hideOverlayTimeout = setTimeout(() => {
+                    hideOverlay();
+                }, 5000);
             }
             
-            // Função para carregar a playlist
-            function loadPlaylist(playlistUrl) {
+            // Alternar visibilidade do overlay
+            function toggleOverlay() {
+                if (hideOverlayTimeout) {
+                    clearTimeout(hideOverlayTimeout);
+                    hideOverlayTimeout = null;
+                }
+                
+                overlayVisible = !overlayVisible;
+                
+                if (overlayVisible) {
+                    channelsOverlay.classList.add('show');
+                    // Atualizar foco para o canal atual tocando
+                    if (currentChannelIndex >= 4 && channelElements.length > 0) {
+                        focusedIndex = currentChannelIndex - 4;
+                        updateFocus();
+                    }
+                } else {
+                    channelsOverlay.classList.remove('show');
+                }
+            }
+            
+            // Ocultar overlay
+            function hideOverlay() {
+                overlayVisible = false;
+                channelsOverlay.classList.remove('show');
+            }
+            
+            // Mostrar informações do vídeo temporariamente
+            function showVideoInfo() {
+                if (hideInfoTimeout) {
+                    clearTimeout(hideInfoTimeout);
+                }
+                
+                videoInfo.classList.add('show');
+                
+                hideInfoTimeout = setTimeout(() => {
+                    videoInfo.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Clique na overlay para alternar lista
+            clickOverlay.addEventListener('click', function(e) {
+                toggleOverlay();
+            });
+            
+            // Prevenir que cliques na lista fechem ela
+            channelsOverlay.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Carregar playlist
+            function loadPlaylist(url) {
                 channelsList.innerHTML = '<div class="loading">Carregando lista de canais...</div>';
                 
-                fetch(playlistUrl)
+                fetch(url)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Erro ao carregar a playlist');
@@ -367,7 +417,7 @@
                     });
             }
             
-            // Função para analisar a playlist M3U
+            // Analisar playlist M3U
             function parsePlaylist(data) {
                 const lines = data.split('\n');
                 channels = [];
@@ -409,96 +459,111 @@
                 renderChannels();
             }
             
-            // Renderizar a lista de canais (ocultando os 4 primeiros)
+            // Renderizar canais (ocultando os 4 primeiros)
             function renderChannels() {
                 if (channels.length === 0) {
                     channelsList.innerHTML = '<div class="error">Nenhum canal encontrado na playlist</div>';
                     return;
                 }
                 
-                // Mostrar contagem total mas ocultar os 4 primeiros
                 const visibleChannels = channels.slice(4);
                 channelsList.innerHTML = '';
-                channelElements = []; // Resetar array de elementos
+                channelElements = [];
+                
+                channelCount.textContent = `${visibleChannels.length} canais`;
                 
                 visibleChannels.forEach((channel, displayIndex) => {
-                    const actualIndex = displayIndex + 4; // Índice real no array original
+                    const actualIndex = displayIndex + 4;
                     const channelItem = document.createElement('div');
                     channelItem.className = 'channel-item';
-                    channelItem.setAttribute('tabindex', '0'); // Tornar focável
+                    channelItem.setAttribute('tabindex', '0');
                     channelItem.innerHTML = `
                         <div class="channel-logo">
-                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : channel.name.charAt(0)}
+                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}">` : channel.name.charAt(0)}
                         </div>
                         <div class="channel-name">${channel.name}</div>
                     `;
                     
-                    channelItem.addEventListener('click', () => {
+                    channelItem.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         playChannel(actualIndex);
-                    });
-                    
-                    // Adicionar evento para Enter/OK do controle remoto
-                    channelItem.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') {
-                            playChannel(actualIndex);
-                        }
+                        hideOverlay();
                     });
                     
                     channelsList.appendChild(channelItem);
-                    channelElements.push(channelItem); // Armazenar referência
+                    channelElements.push(channelItem);
                 });
                 
-                // Reproduzir automaticamente o primeiro canal visível
+                // Reproduzir primeiro canal (sem mostrar overlay ainda)
                 if (visibleChannels.length > 0) {
-                    playChannel(4); // Índice 4 = primeiro canal visível
+                    playChannel(4);
                     focusedIndex = 0;
-                    updateFocus();
                 }
             }
             
-            // Reproduzir um canal
+            // Reproduzir canal
             function playChannel(index) {
                 if (index < 0 || index >= channels.length) return;
                 
-                isDirectStream = false;
+                const channel = channels[index];
                 
-                // Remover classe ativa de todos os canais
+                // Mostrar tela de carregamento
+                loadingScreen.classList.add('show');
+                
                 document.querySelectorAll('.channel-item').forEach(item => {
                     item.classList.remove('active');
                 });
                 
-                // Adicionar classe ativa ao canal selecionado (ajustando para o índice visual)
                 const visualIndex = index - 4;
-                if (visualIndex >= 0) {
-                    const channelItems = document.querySelectorAll('.channel-item');
-                    if (channelItems[visualIndex]) {
-                        channelItems[visualIndex].classList.add('active');
-                    }
+                if (visualIndex >= 0 && channelElements[visualIndex]) {
+                    channelElements[visualIndex].classList.add('active');
                 }
                 
-                // Atualizar informações do canal
-                const channel = channels[index];
                 channelTitle.textContent = channel.name;
-                channelDescription.textContent = channel.group ? ` ${channel.group}` : 'Informações do canal indisponíveis';
+                channelDescription.textContent = channel.group || 'Aproveite o conteúdo';
                 
-                // Configurar e reproduzir o vídeo
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
                 
-                // Tentar reproduzir automaticamente
-                videoPlayer.play().catch(e => {
-                    console.log('Reprodução automática bloqueada:', e);
-                });
+                // Eventos do player para controlar o loading
+                const onCanPlay = () => {
+                    loadingScreen.classList.remove('show');
+                    videoPlayer.play().catch(e => {
+                        console.log('Reprodução automática bloqueada:', e);
+                        loadingScreen.classList.remove('show');
+                    });
+                    
+                    // Mostrar overlay apenas no primeiro carregamento
+                    if (isFirstLoad) {
+                        isFirstLoad = false;
+                        showOverlayInitial();
+                    }
+                    
+                    videoPlayer.removeEventListener('canplay', onCanPlay);
+                    videoPlayer.removeEventListener('error', onError);
+                };
+                
+                const onError = () => {
+                    loadingScreen.classList.remove('show');
+                    showVideoInfo();
+                    videoPlayer.removeEventListener('canplay', onCanPlay);
+                    videoPlayer.removeEventListener('error', onError);
+                };
+                
+                videoPlayer.addEventListener('canplay', onCanPlay);
+                videoPlayer.addEventListener('error', onError);
                 
                 currentChannelIndex = index;
+                
+                // Mostrar info após carregar
+                setTimeout(() => {
+                    if (!loadingScreen.classList.contains('show')) {
+                        showVideoInfo();
+                    }
+                }, 500);
             }
             
-            // Mostrar mensagem de erro
-            function showError(message) {
-                channelsList.innerHTML = `<div class="error">${message}</div>`;
-            }
-            
-            // Função para atualizar o foco visual
+            // Atualizar foco
             function updateFocus() {
                 channelElements.forEach((el, index) => {
                     el.classList.remove('focused');
@@ -509,9 +574,21 @@
                 });
             }
             
-            // Navegação por controle remoto (setas do teclado)
+            // Mostrar erro
+            function showError(message) {
+                channelsList.innerHTML = `<div class="error">${message}</div>`;
+            }
+            
+            // Navegação por teclado/controle remoto
             document.addEventListener('keydown', function(e) {
-                if (channelElements.length === 0) return;
+                // OK ou Enter para alternar overlay
+                if ((e.key === 'Enter' || e.key === 'OK') && !overlayVisible) {
+                    e.preventDefault();
+                    toggleOverlay();
+                    return;
+                }
+                
+                if (!overlayVisible || channelElements.length === 0) return;
                 
                 switch(e.key) {
                     case 'ArrowDown':
@@ -527,47 +604,24 @@
                         break;
                         
                     case 'Enter':
-                    case 'OK': // Alguns controles remotos usam 'OK'
+                    case 'OK':
                         e.preventDefault();
                         const actualIndex = focusedIndex + 4;
                         playChannel(actualIndex);
-                        break;
-                        
-                    case 'ArrowLeft':
-                        e.preventDefault();
-                        // Canal anterior
-                        const prevIndex = currentChannelIndex - 1;
-                        if (prevIndex >= 4) {
-                            playChannel(prevIndex);
-                            focusedIndex = prevIndex - 4;
-                            updateFocus();
-                        }
-                        break;
-                        
-                    case 'ArrowRight':
-                        e.preventDefault();
-                        // Próximo canal
-                        const nextIndex = currentChannelIndex + 1;
-                        if (nextIndex < channels.length) {
-                            playChannel(nextIndex);
-                            focusedIndex = nextIndex - 4;
-                            updateFocus();
-                        }
+                        hideOverlay();
                         break;
                         
                     case 'Back':
                     case 'Backspace':
-                        // Voltar para o canal anterior
+                    case 'Escape':
                         e.preventDefault();
-                        if (currentChannelIndex > 4) {
-                            playChannel(currentChannelIndex - 1);
-                        }
+                        hideOverlay();
                         break;
                 }
             });
             
-            // Carregar a playlist padrão ao iniciar
-            loadPlaylist(playlistUrlInput.value);
+            // Iniciar carregamento
+            loadPlaylist(playlistUrl);
         });
     </script>
 </body>
