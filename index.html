@@ -1137,6 +1137,7 @@
             // ===== BLOQUEIO DE ESCURECIMENTO — MÚLTIPLAS ESTRATÉGIAS =====
             let wakeLock = null;
             let screenKeepAliveInterval = null;
+            let noSleepVideo = null;
 
             // Estratégia 1: API wakeLock (se suportada)
             async function tryWakeLockAPI() {
@@ -1156,42 +1157,42 @@
                 return false;
             }
 
-            // Estratégia 2: Canvas animado invisível
-            // Desenha pixels alternados num canvas fora da tela — força GPU ativa sem usar vídeo
-            let noSleepCanvas = null;
-            let noSleepRAF = null;
-
+            // Estratégia 2: Vídeo invisível em loop (NoSleep.js technique)
+            // Reproduz um vídeo de 1x1 pixel em loop infinito — impede o sistema de dormir
             function startNoSleepVideo() {
-                if (noSleepCanvas) return;
-                noSleepCanvas = document.createElement('canvas');
-                noSleepCanvas.width = 1;
-                noSleepCanvas.height = 1;
-                noSleepCanvas.style.cssText = 'position:fixed;top:-2px;left:-2px;width:1px;height:1px;opacity:0.01;pointer-events:none;z-index:-999;';
-                document.body.appendChild(noSleepCanvas);
-                const ctx = noSleepCanvas.getContext('2d');
-                let frame = 0;
-                let lastDraw = 0;
+                if (noSleepVideo) return;
+                noSleepVideo = document.createElement('video');
+                noSleepVideo.setAttribute('playsinline', '');
+                noSleepVideo.setAttribute('webkit-playsinline', '');
+                noSleepVideo.setAttribute('muted', '');
+                noSleepVideo.muted = true;
+                noSleepVideo.loop = true;
+                noSleepVideo.style.cssText = 'position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0.001;pointer-events:none;z-index:-1;';
 
-                function drawFrame(ts) {
-                    if (ts - lastDraw > 30000) {
-                        ctx.fillStyle = frame % 2 === 0 ? 'rgba(0,0,0,0.01)' : 'rgba(1,1,1,0.01)';
-                        ctx.fillRect(0, 0, 1, 1);
-                        frame++;
-                        lastDraw = ts;
-                    }
-                    noSleepRAF = requestAnimationFrame(drawFrame);
-                }
-                noSleepRAF = requestAnimationFrame(drawFrame);
+                // MP4 de 1x1 pixel transparente codificado em base64
+                const mp4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28ybXA0MQAAAAhmcmVlAAAA/21kYXQAAAA=';
+                const webm = 'data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8oEEQvOBCEKChHdlYm1Ch4ECQoWBAhhTgGcBAAAAAAAVkhFNm3RALE27i1OrhBVJqWZTrIHfTbuMU6uEFlSua1OsggEwTbuMU6uEHFO7a1OsggI27AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmAAAAAAAEAAAABgIBIwAA';
+
+                const source1 = document.createElement('source');
+                source1.src = mp4;
+                source1.type = 'video/mp4';
+
+                const source2 = document.createElement('source');
+                source2.src = webm;
+                source2.type = 'video/webm';
+
+                noSleepVideo.appendChild(source1);
+                noSleepVideo.appendChild(source2);
+                document.body.appendChild(noSleepVideo);
+
+                noSleepVideo.play().catch(() => {});
             }
 
             function stopNoSleepVideo() {
-                if (noSleepRAF) {
-                    cancelAnimationFrame(noSleepRAF);
-                    noSleepRAF = null;
-                }
-                if (noSleepCanvas) {
-                    noSleepCanvas.remove();
-                    noSleepCanvas = null;
+                if (noSleepVideo) {
+                    noSleepVideo.pause();
+                    noSleepVideo.remove();
+                    noSleepVideo = null;
                 }
             }
 
@@ -1794,16 +1795,18 @@
                 
                 if (isFullscreen) {
                     await exitFullscreen();
-                    enableKeepScreenOn();
-                    setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
+                    // Força Wake Lock ao pressionar voltar no fullscreen
+                    await forceWakeLock();
+                    setTimeout(forceWakeLock, 500);
+                    setTimeout(forceWakeLock, 1500);
                     window.history.pushState(null, '', window.location.href);
                     return false;
                 }
                 
-                // Reativa anti-sleep ao pressionar voltar
-                enableKeepScreenOn();
-                setTimeout(enableKeepScreenOn, 600);
+                // Força Wake Lock ao pressionar voltar na tela normal
+                forceWakeLock();
+                setTimeout(forceWakeLock, 500);
+                setTimeout(forceWakeLock, 1500);
 
                 backPressCount++;
                 
