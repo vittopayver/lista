@@ -23,6 +23,118 @@
             height: 100vh;
             position: fixed;
             width: 100%;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Tema Claro */
+        body.light-theme {
+            background: #ffffff;
+            color: #0f0f0f;
+        }
+        
+        body.light-theme .player-container {
+            background: #ffffff;
+        }
+        
+        body.light-theme .channels-section {
+            background: #f5f5f5;
+        }
+        
+        body.light-theme .channel-item {
+            border-left: 3px solid transparent;
+        }
+        
+        body.light-theme .channel-item:hover {
+            background: #e8e8e8;
+        }
+        
+        body.light-theme .channel-item.active {
+            background: #e8e8e8;
+            border-left-color: #f00;
+        }
+        
+        body.light-theme .channel-thumbnail {
+            background: #e0e0e0;
+        }
+        
+        body.light-theme .channel-name {
+            color: #0f0f0f;
+        }
+        
+        body.light-theme .channel-category,
+        body.light-theme .live-indicator {
+            color: #606060;
+        }
+        
+        body.light-theme .info-text {
+            background: #ffffff;
+            color: #606060;
+        }
+        
+        body.light-theme .chat-drawer {
+            background: #f5f5f5;
+        }
+        
+        body.light-theme .chat-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        body.light-theme .chat-title {
+            color: #0f0f0f;
+        }
+        
+        body.light-theme .chat-close-btn {
+            color: #606060;
+        }
+        
+        body.light-theme .chat-close-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        body.light-theme .chat-header::before {
+            background: #d0d0d0;
+        }
+        
+        body.light-theme .chat-unavailable-title {
+            color: #0f0f0f;
+        }
+        
+        body.light-theme .chat-unavailable-text {
+            color: #606060;
+        }
+        
+        body.light-theme .loading,
+        body.light-theme .error {
+            color: #606060;
+        }
+        
+        body.light-theme .error {
+            color: #d32f2f;
+        }
+        
+        body.light-theme ::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+        
+        body.light-theme ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+        }
+        
+        body.light-theme ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+        
+        body.light-theme .browser-block {
+            background: #ffffff;
+        }
+        
+        body.light-theme .browser-block-title {
+            color: #0f0f0f;
+        }
+        
+        body.light-theme .browser-block-message {
+            color: #606060;
         }
         
         .player-container {
@@ -813,6 +925,49 @@
         })();
         
         document.addEventListener('DOMContentLoaded', function() {
+            // ===== DETECÇÃO E APLICAÇÃO DO TEMA DO NAVEGADOR =====
+            function applyTheme() {
+                // Detecta se o navegador está em modo escuro
+                const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+                const prefersLightScheme = window.matchMedia('(prefers-color-scheme: light)');
+                
+                if (prefersLightScheme.matches) {
+                    document.body.classList.add('light-theme');
+                    console.log('Tema claro aplicado');
+                } else if (prefersDarkScheme.matches) {
+                    document.body.classList.remove('light-theme');
+                    console.log('Tema escuro aplicado');
+                } else {
+                    // Padrão: tema escuro
+                    document.body.classList.remove('light-theme');
+                    console.log('Tema padrão (escuro) aplicado');
+                }
+            }
+            
+            // Aplica o tema ao carregar
+            applyTheme();
+            
+            // Detecta mudanças no tema do sistema
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                if (e.matches) {
+                    document.body.classList.remove('light-theme');
+                    console.log('Mudou para tema escuro');
+                } else {
+                    document.body.classList.add('light-theme');
+                    console.log('Mudou para tema claro');
+                }
+            });
+            
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+                if (e.matches) {
+                    document.body.classList.add('light-theme');
+                    console.log('Mudou para tema claro');
+                } else {
+                    document.body.classList.remove('light-theme');
+                    console.log('Mudou para tema escuro');
+                }
+            });
+            
             // ===== DETECÇÃO DE NAVEGADOR =====
             function isHeyTapBrowser() {
                 const userAgent = navigator.userAgent.toLowerCase();
@@ -1227,6 +1382,7 @@
                 
                 videoTitle.textContent = channel.name;
                 
+                // Define a URL do vídeo e carrega normalmente
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
                 
@@ -1238,6 +1394,7 @@
                         // Mostrar a barra de progresso permanentemente após carregar
                         document.getElementById('progress-divider').classList.add('show');
                         
+                        // Reproduz o vídeo do início do stream (posição atual do live)
                         videoPlayer.play().catch(e => {
                             console.log('Autoplay bloqueado');
                             loadingScreen.classList.remove('show');
