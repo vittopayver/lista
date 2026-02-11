@@ -47,7 +47,8 @@
         /* Portrait: video ocupa parte superior */
         @media (orientation: portrait) {
             .video-wrapper {
-                height: 210px;
+                height: 205px;
+                margin-bottom: 5px;
             }
         }
         
@@ -63,6 +64,10 @@
             }
             
             .progress-divider {
+                display: none !important;
+            }
+            
+            .info-text {
                 display: none !important;
             }
         }
@@ -82,6 +87,17 @@
             width: 100%;
             height: 100%;
             z-index: 3;
+        }
+        
+        /* Texto informativo abaixo do player */
+        .info-text {
+            width: 100%;
+            text-align: center;
+            padding: 8px 40px;
+            font-size: 10px;
+            color: #888;
+            background: #0f0f0f;
+            line-height: 1.4;
         }
         
         /* Header sobre o vídeo */
@@ -150,20 +166,27 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 70vh;
+            height: 56vh;
             background: #1a1a1a;
             transform: translateY(100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, height 0.3s ease;
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
             box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+            touch-action: none;
         }
         
         .chat-drawer.open {
             transform: translateY(0);
+        }
+        
+        .chat-drawer.expanded {
+            height: calc(100vh - 90px);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
         }
         
         .chat-header {
@@ -173,14 +196,38 @@
             padding: 16px 20px;
             border-bottom: 1px solid #2a2a2a;
             background: #1f1f1f;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            cursor: grab;
+            position: relative;
+        }
+        
+        .chat-drawer.expanded .chat-header {
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        
+        .chat-header:active {
+            cursor: grabbing;
+        }
+        
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background: #444;
+            border-radius: 2px;
         }
         
         .chat-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: #f1f1f1;
+            margin-top: 8px;
         }
         
         .chat-close-btn {
@@ -198,6 +245,7 @@
             border-radius: 50%;
             transition: background 0.2s;
             line-height: 1;
+            margin-top: 8px;
         }
         
         .chat-close-btn:hover {
@@ -215,14 +263,6 @@
             justify-content: center;
             padding: 32px;
             overflow-y: auto;
-        }
-        
-        .chat-image {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            border-radius: 12px;
-            margin-bottom: 24px;
         }
         
         .chat-unavailable {
@@ -246,25 +286,6 @@
         .chat-unavailable-text {
             font-size: 14px;
             color: #888;
-        }
-        
-        /* Overlay para fechar a gaveta */
-        .chat-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        
-        .chat-overlay.show {
-            opacity: 1;
-            pointer-events: all;
         }
         
         /* Controles de vídeo estilo YouTube */
@@ -335,7 +356,7 @@
         /* Barra Divisória Vermelha com Progresso */
         .progress-divider {
             width: 100%;
-            height: 3px;
+            height: 2px;
             background: #f00;
             position: absolute;
             bottom: 0;
@@ -366,8 +387,8 @@
             top: 50%;
             right: 0;
             transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             background: #f00;
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(0,0,0,0.5);
@@ -387,7 +408,7 @@
         
         .channel-item {
             display: flex;
-            padding: 12px 16px;
+            padding: 8px 16px;
             cursor: pointer;
             transition: background 0.2s;
             gap: 12px;
@@ -573,6 +594,10 @@
             display: none !important;
         }
         
+        .player-container.fullscreen .info-text {
+            display: none !important;
+        }
+        
         /* Remover barras em fullscreen */
         :fullscreen {
             width: 100vw;
@@ -671,7 +696,7 @@
         <div class="browser-block-title">HeyTap Browser</div>
         <div class="browser-block-message">
             Para assistir à G-Hub TV, você precisa usar o navegador HeyTap. 
-            Baixe o aplicativo oficial para ter a melhor experiência.
+            Baixe o aplicativo oficial caso não tenha no seu dispositivo.
         </div>
         <a href="https://play.google.com/store/apps/details?id=com.heytap.browser" class="browser-block-btn" target="_blank">
             Baixar Agora 
@@ -718,6 +743,11 @@
             </div>
         </div>
         
+        <!-- Texto Informativo -->
+        <div class="info-text">
+            Internet de alta latência não funciona bem com o streaming! Por favor aguarde o carregamento do player.
+        </div>
+        
         <!-- Channels Section -->
         <div class="channels-section" id="channels-section">
             <div class="channels-list" id="channels-list">
@@ -726,18 +756,14 @@
         </div>
     </div>
     
-    <!-- Overlay do Chat -->
-    <div class="chat-overlay" id="chat-overlay"></div>
-    
     <!-- Gaveta do Chat -->
     <div class="chat-drawer" id="chat-drawer">
-        <div class="chat-header">
+        <div class="chat-header" id="chat-header">
             <div class="chat-title">Chat ao vivo</div>
             <button class="chat-close-btn" id="chat-close-btn">×</button>
         </div>
         <div class="chat-content">
             <div class="chat-unavailable">
-                <img src="https://raw.githubusercontent.com/vittopayver/tv/refs/heads/main/img/chat-unavailable.png" alt="Chat indisponível" class="chat-image">
                 <div class="chat-unavailable-title">Chat não disponível</div>
                 <div class="chat-unavailable-text">O chat ao vivo não está disponível para este canal</div>
             </div>
@@ -816,7 +842,7 @@
             const progressDividerBall = document.getElementById('progress-divider-ball');
             const chatBtn = document.getElementById('chat-btn');
             const chatDrawer = document.getElementById('chat-drawer');
-            const chatOverlay = document.getElementById('chat-overlay');
+            const chatHeader = document.getElementById('chat-header');
             const chatCloseBtn = document.getElementById('chat-close-btn');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
@@ -866,14 +892,27 @@
             });
             
             // ===== FUNCIONALIDADE DO CHAT =====
+            let isDragging = false;
+            let startY = 0;
+            let currentY = 0;
+            let drawerHeight = 0;
+            let isExpanded = false;
+            
             function openChat() {
                 chatDrawer.classList.add('open');
-                chatOverlay.classList.add('show');
             }
             
             function closeChat() {
+                // Remove a classe open para fazer a gaveta descer
                 chatDrawer.classList.remove('open');
-                chatOverlay.classList.remove('show');
+                
+                // Após a animação de fechar completar, reseta a altura e o estado de expansão
+                setTimeout(() => {
+                    chatDrawer.style.height = '56vh';
+                    chatDrawer.classList.remove('expanded');
+                    isExpanded = false;
+                    chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
+                }, 300);
             }
             
             chatBtn.addEventListener('click', function(e) {
@@ -886,8 +925,63 @@
                 closeChat();
             });
             
-            chatOverlay.addEventListener('click', function(e) {
-                closeChat();
+            // Sistema de arrasto da gaveta
+            chatHeader.addEventListener('touchstart', function(e) {
+                if (!chatDrawer.classList.contains('open')) return;
+                
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                drawerHeight = chatDrawer.offsetHeight;
+                chatDrawer.style.transition = 'none';
+            }, { passive: true });
+            
+            chatHeader.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                
+                currentY = e.touches[0].clientY;
+                const deltaY = startY - currentY;
+                
+                if (deltaY > 0) {
+                    // Arrastando para cima - expandir (até 90px do topo)
+                    const newHeight = Math.min(window.innerHeight - 90, drawerHeight + deltaY);
+                    chatDrawer.style.height = newHeight + 'px';
+                    
+                    if (newHeight >= window.innerHeight - 100) {
+                        chatDrawer.classList.add('expanded');
+                        isExpanded = true;
+                    }
+                } else {
+                    // Arrastando para baixo - recolher
+                    const newHeight = Math.max(window.innerHeight * 0.55, drawerHeight + deltaY);
+                    chatDrawer.style.height = newHeight + 'px';
+                    chatDrawer.classList.remove('expanded');
+                    isExpanded = false;
+                }
+            }, { passive: true });
+            
+            chatHeader.addEventListener('touchend', function(e) {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
+                
+                const finalY = currentY;
+                const deltaY = startY - finalY;
+                
+                if (deltaY < -100) {
+                    // Arrastou muito para baixo, fecha a gaveta
+                    closeChat();
+                } else if (deltaY > 200 || isExpanded) {
+                    // Arrastou muito para cima, expande completamente (deixando 90px no topo)
+                    chatDrawer.style.height = 'calc(100vh - 90px)';
+                    chatDrawer.classList.add('expanded');
+                    isExpanded = true;
+                } else {
+                    // Volta ao tamanho padrão
+                    chatDrawer.style.height = '56vh';
+                    chatDrawer.classList.remove('expanded');
+                    isExpanded = false;
+                }
             });
             
             // Fullscreen com rotação
@@ -1007,6 +1101,12 @@
             }
             
             clickOverlay.addEventListener('click', function(e) {
+                // Fecha a gaveta do chat se estiver aberta
+                if (chatDrawer.classList.contains('open')) {
+                    closeChat();
+                    return;
+                }
+                
                 if (controlsVisible) {
                     hideControls();
                 } else {
@@ -1090,7 +1190,7 @@
                             <div class="channel-meta">
                                 <div class="live-indicator">
                                     <div class="live-dot"></div>
-                                    <span>Streaming</span>
+                                    <span>Transmissão ao vivo</span>
                                 </div>
                                 <div class="channel-category">${channel.group || 'Geral'}</div>
                             </div>
