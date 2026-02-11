@@ -16,14 +16,17 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        body {
+        html, body {
             background: #0f0f0f;
             color: #f1f1f1;
             overflow: hidden;
             height: 100vh;
+            height: 100dvh; /* Dynamic viewport height */
             position: fixed;
             width: 100%;
             transition: background-color 0.3s ease, color 0.3s ease;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
         }
         
         /* Tema Claro */
@@ -143,6 +146,7 @@
             left: 0;
             width: 100%;
             height: 100%;
+            height: 100dvh;
             background: #0f0f0f;
             display: flex;
             flex-direction: column;
@@ -152,23 +156,27 @@
         .video-wrapper {
             position: relative;
             width: 100%;
-            background: #000;
             flex-shrink: 0;
+            background: #000;
         }
         
         /* Portrait: video ocupa parte superior */
         @media (orientation: portrait) {
             .video-wrapper {
-                height: 205px;
-                margin-bottom: 5px;
+                height: 202px;
             }
         }
         
         /* Landscape: video ocupa tela toda */
         @media (orientation: landscape) {
-            .video-wrapper {                 position: relative;
-                 width: 100vw;
-                 height: 100vh;
+            .video-wrapper {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                height: 100dvh;
+                z-index: 100;
             }
             
             .channels-section {
@@ -182,12 +190,20 @@
             .info-text {
                 display: none !important;
             }
+            
+            /* Esconder botão de chat em landscape */
+            .chat-btn {
+                display: none !important;
+            }
         }
         
         #video-player {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: contain; /* Mantém proporções sem cortar */
             background: #000;
             display: block;
         }
@@ -205,7 +221,8 @@
         .info-text {
             width: 100%;
             text-align: center;
-            padding: 8px 40px;
+            margin: 0;
+            padding: 10px 30px;
             font-size: 10px;
             color: #888;
             background: #0f0f0f;
@@ -272,6 +289,11 @@
             height: 20px;
         }
         
+        /* Esconder chat em fullscreen */
+        .player-container.fullscreen .chat-btn {
+            display: none !important;
+        }
+        
         /* Gaveta do Chat */
         .chat-drawer {
             position: fixed;
@@ -287,7 +309,7 @@
             flex-direction: column;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
             touch-action: none;
         }
         
@@ -503,7 +525,7 @@
             height: 10px;
             background: #f00;
             border-radius: 50%;
-            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
         }
         
         /* Seção de Canais estilo YouTube */
@@ -539,7 +561,7 @@
         
         .channel-thumbnail {
             width: 120px;
-            height: 68px;
+            height: 70px;
             border-radius: 8px;
             background: #202020;
             flex-shrink: 0;
@@ -560,7 +582,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #f00 0%, #c00 100%);
             opacity: 0.1;
         }
         
@@ -692,10 +713,31 @@
             background: #5f5f5f;
         }
         
-        /* Fullscreen adjustments */
-        .player-container.fullscreen .video-wrapper {
+        /* Fullscreen adjustments - MODO IMERSIVO TOTAL */
+        .player-container.fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
             height: 100vh !important;
-            padding: 0 50px;
+            height: 100dvh !important;
+            z-index: 999999 !important;
+        }
+        
+        .player-container.fullscreen .video-wrapper {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            z-index: 999999 !important;
+        }
+        
+        .player-container.fullscreen #video-player {
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
         }
         
         .player-container.fullscreen .channels-section {
@@ -710,29 +752,57 @@
             display: none !important;
         }
         
-        /* Remover barras em fullscreen */
+        /* Remover TODAS as barras em fullscreen */
+        html:fullscreen,
+        html:-webkit-full-screen,
+        html:-moz-full-screen,
+        html:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        body:fullscreen,
+        body:-webkit-full-screen,
+        body:-moz-full-screen,
+        body:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
         :fullscreen {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
         }
         
         :-webkit-full-screen {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
         }
         
         :-moz-full-screen {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
         }
         
         :-ms-fullscreen {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
         }
         
         /* Tela de bloqueio de navegador */
@@ -799,6 +869,45 @@
         .browser-block-btn:active {
             transform: scale(0.98);
         }
+        
+        /* Overlay de rotação */
+        .rotation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .rotation-overlay.show {
+            display: flex;
+        }
+        
+        .rotation-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            animation: rotate-hint 2s ease-in-out infinite;
+        }
+        
+        @keyframes rotate-hint {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+        
+        .rotation-text {
+            font-size: 18px;
+            text-align: center;
+            padding: 0 32px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -813,6 +922,12 @@
         <a href="https://play.google.com/store/apps/details?id=com.heytap.browser" class="browser-block-btn" target="_blank">
             Baixar Agora 
         </a>
+    </div>
+    
+    <!-- Overlay de Rotação -->
+    <div class="rotation-overlay" id="rotation-overlay">
+        <div class="rotation-icon">📱</div>
+        <div class="rotation-text">Por favor, rotacione seu dispositivo para o modo paisagem para aproveitar a tela cheia</div>
     </div>
     
     <div class="player-container" id="player-container">
@@ -857,7 +972,7 @@
         
         <!-- Texto Informativo -->
         <div class="info-text">
-            Internet de alta latência não funciona bem com o streaming! Por favor aguarde o carregamento do player.
+            As informações e conteúdos exibidos nos canais são de responsabilidade exclusiva de cada emissora.
         </div>
         
         <!-- Channels Section -->
@@ -927,61 +1042,48 @@
         document.addEventListener('DOMContentLoaded', function() {
             // ===== DETECÇÃO E APLICAÇÃO DO TEMA DO NAVEGADOR =====
             function applyTheme() {
-                // Detecta se o navegador está em modo escuro
                 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
                 const prefersLightScheme = window.matchMedia('(prefers-color-scheme: light)');
                 
                 if (prefersLightScheme.matches) {
                     document.body.classList.add('light-theme');
-                    console.log('Tema claro aplicado');
                 } else if (prefersDarkScheme.matches) {
                     document.body.classList.remove('light-theme');
-                    console.log('Tema escuro aplicado');
                 } else {
-                    // Padrão: tema escuro
                     document.body.classList.remove('light-theme');
-                    console.log('Tema padrão (escuro) aplicado');
                 }
             }
             
-            // Aplica o tema ao carregar
             applyTheme();
             
-            // Detecta mudanças no tema do sistema
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
                 if (e.matches) {
                     document.body.classList.remove('light-theme');
-                    console.log('Mudou para tema escuro');
                 } else {
                     document.body.classList.add('light-theme');
-                    console.log('Mudou para tema claro');
                 }
             });
             
             window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
                 if (e.matches) {
                     document.body.classList.add('light-theme');
-                    console.log('Mudou para tema claro');
                 } else {
                     document.body.classList.remove('light-theme');
-                    console.log('Mudou para tema escuro');
                 }
             });
             
             // ===== DETECÇÃO DE NAVEGADOR =====
             function isHeyTapBrowser() {
                 const userAgent = navigator.userAgent.toLowerCase();
-                // Detecta o navegador HeyTap
                 return userAgent.includes('heytapbrowser') || 
                        userAgent.includes('heytap') ||
                        userAgent.includes('oppo');
             }
             
-            // Verificar se é o navegador correto
             if (!isHeyTapBrowser()) {
                 document.getElementById('browser-block').classList.add('show');
                 document.getElementById('player-container').style.display = 'none';
-                return; // Interrompe a execução do resto do código
+                return;
             }
             
             const videoPlayer = document.getElementById('video-player');
@@ -999,6 +1101,7 @@
             const chatDrawer = document.getElementById('chat-drawer');
             const chatHeader = document.getElementById('chat-header');
             const chatCloseBtn = document.getElementById('chat-close-btn');
+            const rotationOverlay = document.getElementById('rotation-overlay');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
             
@@ -1009,6 +1112,7 @@
             let isPressing = false;
             let pressTimer = null;
             let isFullscreen = false;
+            let isLandscape = false;
             
             const urlProxy = new Map();
             let urlCounter = 0;
@@ -1058,10 +1162,8 @@
             }
             
             function closeChat() {
-                // Remove a classe open para fazer a gaveta descer
                 chatDrawer.classList.remove('open');
                 
-                // Após a animação de fechar completar, reseta a altura e o estado de expansão
                 setTimeout(() => {
                     chatDrawer.style.height = '56vh';
                     chatDrawer.classList.remove('expanded');
@@ -1080,7 +1182,6 @@
                 closeChat();
             });
             
-            // Sistema de arrasto da gaveta
             chatHeader.addEventListener('touchstart', function(e) {
                 if (!chatDrawer.classList.contains('open')) return;
                 
@@ -1097,7 +1198,6 @@
                 const deltaY = startY - currentY;
                 
                 if (deltaY > 0) {
-                    // Arrastando para cima - expandir (até 90px do topo)
                     const newHeight = Math.min(window.innerHeight - 90, drawerHeight + deltaY);
                     chatDrawer.style.height = newHeight + 'px';
                     
@@ -1106,7 +1206,6 @@
                         isExpanded = true;
                     }
                 } else {
-                    // Arrastando para baixo - recolher
                     const newHeight = Math.max(window.innerHeight * 0.55, drawerHeight + deltaY);
                     chatDrawer.style.height = newHeight + 'px';
                     chatDrawer.classList.remove('expanded');
@@ -1124,99 +1223,256 @@
                 const deltaY = startY - finalY;
                 
                 if (deltaY < -100) {
-                    // Arrastou muito para baixo, fecha a gaveta
                     closeChat();
                 } else if (deltaY > 200 || isExpanded) {
-                    // Arrastou muito para cima, expande completamente (deixando 90px no topo)
                     chatDrawer.style.height = 'calc(100vh - 90px)';
                     chatDrawer.classList.add('expanded');
                     isExpanded = true;
                 } else {
-                    // Volta ao tamanho padrão
                     chatDrawer.style.height = '56vh';
                     chatDrawer.classList.remove('expanded');
                     isExpanded = false;
                 }
             });
             
-            // Fullscreen com rotação
+            // ===== DETECÇÃO DE ORIENTAÇÃO =====
+            function checkOrientation() {
+                const orientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+                isLandscape = orientation === 'landscape';
+                return orientation;
+            }
+            
+            // ===== FUNÇÃO PARA ESCONDER BARRAS DO NAVEGADOR (IMERSIVO) =====
+            function hideAddressBar() {
+                // Técnica 1: Scroll mínimo
+                window.scrollTo(0, 1);
+                
+                // Técnica 2: Forçar foco no body
+                document.body.focus();
+                
+                // Técnica 3: Resetar scroll
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                }, 50);
+                
+                // Técnica 4: Usar visualViewport se disponível
+                if (window.visualViewport) {
+                    const viewport = window.visualViewport;
+                    window.scrollTo(0, Math.max(0, viewport.offsetTop));
+                }
+            }
+            
+            // ===== FULLSCREEN IMERSIVO TOTAL =====
             async function enterFullscreen() {
-                const elem = document.documentElement;
-                
-                isFullscreen = true;
-                playerContainer.classList.add('fullscreen');
-                
-                // Tenta travar a orientação PRIMEIRO
-                if (screen.orientation) {
-                    try {
-                        await screen.orientation.lock('landscape-primary').catch(async err => {
-                            // Se landscape-primary falhar, tenta apenas landscape
-                            await screen.orientation.lock('landscape').catch(err2 => {
-                                console.log('Rotação para landscape falhou:', err2);
-                            });
-                        });
-                    } catch (err) {
-                        console.log('Rotação de tela não disponível:', err);
-                    }
-                }
-                
-                // Aguarda um pouco para a rotação acontecer
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                // Depois entra em fullscreen com todas as opções para remover barras
                 try {
-                    if (elem.requestFullscreen) {
-                        await elem.requestFullscreen({ navigationUI: "hide" });
-                    } else if (elem.webkitRequestFullscreen) {
-                        elem.webkitRequestFullscreen();
-                    } else if (elem.mozRequestFullScreen) {
-                        elem.mozRequestFullScreen();
-                    } else if (elem.msRequestFullscreen) {
-                        elem.msRequestFullscreen();
+                    console.log('=== Iniciando fullscreen imersivo ===');
+                    isFullscreen = true;
+                    playerContainer.classList.add('fullscreen');
+                    
+                    const currentOrientation = checkOrientation();
+                    
+                    if (currentOrientation === 'portrait') {
+                        rotationOverlay.classList.add('show');
                     }
+                    
+                    // PASSO 1: Tentar fullscreen em DOCUMENT.DOCUMENTELEMENT (melhor para mobile)
+                    const elem = document.documentElement;
+                    let fullscreenSuccess = false;
+                    
+                    try {
+                        if (elem.requestFullscreen) {
+                            await elem.requestFullscreen({ navigationUI: "hide" });
+                            fullscreenSuccess = true;
+                            console.log('✓ Fullscreen via requestFullscreen');
+                        }
+                    } catch (err) {
+                        console.log('requestFullscreen falhou:', err.message);
+                    }
+                    
+                    if (!fullscreenSuccess) {
+                        try {
+                            if (elem.webkitRequestFullscreen) {
+                                await elem.webkitRequestFullscreen();
+                                fullscreenSuccess = true;
+                                console.log('✓ Fullscreen via webkitRequestFullscreen');
+                            }
+                        } catch (err) {
+                            console.log('webkitRequestFullscreen falhou:', err.message);
+                        }
+                    }
+                    
+                    if (!fullscreenSuccess) {
+                        try {
+                            if (elem.webkitEnterFullscreen) {
+                                elem.webkitEnterFullscreen();
+                                fullscreenSuccess = true;
+                                console.log('✓ Fullscreen via webkitEnterFullscreen');
+                            }
+                        } catch (err) {
+                            console.log('webkitEnterFullscreen falhou:', err.message);
+                        }
+                    }
+                    
+                    if (!fullscreenSuccess) {
+                        try {
+                            if (elem.mozRequestFullScreen) {
+                                await elem.mozRequestFullScreen();
+                                fullscreenSuccess = true;
+                                console.log('✓ Fullscreen via mozRequestFullScreen');
+                            }
+                        } catch (err) {
+                            console.log('mozRequestFullScreen falhou:', err.message);
+                        }
+                    }
+                    
+                    if (!fullscreenSuccess) {
+                        try {
+                            if (elem.msRequestFullscreen) {
+                                await elem.msRequestFullscreen();
+                                fullscreenSuccess = true;
+                                console.log('✓ Fullscreen via msRequestFullscreen');
+                            }
+                        } catch (err) {
+                            console.log('msRequestFullscreen falhou:', err.message);
+                        }
+                    }
+                    
+                    // PASSO 2: Esconder barras do navegador de TODAS as formas possíveis
+                    hideAddressBar();
+                    
+                    // Repetir várias vezes para garantir
+                    setTimeout(hideAddressBar, 100);
+                    setTimeout(hideAddressBar, 300);
+                    setTimeout(hideAddressBar, 500);
+                    setTimeout(hideAddressBar, 1000);
+                    
+                    // PASSO 3: Tentar orientação landscape
+                    if (screen.orientation && screen.orientation.lock) {
+                        const lockAttempts = [
+                            'landscape',
+                            'landscape-primary', 
+                            'landscape-secondary',
+                        ];
+                        
+                        for (const orientation of lockAttempts) {
+                            try {
+                                await screen.orientation.lock(orientation);
+                                console.log(`✓ Orientação travada em: ${orientation}`);
+                                rotationOverlay.classList.remove('show');
+                                break;
+                            } catch (err) {
+                                console.log(`Tentativa ${orientation} falhou:`, err.message);
+                            }
+                        }
+                    }
+                    
+                    // PASSO 4: Forçar altura da viewport
+                    document.body.style.height = '100vh';
+                    document.documentElement.style.height = '100vh';
+                    playerContainer.style.height = '100vh';
+                    
+                    console.log('=== Fullscreen imersivo ativado ===');
+                    
                 } catch (err) {
-                    console.log('Fullscreen erro:', err);
-                }
-                
-                // Tenta esconder as barras do navegador móvel
-                if (window.navigator && window.navigator.standalone !== undefined) {
-                    window.scrollTo(0, 1);
+                    console.error('Erro ao entrar em fullscreen:', err);
+                    rotationOverlay.classList.remove('show');
                 }
             }
             
             async function exitFullscreen() {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
-                
-                isFullscreen = false;
-                playerContainer.classList.remove('fullscreen');
-                
-                // Voltar para portrait ao sair do fullscreen
-                setTimeout(async () => {
+                try {
+                    console.log('=== Saindo do fullscreen ===');
+                    
+                    rotationOverlay.classList.remove('show');
+                    
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        await document.webkitExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        await document.mozCancelFullScreen();
+                    } else if (document.msExitFullscreen) {
+                        await document.msExitFullscreen();
+                    }
+                    
+                    isFullscreen = false;
+                    playerContainer.classList.remove('fullscreen');
+                    
+                    // Restaurar alturas
+                    document.body.style.height = '';
+                    document.documentElement.style.height = '';
+                    playerContainer.style.height = '';
+                    
                     if (screen.orientation && screen.orientation.unlock) {
                         screen.orientation.unlock();
-                        if (screen.orientation.lock) {
-                            try {
-                                await screen.orientation.lock('portrait').catch(err => {
-                                    console.log('Não foi possível travar em portrait:', err);
-                                });
-                            } catch (err) {
-                                console.log('Lock portrait não disponível:', err);
-                            }
-                        }
                     }
-                }, 200);
+                    
+                    console.log('✓ Fullscreen desativado');
+                    
+                } catch (err) {
+                    console.error('Erro ao sair do fullscreen:', err);
+                }
             }
             
             fullscreenBtn.addEventListener('click', async function(e) {
                 e.stopPropagation();
-                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                
+                if (!isFullscreen) {
                     await enterFullscreen();
                 } else {
-                    exitFullscreen();
+                    await exitFullscreen();
+                }
+            });
+            
+            // Detecta mudanças de orientação
+            window.addEventListener('orientationchange', function() {
+                const newOrientation = checkOrientation();
+                
+                if (isFullscreen) {
+                    hideAddressBar();
+                    
+                    if (newOrientation === 'landscape') {
+                        rotationOverlay.classList.remove('show');
+                    }
+                }
+            });
+            
+            window.addEventListener('resize', function() {
+                const newOrientation = checkOrientation();
+                
+                if (isFullscreen) {
+                    hideAddressBar();
+                    
+                    if (newOrientation === 'landscape') {
+                        rotationOverlay.classList.remove('show');
+                    }
+                }
+            });
+            
+            // Detecta mudanças no estado de fullscreen
+            document.addEventListener('fullscreenchange', function() {
+                if (!document.fullscreenElement) {
+                    isFullscreen = false;
+                    playerContainer.classList.remove('fullscreen');
+                    rotationOverlay.classList.remove('show');
+                    if (screen.orientation && screen.orientation.unlock) {
+                        screen.orientation.unlock();
+                    }
+                } else {
+                    hideAddressBar();
+                }
+            });
+            
+            document.addEventListener('webkitfullscreenchange', function() {
+                if (!document.webkitFullscreenElement) {
+                    isFullscreen = false;
+                    playerContainer.classList.remove('fullscreen');
+                    rotationOverlay.classList.remove('show');
+                    if (screen.orientation && screen.orientation.unlock) {
+                        screen.orientation.unlock();
+                    }
+                } else {
+                    hideAddressBar();
                 }
             });
             
@@ -1249,14 +1505,7 @@
                 videoControls.classList.remove('show');
             }
             
-            // Mobile detection
-            function isMobileDevice() {
-                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                    || window.innerWidth <= 768;
-            }
-            
             clickOverlay.addEventListener('click', function(e) {
-                // Fecha a gaveta do chat se estiver aberta
                 if (chatDrawer.classList.contains('open')) {
                     closeChat();
                     return;
@@ -1372,7 +1621,6 @@
                 
                 loadingScreen.classList.add('show');
                 
-                // Esconder a barra de progresso ao trocar de canal
                 document.getElementById('progress-divider').classList.remove('show');
                 
                 document.querySelectorAll('.channel-item').forEach((item, i) => {
@@ -1382,7 +1630,6 @@
                 
                 videoTitle.textContent = channel.name;
                 
-                // Define a URL do vídeo e carrega normalmente
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
                 
@@ -1391,10 +1638,8 @@
                         loadingScreen.classList.remove('show');
                         videoPlayer.muted = false;
                         
-                        // Mostrar a barra de progresso permanentemente após carregar
                         document.getElementById('progress-divider').classList.add('show');
                         
-                        // Reproduz o vídeo do início do stream (posição atual do live)
                         videoPlayer.play().catch(e => {
                             console.log('Autoplay bloqueado');
                             loadingScreen.classList.remove('show');
@@ -1428,7 +1673,7 @@
                         wakeLock = await navigator.wakeLock.request('screen');
                     }
                 } catch (err) {
-                    console.log('Wake Lock não disponível');
+                    console.log('Wake Lock não disponível:', err);
                 }
             }
             
@@ -1440,48 +1685,12 @@
                     if (videoPlayer && videoPlayer.paused && currentChannelIndex >= 0) {
                         videoPlayer.play().catch(err => console.log('Autoplay bloqueado'));
                     }
+                    
+                    if (isFullscreen) {
+                        hideAddressBar();
+                    }
                 }
             });
-            
-            // Manter fullscreen e gerenciar orientação
-            document.addEventListener('fullscreenchange', function() {
-                if (!document.fullscreenElement) {
-                    isFullscreen = false;
-                    playerContainer.classList.remove('fullscreen');
-                } else {
-                    isFullscreen = true;
-                    playerContainer.classList.add('fullscreen');
-                    requestWakeLock();
-                }
-            });
-            
-            document.addEventListener('webkitfullscreenchange', function() {
-                if (!document.webkitFullscreenElement) {
-                    isFullscreen = false;
-                    playerContainer.classList.remove('fullscreen');
-                } else {
-                    isFullscreen = true;
-                    playerContainer.classList.add('fullscreen');
-                    requestWakeLock();
-                }
-            });
-            
-            // Orientação
-            function handleOrientationChange() {
-                if (currentChannelIndex >= 0) {
-                    setTimeout(() => {
-                        videoPlayer.style.width = '100%';
-                        videoPlayer.style.height = '100%';
-                    }, 100);
-                }
-            }
-            
-            window.addEventListener('orientationchange', handleOrientationChange);
-            window.addEventListener('resize', handleOrientationChange);
-            
-            if (screen.orientation) {
-                screen.orientation.addEventListener('change', handleOrientationChange);
-            }
             
             // Navegação
             let backPressCount = 0;
@@ -1525,6 +1734,7 @@
                 return false;
             });
             
+            checkOrientation();
             loadPlaylist(playlistUrl);
         });
     </script>
