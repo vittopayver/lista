@@ -203,7 +203,6 @@
             display: block;
         }
         
-        /* ===== OVERLAY DE TOQUE — COBRE TODA A ÁREA DO PLAYER ===== */
         .click-overlay {
             position: absolute;
             top: 0;
@@ -211,10 +210,8 @@
             width: 100%;
             height: 100%;
             z-index: 3;
-            /* Cobre header e controles, mas eventos dos botões passam pelo pointer-events */
         }
         
-        /* Header e controles ficam acima do overlay para receber cliques */
         .video-header {
             position: absolute;
             top: 0;
@@ -1104,6 +1101,53 @@
             let hideControlsTimeout = null;
             let isFullscreen = false;
             let isLandscape = false;
+
+            // ===== CONTROLE DO BOTÃO VOLTAR =====
+            // NÃO adiciona pushState — deixa o histórico natural do navegador intacto.
+            // Assim o primeiro clique em "Voltar" vai realmente sair da página.
+            // Apenas interceptamos para tratar fullscreen e chat abertos.
+            let backHandlerActive = false;
+
+            function activateBackHandler() {
+                if (backHandlerActive) return;
+                backHandlerActive = true;
+                // Empurra UM estado extra para podermos capturar o evento popstate
+                window.history.pushState({ appState: true }, '');
+            }
+
+            function deactivateBackHandler() {
+                backHandlerActive = false;
+            }
+
+            window.addEventListener('popstate', async function(e) {
+                // Se o estado não é nosso, deixa o navegador sair normalmente
+                if (!e.state || !e.state.appState) {
+                    deactivateBackHandler();
+                    return;
+                }
+
+                // Se o fullscreen está ativo, sai do fullscreen
+                if (isFullscreen) {
+                    await exitFullscreen();
+                    enableKeepScreenOn();
+                    // Recoloca o estado para próxima interceptação (caso chat esteja aberto)
+                    if (chatDrawer.classList.contains('open')) {
+                        activateBackHandler();
+                    }
+                    return;
+                }
+
+                // Se o chat está aberto, fecha o chat
+                if (chatDrawer.classList.contains('open')) {
+                    closeChat();
+                    // Não reempurra estado — próximo "Voltar" sai da página
+                    return;
+                }
+
+                // Nenhuma camada aberta: sai da página normalmente
+                deactivateBackHandler();
+                window.history.back();
+            });
             
             const urlProxy = new Map();
             let urlCounter = 0;
@@ -1141,7 +1185,7 @@
                 configurable: false
             });
 
-            // ===== BLOQUEIO DE ESCURECIMENTO — MÚLTIPLAS ESTRATÉGIAS =====
+            // ===== BLOQUEIO DE ESCURECIMENTO =====
             let wakeLock = null;
             let screenKeepAliveInterval = null;
             let noSleepVideo = null;
@@ -1265,6 +1309,8 @@
             
             function openChat() {
                 chatDrawer.classList.add('open');
+                // Ativa o back handler para que "Voltar" feche o chat
+                activateBackHandler();
             }
             
             function closeChat() {
@@ -1340,7 +1386,7 @@
                 return orientation;
             }
             
-            // ===== FUNÇÃO PARA ESCONDER BARRAS DO NAVEGADOR (IMERSIVO) =====
+            // ===== FUNÇÃO PARA ESCONDER BARRAS DO NAVEGADOR =====
             function hideAddressBar() {
                 window.scrollTo(0, 1);
                 document.body.focus();
@@ -1353,11 +1399,14 @@
                 }
             }
             
-            // ===== FULLSCREEN IMERSIVO TOTAL =====
+            // ===== FULLSCREEN =====
             async function enterFullscreen() {
                 try {
                     isFullscreen = true;
                     playerContainer.classList.add('fullscreen');
+
+                    // Ativa back handler para que "Voltar" saia do fullscreen
+                    activateBackHandler();
 
                     await forceWakeLock();
                     setTimeout(enableKeepScreenOn, 600);
@@ -1436,21 +1485,19 @@
                 }
             }
             
-            // ===== SAIR DO FULLSCREEN — SEM RELOAD =====
+            // ===== SAIR DO FULLSCREEN =====
             async function exitFullscreen() {
                 try {
                     rotationOverlay.classList.remove('show');
                     
-                    // Remove a classe fullscreen ANTES de chamar a API
-                    // para evitar qualquer recálculo de layout que cause reload
                     isFullscreen = false;
                     playerContainer.classList.remove('fullscreen');
+                    deactivateBackHandler();
 
                     if (screen.orientation && screen.orientation.unlock) {
                         try { screen.orientation.unlock(); } catch (_) {}
                     }
 
-                    // Chama a API de saída do fullscreen sem aguardar reload
                     if (document.fullscreenElement) {
                         document.exitFullscreen().catch(() => {});
                     } else if (document.webkitFullscreenElement) {
@@ -1461,7 +1508,6 @@
                         document.msExitFullscreen().catch(() => {});
                     }
 
-                    // Reativa wake lock sem reload
                     enableKeepScreenOn();
                     setTimeout(enableKeepScreenOn, 600);
                     setTimeout(enableKeepScreenOn, 1500);
@@ -1496,7 +1542,7 @@
                 if (isFullscreen) hideAddressBar();
             });
             
-            // ===== EVENTOS DE FULLSCREEN — SEM RELOAD =====
+            // ===== EVENTOS DE FULLSCREEN =====
             function onFullscreenChange() {
                 const isNowFullscreen = !!(
                     document.fullscreenElement ||
@@ -1506,11 +1552,10 @@
                 );
 
                 if (!isNowFullscreen && isFullscreen) {
-                    // Saiu do fullscreen pelo gesto do sistema (ex: botão nativo)
-                    // Apenas atualiza estado sem reload
                     isFullscreen = false;
                     playerContainer.classList.remove('fullscreen');
                     rotationOverlay.classList.remove('show');
+                    deactivateBackHandler();
                     if (screen.orientation && screen.orientation.unlock) {
                         try { screen.orientation.unlock(); } catch (_) {}
                     }
@@ -1536,7 +1581,7 @@
                 }
             });
             
-            // ===== CONTROLES — TODA A ÁREA DO PLAYER RESPONDE AO TOQUE =====
+            // ===== CONTROLES =====
             function showControls() {
                 controlsVisible = true;
                 videoHeader.classList.add('show');
@@ -1557,8 +1602,6 @@
                 videoControls.classList.remove('show');
             }
             
-            // O click-overlay cobre toda a área do video-wrapper
-            // Toque em qualquer parte do player mostra/oculta os controles
             clickOverlay.addEventListener('click', function(e) {
                 if (chatDrawer.classList.contains('open')) {
                     closeChat();
@@ -1571,9 +1614,8 @@
                 }
             });
 
-            // Suporte a toque (touchstart) para resposta mais rápida em mobile
             clickOverlay.addEventListener('touchend', function(e) {
-                e.preventDefault(); // evita duplo disparo com click
+                e.preventDefault();
                 if (chatDrawer.classList.contains('open')) {
                     closeChat();
                     return;
@@ -1726,48 +1768,6 @@
                 
                 currentChannelIndex = index;
             }
-            
-            // ===== NAVEGAÇÃO COM BOTÃO VOLTAR — SEM RELOAD =====
-            let backPressCount = 0;
-            let backPressTimer = null;
-            
-            window.history.pushState(null, '', window.location.href);
-            
-            window.addEventListener('popstate', async function(e) {
-                // Evita qualquer navegação real que causaria reload
-                e.preventDefault();
-                window.history.pushState(null, '', window.location.href);
-                
-                if (isFullscreen) {
-                    // Sai do fullscreen sem reload
-                    await exitFullscreen();
-                    enableKeepScreenOn();
-                    return;
-                }
-                
-                enableKeepScreenOn();
-
-                backPressCount++;
-                
-                if (backPressCount === 1) {
-                    showControls();
-                    videoTitle.textContent = 'Pressione VOLTAR novamente para sair';
-                    
-                    if (backPressTimer) clearTimeout(backPressTimer);
-                    backPressTimer = setTimeout(() => {
-                        backPressCount = 0;
-                        if (currentChannelIndex >= 0) {
-                            videoTitle.textContent = channels[currentChannelIndex].name;
-                        }
-                    }, 2000);
-                    
-                } else if (backPressCount >= 2) {
-                    backPressCount = 0;
-                    await releaseWakeLock();
-                    // Usa replace para sair sem adicionar histórico
-                    window.history.back();
-                }
-            });
             
             checkOrientation();
             loadPlaylist(playlistUrl);
