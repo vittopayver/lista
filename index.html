@@ -203,6 +203,7 @@
             display: block;
         }
         
+        /* ===== OVERLAY DE TOQUE — COBRE TODA A ÁREA DO PLAYER ===== */
         .click-overlay {
             position: absolute;
             top: 0;
@@ -210,19 +211,10 @@
             width: 100%;
             height: 100%;
             z-index: 3;
+            /* Cobre header e controles, mas eventos dos botões passam pelo pointer-events */
         }
         
-        .info-text {
-            width: 100%;
-            text-align: center;
-            margin: 0;
-            padding: 10px 30px;
-            font-size: 10px;
-            color: #888;
-            background: #0f0f0f;
-            line-height: 1.4;
-        }
-        
+        /* Header e controles ficam acima do overlay para receber cliques */
         .video-header {
             position: absolute;
             top: 0;
@@ -230,16 +222,18 @@
             right: 0;
             background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
             padding: 12px 16px;
-            z-index: 5;
+            z-index: 6;
             display: flex;
             align-items: center;
             gap: 12px;
             opacity: 0;
             transition: opacity 0.3s ease;
+            pointer-events: none;
         }
         
         .video-header.show {
             opacity: 1;
+            pointer-events: all;
         }
         
         .video-title {
@@ -420,13 +414,15 @@
             right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             padding: 40px 16px 12px;
-            z-index: 5;
+            z-index: 6;
             opacity: 0;
             transition: opacity 0.3s ease;
+            pointer-events: none;
         }
         
         .video-controls.show {
             opacity: 1;
+            pointer-events: all;
         }
         
         .controls-row {
@@ -515,6 +511,17 @@
             background: #f00;
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+        
+        .info-text {
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            padding: 10px 30px;
+            font-size: 10px;
+            color: #888;
+            background: #0f0f0f;
+            line-height: 1.4;
         }
         
         .channels-section {
@@ -916,12 +923,13 @@
     
     <div class="player-container" id="player-container">
         <!-- Video Wrapper -->
-        <div class="video-wrapper">
+        <div class="video-wrapper" id="video-wrapper">
             <video id="video-player" preload="auto" muted playsinline webkit-playsinline></video>
             
+            <!-- Overlay de toque: cobre toda a área do player -->
             <div class="click-overlay" id="click-overlay"></div>
             
-            <!-- Header -->
+            <!-- Header (z-index acima do overlay) -->
             <div class="video-header" id="video-header">
                 <div class="video-title" id="video-title">Carregando...</div>
                 <button class="chat-btn" id="chat-btn">
@@ -931,7 +939,7 @@
                 </button>
             </div>
             
-            <!-- Controls -->
+            <!-- Controls (z-index acima do overlay) -->
             <div class="video-controls" id="video-controls">
                 <div class="controls-row">
                     <div class="live-badge">
@@ -1072,6 +1080,7 @@
             
             const videoPlayer = document.getElementById('video-player');
             const playerContainer = document.getElementById('player-container');
+            const videoWrapper = document.getElementById('video-wrapper');
             const channelsList = document.getElementById('channels-list');
             const clickOverlay = document.getElementById('click-overlay');
             const loadingScreen = document.getElementById('loading-screen');
@@ -1093,8 +1102,6 @@
             let currentChannelIndex = -1;
             let controlsVisible = false;
             let hideControlsTimeout = null;
-            let isPressing = false;
-            let pressTimer = null;
             let isFullscreen = false;
             let isLandscape = false;
             
@@ -1139,7 +1146,6 @@
             let screenKeepAliveInterval = null;
             let noSleepVideo = null;
 
-            // Estratégia 1: API wakeLock (se suportada)
             async function tryWakeLockAPI() {
                 try {
                     if ('wakeLock' in navigator && document.visibilityState === 'visible') {
@@ -1157,8 +1163,6 @@
                 return false;
             }
 
-            // Estratégia 2: Vídeo invisível em loop (NoSleep.js technique)
-            // Reproduz um vídeo de 1x1 pixel em loop infinito — impede o sistema de dormir
             function startNoSleepVideo() {
                 if (noSleepVideo) return;
                 noSleepVideo = document.createElement('video');
@@ -1168,23 +1172,17 @@
                 noSleepVideo.muted = true;
                 noSleepVideo.loop = true;
                 noSleepVideo.style.cssText = 'position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0.001;pointer-events:none;z-index:-1;';
-
-                // MP4 de 1x1 pixel transparente codificado em base64
                 const mp4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28ybXA0MQAAAAhmcmVlAAAA/21kYXQAAAA=';
                 const webm = 'data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8oEEQvOBCEKChHdlYm1Ch4ECQoWBAhhTgGcBAAAAAAAVkhFNm3RALE27i1OrhBVJqWZTrIHfTbuMU6uEFlSua1OsggEwTbuMU6uEHFO7a1OsggI27AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmAAAAAAAEAAAABgIBIwAA';
-
                 const source1 = document.createElement('source');
                 source1.src = mp4;
                 source1.type = 'video/mp4';
-
                 const source2 = document.createElement('source');
                 source2.src = webm;
                 source2.type = 'video/webm';
-
                 noSleepVideo.appendChild(source1);
                 noSleepVideo.appendChild(source2);
                 document.body.appendChild(noSleepVideo);
-
                 noSleepVideo.play().catch(() => {});
             }
 
@@ -1196,8 +1194,6 @@
                 }
             }
 
-            // Estratégia 3: Simular micro-interação periódica no DOM
-            // Move 1 pixel um elemento invisível — força o browser a manter a tela ativa
             function startScreenActivity() {
                 if (screenKeepAliveInterval) return;
                 const ghost = document.createElement('div');
@@ -1207,7 +1203,7 @@
                 screenKeepAliveInterval = setInterval(() => {
                     ghost.style.transform = `translateX(${tick % 2}px)`;
                     tick++;
-                }, 20000); // a cada 20s
+                }, 20000);
             }
 
             function stopScreenActivity() {
@@ -1217,7 +1213,6 @@
                 }
             }
 
-            // Ativa todas as estratégias juntas
             async function enableKeepScreenOn() {
                 await tryWakeLockAPI();
                 startNoSleepVideo();
@@ -1241,10 +1236,8 @@
                 wakeLock = null;
             }
 
-            // Ativa ao carregar a página
             enableKeepScreenOn();
 
-            // Reativa quando a página volta ao foco
             document.addEventListener('visibilitychange', async () => {
                 if (document.visibilityState === 'visible') {
                     await enableKeepScreenOn();
@@ -1257,7 +1250,6 @@
                 }
             });
 
-            // Reativa ao qualquer toque na tela
             document.addEventListener('touchstart', () => {
                 if (document.visibilityState === 'visible') {
                     enableKeepScreenOn();
@@ -1277,7 +1269,6 @@
             
             function closeChat() {
                 chatDrawer.classList.remove('open');
-                
                 setTimeout(() => {
                     chatDrawer.style.height = '56vh';
                     chatDrawer.classList.remove('expanded');
@@ -1298,7 +1289,6 @@
             
             chatHeader.addEventListener('touchstart', function(e) {
                 if (!chatDrawer.classList.contains('open')) return;
-                
                 isDragging = true;
                 startY = e.touches[0].clientY;
                 drawerHeight = chatDrawer.offsetHeight;
@@ -1307,14 +1297,11 @@
             
             chatHeader.addEventListener('touchmove', function(e) {
                 if (!isDragging) return;
-                
                 currentY = e.touches[0].clientY;
                 const deltaY = startY - currentY;
-                
                 if (deltaY > 0) {
                     const newHeight = Math.min(window.innerHeight - 90, drawerHeight + deltaY);
                     chatDrawer.style.height = newHeight + 'px';
-                    
                     if (newHeight >= window.innerHeight - 100) {
                         chatDrawer.classList.add('expanded');
                         isExpanded = true;
@@ -1329,13 +1316,10 @@
             
             chatHeader.addEventListener('touchend', function(e) {
                 if (!isDragging) return;
-                
                 isDragging = false;
                 chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
-                
                 const finalY = currentY;
                 const deltaY = startY - finalY;
-                
                 if (deltaY < -100) {
                     closeChat();
                 } else if (deltaY > 200 || isExpanded) {
@@ -1372,17 +1356,14 @@
             // ===== FULLSCREEN IMERSIVO TOTAL =====
             async function enterFullscreen() {
                 try {
-                    console.log('=== Iniciando fullscreen imersivo ===');
                     isFullscreen = true;
                     playerContainer.classList.add('fullscreen');
 
-                    // Força reativação de todas as estratégias anti-sleep
                     await forceWakeLock();
                     setTimeout(enableKeepScreenOn, 600);
                     setTimeout(enableKeepScreenOn, 1500);
                     
                     const currentOrientation = checkOrientation();
-                    
                     if (currentOrientation === 'portrait') {
                         rotationOverlay.classList.add('show');
                     }
@@ -1394,22 +1375,16 @@
                         if (elem.requestFullscreen) {
                             await elem.requestFullscreen({ navigationUI: "hide" });
                             fullscreenSuccess = true;
-                            console.log('✓ Fullscreen via requestFullscreen');
                         }
-                    } catch (err) {
-                        console.log('requestFullscreen falhou:', err.message);
-                    }
+                    } catch (err) {}
                     
                     if (!fullscreenSuccess) {
                         try {
                             if (elem.webkitRequestFullscreen) {
                                 await elem.webkitRequestFullscreen();
                                 fullscreenSuccess = true;
-                                console.log('✓ Fullscreen via webkitRequestFullscreen');
                             }
-                        } catch (err) {
-                            console.log('webkitRequestFullscreen falhou:', err.message);
-                        }
+                        } catch (err) {}
                     }
                     
                     if (!fullscreenSuccess) {
@@ -1417,11 +1392,8 @@
                             if (elem.webkitEnterFullscreen) {
                                 elem.webkitEnterFullscreen();
                                 fullscreenSuccess = true;
-                                console.log('✓ Fullscreen via webkitEnterFullscreen');
                             }
-                        } catch (err) {
-                            console.log('webkitEnterFullscreen falhou:', err.message);
-                        }
+                        } catch (err) {}
                     }
                     
                     if (!fullscreenSuccess) {
@@ -1429,11 +1401,8 @@
                             if (elem.mozRequestFullScreen) {
                                 await elem.mozRequestFullScreen();
                                 fullscreenSuccess = true;
-                                console.log('✓ Fullscreen via mozRequestFullScreen');
                             }
-                        } catch (err) {
-                            console.log('mozRequestFullScreen falhou:', err.message);
-                        }
+                        } catch (err) {}
                     }
                     
                     if (!fullscreenSuccess) {
@@ -1441,11 +1410,8 @@
                             if (elem.msRequestFullscreen) {
                                 await elem.msRequestFullscreen();
                                 fullscreenSuccess = true;
-                                console.log('✓ Fullscreen via msRequestFullscreen');
                             }
-                        } catch (err) {
-                            console.log('msRequestFullscreen falhou:', err.message);
-                        }
+                        } catch (err) {}
                     }
                     
                     hideAddressBar();
@@ -1455,69 +1421,50 @@
                     setTimeout(hideAddressBar, 1000);
                     
                     if (screen.orientation && screen.orientation.lock) {
-                        const lockAttempts = [
-                            'landscape',
-                            'landscape-primary', 
-                            'landscape-secondary',
-                        ];
-                        
+                        const lockAttempts = ['landscape', 'landscape-primary', 'landscape-secondary'];
                         for (const orientation of lockAttempts) {
                             try {
                                 await screen.orientation.lock(orientation);
-                                console.log(`✓ Orientação travada em: ${orientation}`);
                                 rotationOverlay.classList.remove('show');
                                 break;
-                            } catch (err) {
-                                console.log(`Tentativa ${orientation} falhou:`, err.message);
-                            }
+                            } catch (err) {}
                         }
                     }
                     
-                    document.body.style.height = '100vh';
-                    document.documentElement.style.height = '100vh';
-                    playerContainer.style.height = '100vh';
-                    
-                    console.log('=== Fullscreen imersivo ativado ===');
-                    
                 } catch (err) {
-                    console.error('Erro ao entrar em fullscreen:', err);
                     rotationOverlay.classList.remove('show');
                 }
             }
             
+            // ===== SAIR DO FULLSCREEN — SEM RELOAD =====
             async function exitFullscreen() {
                 try {
-                    console.log('=== Saindo do fullscreen ===');
-                    
                     rotationOverlay.classList.remove('show');
                     
-                    if (document.exitFullscreen) {
-                        await document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        await document.webkitExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        await document.mozCancelFullScreen();
-                    } else if (document.msExitFullscreen) {
-                        await document.msExitFullscreen();
-                    }
-                    
+                    // Remove a classe fullscreen ANTES de chamar a API
+                    // para evitar qualquer recálculo de layout que cause reload
                     isFullscreen = false;
                     playerContainer.classList.remove('fullscreen');
-                    
-                    document.body.style.height = '';
-                    document.documentElement.style.height = '';
-                    playerContainer.style.height = '';
-                    
+
                     if (screen.orientation && screen.orientation.unlock) {
-                        screen.orientation.unlock();
+                        try { screen.orientation.unlock(); } catch (_) {}
                     }
 
-                    // Força reativação de todas as estratégias anti-sleep ao sair do fullscreen
-                    await forceWakeLock();
+                    // Chama a API de saída do fullscreen sem aguardar reload
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen().catch(() => {});
+                    } else if (document.webkitFullscreenElement) {
+                        document.webkitExitFullscreen().catch(() => {});
+                    } else if (document.mozFullScreenElement) {
+                        document.mozCancelFullScreen().catch(() => {});
+                    } else if (document.msFullscreenElement) {
+                        document.msExitFullscreen().catch(() => {});
+                    }
+
+                    // Reativa wake lock sem reload
+                    enableKeepScreenOn();
                     setTimeout(enableKeepScreenOn, 600);
                     setTimeout(enableKeepScreenOn, 1500);
-                    
-                    console.log('✓ Fullscreen desativado');
                     
                 } catch (err) {
                     console.error('Erro ao sair do fullscreen:', err);
@@ -1526,7 +1473,6 @@
             
             fullscreenBtn.addEventListener('click', async function(e) {
                 e.stopPropagation();
-                
                 if (!isFullscreen) {
                     await enterFullscreen();
                 } else {
@@ -1536,67 +1482,53 @@
             
             window.addEventListener('orientationchange', function() {
                 const newOrientation = checkOrientation();
-                
-                if (isFullscreen) {
-                    hideAddressBar();
-                    
-                    if (newOrientation === 'landscape') {
-                        rotationOverlay.classList.remove('show');
-                    }
+                if (isFullscreen && newOrientation === 'landscape') {
+                    rotationOverlay.classList.remove('show');
                 }
+                if (isFullscreen) hideAddressBar();
             });
             
             window.addEventListener('resize', function() {
                 const newOrientation = checkOrientation();
-                
-                if (isFullscreen) {
-                    hideAddressBar();
-                    
-                    if (newOrientation === 'landscape') {
-                        rotationOverlay.classList.remove('show');
-                    }
+                if (isFullscreen && newOrientation === 'landscape') {
+                    rotationOverlay.classList.remove('show');
                 }
+                if (isFullscreen) hideAddressBar();
             });
             
-            document.addEventListener('fullscreenchange', function() {
-                if (!document.fullscreenElement) {
+            // ===== EVENTOS DE FULLSCREEN — SEM RELOAD =====
+            function onFullscreenChange() {
+                const isNowFullscreen = !!(
+                    document.fullscreenElement ||
+                    document.webkitFullscreenElement ||
+                    document.mozFullScreenElement ||
+                    document.msFullscreenElement
+                );
+
+                if (!isNowFullscreen && isFullscreen) {
+                    // Saiu do fullscreen pelo gesto do sistema (ex: botão nativo)
+                    // Apenas atualiza estado sem reload
                     isFullscreen = false;
                     playerContainer.classList.remove('fullscreen');
                     rotationOverlay.classList.remove('show');
                     if (screen.orientation && screen.orientation.unlock) {
-                        screen.orientation.unlock();
+                        try { screen.orientation.unlock(); } catch (_) {}
                     }
                     enableKeepScreenOn();
                     setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
-                } else {
+                } else if (isNowFullscreen) {
                     hideAddressBar();
                     enableKeepScreenOn();
                     setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
                 }
-            });
+            }
             
-            document.addEventListener('webkitfullscreenchange', function() {
-                if (!document.webkitFullscreenElement) {
-                    isFullscreen = false;
-                    playerContainer.classList.remove('fullscreen');
-                    rotationOverlay.classList.remove('show');
-                    if (screen.orientation && screen.orientation.unlock) {
-                        screen.orientation.unlock();
-                    }
-                    enableKeepScreenOn();
-                    setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
-                } else {
-                    hideAddressBar();
-                    enableKeepScreenOn();
-                    setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
-                }
-            });
+            document.addEventListener('fullscreenchange', onFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+            document.addEventListener('mozfullscreenchange', onFullscreenChange);
+            document.addEventListener('MSFullscreenChange', onFullscreenChange);
             
-            // Progress Bar e Divider
+            // Progress Bar
             videoPlayer.addEventListener('timeupdate', function() {
                 if (videoPlayer.duration && isFinite(videoPlayer.duration)) {
                     const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
@@ -1604,7 +1536,7 @@
                 }
             });
             
-            // Controles
+            // ===== CONTROLES — TODA A ÁREA DO PLAYER RESPONDE AO TOQUE =====
             function showControls() {
                 controlsVisible = true;
                 videoHeader.classList.add('show');
@@ -1625,18 +1557,33 @@
                 videoControls.classList.remove('show');
             }
             
+            // O click-overlay cobre toda a área do video-wrapper
+            // Toque em qualquer parte do player mostra/oculta os controles
             clickOverlay.addEventListener('click', function(e) {
                 if (chatDrawer.classList.contains('open')) {
                     closeChat();
                     return;
                 }
-                
                 if (controlsVisible) {
                     hideControls();
                 } else {
                     showControls();
                 }
             });
+
+            // Suporte a toque (touchstart) para resposta mais rápida em mobile
+            clickOverlay.addEventListener('touchend', function(e) {
+                e.preventDefault(); // evita duplo disparo com click
+                if (chatDrawer.classList.contains('open')) {
+                    closeChat();
+                    return;
+                }
+                if (controlsVisible) {
+                    hideControls();
+                } else {
+                    showControls();
+                }
+            }, { passive: false });
             
             // Carregar playlist
             function loadPlaylist(url) {
@@ -1740,7 +1687,6 @@
                 const channel = channels[index];
                 
                 loadingScreen.classList.add('show');
-                
                 document.getElementById('progress-divider').classList.remove('show');
                 
                 document.querySelectorAll('.channel-item').forEach((item, i) => {
@@ -1757,14 +1703,11 @@
                     setTimeout(() => {
                         loadingScreen.classList.remove('show');
                         videoPlayer.muted = false;
-                        
                         document.getElementById('progress-divider').classList.add('show');
-                        
                         videoPlayer.play().catch(e => {
                             console.log('Autoplay bloqueado');
                             loadingScreen.classList.remove('show');
                         });
-                        
                         showControls();
                     }, 300);
                     
@@ -1784,37 +1727,31 @@
                 currentChannelIndex = index;
             }
             
-            // ===== NAVEGAÇÃO COM BOTÃO VOLTAR =====
+            // ===== NAVEGAÇÃO COM BOTÃO VOLTAR — SEM RELOAD =====
             let backPressCount = 0;
             let backPressTimer = null;
             
             window.history.pushState(null, '', window.location.href);
             
             window.addEventListener('popstate', async function(e) {
+                // Evita qualquer navegação real que causaria reload
                 e.preventDefault();
+                window.history.pushState(null, '', window.location.href);
                 
                 if (isFullscreen) {
+                    // Sai do fullscreen sem reload
                     await exitFullscreen();
-                    // Força Wake Lock ao pressionar voltar no fullscreen
-                    await forceWakeLock();
-                    setTimeout(forceWakeLock, 500);
-                    setTimeout(forceWakeLock, 1500);
-                    window.history.pushState(null, '', window.location.href);
-                    return false;
+                    enableKeepScreenOn();
+                    return;
                 }
                 
-                // Força Wake Lock ao pressionar voltar na tela normal
-                forceWakeLock();
-                setTimeout(forceWakeLock, 500);
-                setTimeout(forceWakeLock, 1500);
+                enableKeepScreenOn();
 
                 backPressCount++;
                 
                 if (backPressCount === 1) {
                     showControls();
                     videoTitle.textContent = 'Pressione VOLTAR novamente para sair';
-                    
-                    window.history.pushState(null, '', window.location.href);
                     
                     if (backPressTimer) clearTimeout(backPressTimer);
                     backPressTimer = setTimeout(() => {
@@ -1826,12 +1763,10 @@
                     
                 } else if (backPressCount >= 2) {
                     backPressCount = 0;
-                    // Libera o Wake Lock apenas ao sair definitivamente do app
                     await releaseWakeLock();
+                    // Usa replace para sair sem adicionar histórico
                     window.history.back();
                 }
-                
-                return false;
             });
             
             checkOrientation();
