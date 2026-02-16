@@ -150,48 +150,19 @@
             display: flex;
             flex-direction: column;
         }
-        
+
+        /* ── Exatamente o padrão do tv3.html ──
+           padding-top: 56.25% cria a altura 16:9 a partir da largura.
+           O wrapper NUNCA muda de position — elimina o delay. */
         .video-wrapper {
             position: relative;
             width: 100%;
-            flex-shrink: 0;
+            padding-top: 56.25%;
             background: #000;
+            overflow: visible;
+            flex-shrink: 0;
         }
-        
-        @media (orientation: portrait) {
-            .video-wrapper {
-                height: 202px;
-            }
-        }
-        
-        @media (orientation: landscape) {
-            .video-wrapper {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                height: 100dvh;
-                z-index: 100;
-            }
-            
-            .channels-section {
-                display: none !important;
-            }
-            
-            .progress-divider {
-                display: none !important;
-            }
-            
-            .info-text {
-                display: none !important;
-            }
-            
-            .chat-btn {
-                display: none !important;
-            }
-        }
-        
+
         #video-player {
             position: absolute;
             top: 0;
@@ -201,6 +172,66 @@
             object-fit: contain;
             background: #000;
             display: block;
+        }
+
+        .video-wrapper.transitioning {
+            visibility: hidden;
+        }
+
+        .progress-divider {
+            width: 100%;
+            height: 2px;
+            background: #f00;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-divider.show {
+            opacity: 1;
+        }
+
+        .progress-divider-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: #f00;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .progress-divider-ball {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+
+        body.is-landscape .channels-section {
+            display: none !important;
+        }
+
+        body.is-landscape .progress-divider {
+            display: none !important;
+        }
+
+        body.is-landscape .info-text {
+            display: none !important;
+        }
+
+        body.is-landscape .chat-btn {
+            display: none !important;
         }
         
         .click-overlay {
@@ -470,45 +501,7 @@
             animation: pulse 2s ease-in-out infinite;
         }
         
-        .progress-divider {
-            width: 100%;
-            height: 2px;
-            background: #f00;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
         
-        .progress-divider.show {
-            opacity: 1;
-        }
-        
-        .progress-divider-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 0%;
-            background: #f00;
-            transition: width 0.1s linear;
-            position: relative;
-        }
-        
-        .progress-divider-ball {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 10px;
-            background: #f00;
-            border-radius: 50%;
-            box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        }
         
         .info-text {
             width: 100%;
@@ -704,7 +697,9 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #5f5f5f;
         }
-        
+
+        /* FULLSCREEN: só o player-container expande.
+           O video-wrapper NUNCA muda de position — isso elimina o delay. */
         .player-container.fullscreen {
             position: fixed !important;
             top: 0 !important;
@@ -714,21 +709,11 @@
             height: 100dvh !important;
             z-index: 999999 !important;
         }
-        
+
         .player-container.fullscreen .video-wrapper {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            z-index: 999999 !important;
-        }
-        
-        .player-container.fullscreen #video-player {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
+            padding-top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
         }
         
         .player-container.fullscreen .channels-section {
@@ -951,8 +936,8 @@
             <div class="loading-screen" id="loading-screen">
                 <div class="spinner"></div>
             </div>
-            
-            <!-- Barra Divisória com Progresso -->
+
+            <!-- Barra Divisória com Progresso — dentro do wrapper, overflow visible para bolinha aparecer -->
             <div class="progress-divider" id="progress-divider">
                 <div class="progress-divider-fill" id="progress-divider-fill"></div>
                 <div class="progress-divider-ball" id="progress-divider-ball"></div>
@@ -1103,15 +1088,11 @@
             let isLandscape = false;
 
             // ===== CONTROLE DO BOTÃO VOLTAR =====
-            // NÃO adiciona pushState — deixa o histórico natural do navegador intacto.
-            // Assim o primeiro clique em "Voltar" vai realmente sair da página.
-            // Apenas interceptamos para tratar fullscreen e chat abertos.
             let backHandlerActive = false;
 
             function activateBackHandler() {
                 if (backHandlerActive) return;
                 backHandlerActive = true;
-                // Empurra UM estado extra para podermos capturar o evento popstate
                 window.history.pushState({ appState: true }, '');
             }
 
@@ -1120,31 +1101,25 @@
             }
 
             window.addEventListener('popstate', async function(e) {
-                // Se o estado não é nosso, deixa o navegador sair normalmente
                 if (!e.state || !e.state.appState) {
                     deactivateBackHandler();
                     return;
                 }
 
-                // Se o fullscreen está ativo, sai do fullscreen
                 if (isFullscreen) {
                     await exitFullscreen();
                     enableKeepScreenOn();
-                    // Recoloca o estado para próxima interceptação (caso chat esteja aberto)
                     if (chatDrawer.classList.contains('open')) {
                         activateBackHandler();
                     }
                     return;
                 }
 
-                // Se o chat está aberto, fecha o chat
                 if (chatDrawer.classList.contains('open')) {
                     closeChat();
-                    // Não reempurra estado — próximo "Voltar" sai da página
                     return;
                 }
 
-                // Nenhuma camada aberta: sai da página normalmente
                 deactivateBackHandler();
                 window.history.back();
             });
@@ -1309,7 +1284,6 @@
             
             function openChat() {
                 chatDrawer.classList.add('open');
-                // Ativa o back handler para que "Voltar" feche o chat
                 activateBackHandler();
             }
             
@@ -1405,7 +1379,6 @@
                     isFullscreen = true;
                     playerContainer.classList.add('fullscreen');
 
-                    // Ativa back handler para que "Voltar" saia do fullscreen
                     activateBackHandler();
 
                     await forceWakeLock();
@@ -1486,43 +1459,67 @@
             }
             
             // ===== SAIR DO FULLSCREEN =====
-            async function exitFullscreen() {
-                try {
-                    rotationOverlay.classList.remove('show');
-                    
-                    isFullscreen = false;
-                    playerContainer.classList.remove('fullscreen');
-                    deactivateBackHandler();
+            // Função síncrona pura — remove a classe IMEDIATAMENTE,
+            // sem await, sem setTimeout, sem esperar nenhum evento do browser.
+            function exitFullscreenSync() {
+                // Esconde o wrapper imediatamente
+                videoWrapper.classList.add('transitioning');
 
-                    if (screen.orientation && screen.orientation.unlock) {
-                        try { screen.orientation.unlock(); } catch (_) {}
-                    }
+                isFullscreen = false;
+                playerContainer.classList.remove('fullscreen');
+                rotationOverlay.classList.remove('show');
+                deactivateBackHandler();
 
-                    if (document.fullscreenElement) {
-                        document.exitFullscreen().catch(() => {});
-                    } else if (document.webkitFullscreenElement) {
-                        document.webkitExitFullscreen().catch(() => {});
-                    } else if (document.mozFullScreenElement) {
-                        document.mozCancelFullScreen().catch(() => {});
-                    } else if (document.msFullscreenElement) {
-                        document.msExitFullscreen().catch(() => {});
-                    }
+                if (screen.orientation && screen.orientation.unlock) {
+                    try { screen.orientation.unlock(); } catch (_) {}
+                }
 
-                    enableKeepScreenOn();
-                    setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
-                    
-                } catch (err) {
-                    console.error('Erro ao sair do fullscreen:', err);
+                // Revela o wrapper assim que o browser confirmar saída do fullscreen
+                // (fullscreenchange é o momento exato que o layout já estabilizou)
+                const revealOnChange = () => {
+                    requestAnimationFrame(() => {
+                        videoWrapper.classList.remove('transitioning');
+                        enableKeepScreenOn();
+                    });
+                    document.removeEventListener('fullscreenchange', revealOnChange);
+                    document.removeEventListener('webkitfullscreenchange', revealOnChange);
+                };
+
+                document.addEventListener('fullscreenchange', revealOnChange);
+                document.addEventListener('webkitfullscreenchange', revealOnChange);
+
+                if (document.fullscreenElement) {
+                    document.exitFullscreen().catch(() => {
+                        // Se falhar, revela após fallback
+                        setTimeout(() => videoWrapper.classList.remove('transitioning'), 150);
+                    });
+                } else if (document.webkitFullscreenElement) {
+                    document.webkitExitFullscreen();
+                } else {
+                    // Sem fullscreen nativo — só CSS, revela imediatamente
+                    document.removeEventListener('fullscreenchange', revealOnChange);
+                    document.removeEventListener('webkitfullscreenchange', revealOnChange);
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            videoWrapper.classList.remove('transitioning');
+                            enableKeepScreenOn();
+                        });
+                    });
                 }
             }
+
+            // Mantém alias async para compatibilidade com o popstate handler
+            async function exitFullscreen() {
+                exitFullscreenSync();
+            }
             
-            fullscreenBtn.addEventListener('click', async function(e) {
+            fullscreenBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (!isFullscreen) {
-                    await enterFullscreen();
+                    enterFullscreen();
                 } else {
-                    await exitFullscreen();
+                    // Chama síncrono diretamente — sem await para não atrasar nada
+                    exitFullscreenSync();
                 }
             });
             
@@ -1543,6 +1540,9 @@
             });
             
             // ===== EVENTOS DE FULLSCREEN =====
+            // Este handler cobre casos onde o browser sai do fullscreen por conta
+            // própria (ex: botão nativo do SO). Quando é pelo nosso botão,
+            // exitFullscreenSync() já fez tudo antes deste evento disparar.
             function onFullscreenChange() {
                 const isNowFullscreen = !!(
                     document.fullscreenElement ||
@@ -1560,11 +1560,9 @@
                         try { screen.orientation.unlock(); } catch (_) {}
                     }
                     enableKeepScreenOn();
-                    setTimeout(enableKeepScreenOn, 600);
                 } else if (isNowFullscreen) {
                     hideAddressBar();
                     enableKeepScreenOn();
-                    setTimeout(enableKeepScreenOn, 600);
                 }
             }
             
