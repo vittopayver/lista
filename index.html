@@ -56,7 +56,7 @@
         }
         
         body.light-theme .channel-thumbnail {
-            background: #e0e0e0;
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
         }
         
         body.light-theme .channel-name {
@@ -543,7 +543,7 @@
             width: 120px;
             height: 70px;
             border-radius: 8px;
-            background: #202020;
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
@@ -552,7 +552,8 @@
         .channel-thumbnail img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            padding: 6px;
         }
         
         .channel-thumbnail::before {
@@ -1845,10 +1846,11 @@
 
             // ===== REPRODUÇÃO DO CANAL =====
 
-            // Timer único que fica vivo enquanto o canal estiver tocando.
-            // Reinicia toda vez que o vídeo emite 'timeupdate' (prova de que está vivo).
-            // Se passar STALL_LIMIT ms sem nenhum timeupdate → tela preta/travado → erro.
-            const STALL_LIMIT = 8000; // 8 s sem progresso = stream morto
+            // Logica de deteccao de travamento:
+            // - Timer SO começa quando o video para ('waiting' ou 'stalled')
+            // - 'timeupdate' ou 'playing' CANCELA o timer — video esta vivo
+            // - Erro so dispara se ficar parado por STALL_LIMIT sem nenhum sinal de vida
+            const STALL_LIMIT = 20000; // 20s parado = stream morto
             let _stallTimer = null;
 
             function _clearStall() {
@@ -1867,44 +1869,36 @@
                 }
             }
 
-            // Listeners que ficam ativos durante a reprodução
-            function _onTimeUpdate() {
-                // Vídeo avançou → reseta o timer
-                _clearStall();
-                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
-            }
+            // Video avancou ou voltou a tocar: cancela contagem de erro
+            function _onTimeUpdate() { _clearStall(); }
+            function _onPlaying()    { _clearStall(); }
 
+            // Video parou de receber dados: inicia contagem
+            // Buffering normal resolve antes dos 20s
             function _onWaiting() {
-                // Browser parou de receber dados — inicia contagem
-                _clearStall();
-                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
             }
-
-            function _onPlaying() {
-                // Voltou a tocar — reseta
-                _clearStall();
-                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            function _onStalled() {
+                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
             }
-
-            function _onVideoError() {
-                _triggerError();
-            }
+            function _onVideoError() { _triggerError(); }
 
             function _removeStallListeners() {
                 videoPlayer.removeEventListener('timeupdate', _onTimeUpdate);
-                videoPlayer.removeEventListener('waiting',    _onWaiting);
                 videoPlayer.removeEventListener('playing',   _onPlaying);
-                videoPlayer.removeEventListener('error',     _onVideoError);
+                videoPlayer.removeEventListener('waiting',   _onWaiting);
+                videoPlayer.removeEventListener('stalled',  _onStalled);
+                videoPlayer.removeEventListener('error',    _onVideoError);
             }
 
             function _attachStallListeners() {
-                _removeStallListeners(); // garante sem duplicatas
+                _removeStallListeners();
                 videoPlayer.addEventListener('timeupdate', _onTimeUpdate);
-                videoPlayer.addEventListener('waiting',    _onWaiting);
-                videoPlayer.addEventListener('playing',    _onPlaying);
-                videoPlayer.addEventListener('error',      _onVideoError);
-                // Inicia o timer imediatamente — se nada acontecer em STALL_LIMIT, dispara
-                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+                videoPlayer.addEventListener('playing',   _onPlaying);
+                videoPlayer.addEventListener('waiting',   _onWaiting);
+                videoPlayer.addEventListener('stalled',  _onStalled);
+                videoPlayer.addEventListener('error',    _onVideoError);
+                // Nao inicia timer aqui: so conta quando o video parar
             }
 
             // isRetry = true quando o usuário clicou em "Tentar novamente"
