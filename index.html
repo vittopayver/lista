@@ -52,7 +52,7 @@
         
         body.light-theme .channel-item.active {
             background: #e8e8e8;
-            border-left-color: #f00;
+            border-left-color: #a000ff;
         }
         
         body.light-theme .channel-thumbnail {
@@ -112,7 +112,7 @@
         }
         
         body.light-theme .error {
-            color: #d32f2f;
+            color: #a000ff;
         }
         
         body.light-theme ::-webkit-scrollbar-track {
@@ -151,9 +151,6 @@
             flex-direction: column;
         }
 
-        /* ── Exatamente o padrão do tv3.html ──
-           padding-top: 56.25% cria a altura 16:9 a partir da largura.
-           O wrapper NUNCA muda de position — elimina o delay. */
         .video-wrapper {
             position: relative;
             width: 100%;
@@ -181,7 +178,7 @@
         .progress-divider {
             width: 100%;
             height: 2px;
-            background: #f00;
+            background: linear-gradient(to right, #a000ff, #2d5bff);
             position: absolute;
             bottom: 0;
             left: 0;
@@ -201,7 +198,7 @@
             left: 0;
             height: 100%;
             width: 0%;
-            background: #f00;
+            background: linear-gradient(to right, #a000ff, #2d5bff);
             transition: width 0.1s linear;
             position: relative;
         }
@@ -213,7 +210,7 @@
             transform: translateY(-50%);
             width: 10px;
             height: 10px;
-            background: #f00;
+            background: #2d5bff;
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(0,0,0,0.3);
         }
@@ -496,12 +493,10 @@
         .live-badge-dot {
             width: 7px;
             height: 7px;
-            background: #f00;
+            background: #a000ff;
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
         }
-        
-        
         
         .info-text {
             width: 100%;
@@ -541,7 +536,7 @@
         
         .channel-item.active {
             background: #272727;
-            border-left-color: #f00;
+            border-left-color: #a000ff;
         }
         
         .channel-thumbnail {
@@ -577,7 +572,7 @@
             transform: translate(-50%, -50%);
             font-size: 32px;
             font-weight: 700;
-            color: #f00;
+            color: #a000ff;
         }
         
         .channel-info {
@@ -625,7 +620,7 @@
         .live-dot {
             width: 6px;
             height: 6px;
-            background: #f00;
+            background: #a000ff;
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
         }
@@ -661,7 +656,8 @@
             width: 48px;
             height: 48px;
             border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #f00;
+            border-top-color: #a000ff;
+            border-right-color: #2d5bff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -678,7 +674,89 @@
         }
         
         .error {
-            color: #f00;
+            color: #a000ff;
+        }
+
+        /* ===== TELA DE ERRO NO PLAYER ===== */
+        .player-error-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .player-error-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .player-error-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .player-error-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f1f1;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .player-error-subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 18px;
+            line-height: 1.5;
+            max-width: 260px;
+        }
+
+        .player-error-btn {
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            color: #fff;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            letter-spacing: 0.3px;
+        }
+
+        .player-error-btn:hover {
+            opacity: 0.85;
+        }
+
+        .player-error-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Variante "canal indisponível" — ícone e botão diferentes */
+        .player-error-screen.unavailable .player-error-icon {
+            opacity: 0.5;
+        }
+
+        .player-error-screen.unavailable .player-error-btn {
+            background: #333;
+            color: #ccc;
+        }
+
+        .player-error-screen.unavailable .player-error-btn:hover {
+            background: #444;
         }
         
         ::-webkit-scrollbar {
@@ -698,8 +776,6 @@
             background: #5f5f5f;
         }
 
-        /* FULLSCREEN: só o player-container expande.
-           O video-wrapper NUNCA muda de position — isso elimina o delay. */
         .player-container.fullscreen {
             position: fixed !important;
             top: 0 !important;
@@ -937,7 +1013,23 @@
                 <div class="spinner"></div>
             </div>
 
-            <!-- Barra Divisória com Progresso — dentro do wrapper, overflow visible para bolinha aparecer -->
+            <!-- Tela de Erro: Tente novamente -->
+            <div class="player-error-screen" id="player-error-retry">
+                <div class="player-error-icon">⚠️</div>
+                <div class="player-error-title">Não foi possível reproduzir</div>
+                <div class="player-error-subtitle">Toque no botão abaixo ou clique no canal novamente para tentar uma nova conexão.</div>
+                <button class="player-error-btn" id="player-retry-btn">Tentar novamente</button>
+            </div>
+
+            <!-- Tela de Erro: Canal indisponível -->
+            <div class="player-error-screen unavailable" id="player-error-unavailable">
+                <div class="player-error-icon">📡</div>
+                <div class="player-error-title">Canal indisponível no momento</div>
+                <div class="player-error-subtitle">Este canal está temporariamente fora do ar. Tente outro canal ou volte mais tarde.</div>
+                <button class="player-error-btn" id="player-unavailable-btn">Escolher outro canal</button>
+            </div>
+
+            <!-- Barra Divisória com Progresso -->
             <div class="progress-divider" id="progress-divider">
                 <div class="progress-divider-fill" id="progress-divider-fill"></div>
                 <div class="progress-divider-ball" id="progress-divider-ball"></div>
@@ -1077,6 +1169,12 @@
             const chatHeader = document.getElementById('chat-header');
             const chatCloseBtn = document.getElementById('chat-close-btn');
             const rotationOverlay = document.getElementById('rotation-overlay');
+
+            // Referências das telas de erro
+            const playerErrorRetry = document.getElementById('player-error-retry');
+            const playerErrorUnavailable = document.getElementById('player-error-unavailable');
+            const playerRetryBtn = document.getElementById('player-retry-btn');
+            const playerUnavailableBtn = document.getElementById('player-unavailable-btn');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
             
@@ -1086,6 +1184,42 @@
             let hideControlsTimeout = null;
             let isFullscreen = false;
             let isLandscape = false;
+
+            // ===== CONTROLE DE ERROS =====
+            // errorCount: quantas falhas consecutivas ocorreram no canal atual
+            let errorCount = 0;
+
+            function hideAllErrorScreens() {
+                playerErrorRetry.classList.remove('show');
+                playerErrorUnavailable.classList.remove('show');
+            }
+
+            function showRetryScreen() {
+                loadingScreen.classList.remove('show');
+                hideAllErrorScreens();
+                playerErrorRetry.classList.add('show');
+            }
+
+            function showUnavailableScreen() {
+                loadingScreen.classList.remove('show');
+                hideAllErrorScreens();
+                playerErrorUnavailable.classList.add('show');
+            }
+
+            // Botão "Tentar novamente" — recarrega o canal atual
+            playerRetryBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (currentChannelIndex >= 0) {
+                    playChannel(currentChannelIndex, true);
+                }
+            });
+
+            // Botão "Escolher outro canal" — fecha a tela e rola a lista para o topo
+            playerUnavailableBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                hideAllErrorScreens();
+                document.getElementById('channels-section').scrollTo({ top: 0, behavior: 'smooth' });
+            });
 
             // ===== CONTROLE DO BOTÃO VOLTAR =====
             let backHandlerActive = false;
@@ -1459,10 +1593,7 @@
             }
             
             // ===== SAIR DO FULLSCREEN =====
-            // Função síncrona pura — remove a classe IMEDIATAMENTE,
-            // sem await, sem setTimeout, sem esperar nenhum evento do browser.
             function exitFullscreenSync() {
-                // Esconde o wrapper imediatamente
                 videoWrapper.classList.add('transitioning');
 
                 isFullscreen = false;
@@ -1474,8 +1605,6 @@
                     try { screen.orientation.unlock(); } catch (_) {}
                 }
 
-                // Revela o wrapper assim que o browser confirmar saída do fullscreen
-                // (fullscreenchange é o momento exato que o layout já estabilizou)
                 const revealOnChange = () => {
                     requestAnimationFrame(() => {
                         videoWrapper.classList.remove('transitioning');
@@ -1490,13 +1619,11 @@
 
                 if (document.fullscreenElement) {
                     document.exitFullscreen().catch(() => {
-                        // Se falhar, revela após fallback
                         setTimeout(() => videoWrapper.classList.remove('transitioning'), 150);
                     });
                 } else if (document.webkitFullscreenElement) {
                     document.webkitExitFullscreen();
                 } else {
-                    // Sem fullscreen nativo — só CSS, revela imediatamente
                     document.removeEventListener('fullscreenchange', revealOnChange);
                     document.removeEventListener('webkitfullscreenchange', revealOnChange);
                     requestAnimationFrame(() => {
@@ -1508,7 +1635,6 @@
                 }
             }
 
-            // Mantém alias async para compatibilidade com o popstate handler
             async function exitFullscreen() {
                 exitFullscreenSync();
             }
@@ -1518,7 +1644,6 @@
                 if (!isFullscreen) {
                     enterFullscreen();
                 } else {
-                    // Chama síncrono diretamente — sem await para não atrasar nada
                     exitFullscreenSync();
                 }
             });
@@ -1540,9 +1665,6 @@
             });
             
             // ===== EVENTOS DE FULLSCREEN =====
-            // Este handler cobre casos onde o browser sai do fullscreen por conta
-            // própria (ex: botão nativo do SO). Quando é pelo nosso botão,
-            // exitFullscreenSync() já fez tudo antes deste evento disparar.
             function onFullscreenChange() {
                 const isNowFullscreen = !!(
                     document.fullscreenElement ||
@@ -1720,50 +1842,136 @@
                     playChannel(0);
                 }
             }
-            
-            function playChannel(index) {
+
+            // ===== REPRODUÇÃO DO CANAL =====
+
+            // Timer único que fica vivo enquanto o canal estiver tocando.
+            // Reinicia toda vez que o vídeo emite 'timeupdate' (prova de que está vivo).
+            // Se passar STALL_LIMIT ms sem nenhum timeupdate → tela preta/travado → erro.
+            const STALL_LIMIT = 8000; // 8 s sem progresso = stream morto
+            let _stallTimer = null;
+
+            function _clearStall() {
+                if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; }
+            }
+
+            function _triggerError() {
+                _clearStall();
+                _removeStallListeners();
+                loadingScreen.classList.remove('show');
+                errorCount++;
+                if (errorCount === 1) {
+                    showRetryScreen();
+                } else {
+                    showUnavailableScreen();
+                }
+            }
+
+            // Listeners que ficam ativos durante a reprodução
+            function _onTimeUpdate() {
+                // Vídeo avançou → reseta o timer
+                _clearStall();
+                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            }
+
+            function _onWaiting() {
+                // Browser parou de receber dados — inicia contagem
+                _clearStall();
+                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            }
+
+            function _onPlaying() {
+                // Voltou a tocar — reseta
+                _clearStall();
+                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            }
+
+            function _onVideoError() {
+                _triggerError();
+            }
+
+            function _removeStallListeners() {
+                videoPlayer.removeEventListener('timeupdate', _onTimeUpdate);
+                videoPlayer.removeEventListener('waiting',    _onWaiting);
+                videoPlayer.removeEventListener('playing',   _onPlaying);
+                videoPlayer.removeEventListener('error',     _onVideoError);
+            }
+
+            function _attachStallListeners() {
+                _removeStallListeners(); // garante sem duplicatas
+                videoPlayer.addEventListener('timeupdate', _onTimeUpdate);
+                videoPlayer.addEventListener('waiting',    _onWaiting);
+                videoPlayer.addEventListener('playing',    _onPlaying);
+                videoPlayer.addEventListener('error',      _onVideoError);
+                // Inicia o timer imediatamente — se nada acontecer em STALL_LIMIT, dispara
+                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            }
+
+            // isRetry = true quando o usuário clicou em "Tentar novamente"
+            function playChannel(index, isRetry) {
                 if (index < 0 || index >= channels.length) return;
-                
+
+                // Para tudo do canal anterior
+                _clearStall();
+                _removeStallListeners();
+
+                // Troca de canal → zera contador de erros
+                if (!isRetry) errorCount = 0;
+
                 const channel = channels[index];
-                
+
+                hideAllErrorScreens();
                 loadingScreen.classList.add('show');
                 document.getElementById('progress-divider').classList.remove('show');
-                
+
                 document.querySelectorAll('.channel-item').forEach((item, i) => {
                     item.classList.remove('active');
                     if (i === index) item.classList.add('active');
                 });
-                
+
                 videoTitle.textContent = channel.name;
-                
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
-                
+
+                const onError = () => {
+                    cleanupLoad();
+                    _triggerError();
+                };
+
                 const onCanPlay = () => {
+                    cleanupLoad();
+                    errorCount = 0;
+
+                    videoPlayer.muted = false;
+                    document.getElementById('progress-divider').classList.add('show');
+                    videoPlayer.play().catch(() => {});
+
                     setTimeout(() => {
                         loadingScreen.classList.remove('show');
-                        videoPlayer.muted = false;
-                        document.getElementById('progress-divider').classList.add('show');
-                        videoPlayer.play().catch(e => {
-                            console.log('Autoplay bloqueado');
-                            loadingScreen.classList.remove('show');
-                        });
+                        hideAllErrorScreens();
                         showControls();
+                        // Ativa vigilância contínua de travamento
+                        _attachStallListeners();
                     }, 300);
-                    
-                    videoPlayer.removeEventListener('canplay', onCanPlay);
-                    videoPlayer.removeEventListener('error', onError);
                 };
-                
-                const onError = () => {
-                    loadingScreen.classList.remove('show');
+
+                // Timeout só para a fase de loading inicial (15 s)
+                const loadTimer = setTimeout(() => {
+                    if (loadingScreen.classList.contains('show')) {
+                        cleanupLoad();
+                        _triggerError();
+                    }
+                }, 15000);
+
+                function cleanupLoad() {
+                    clearTimeout(loadTimer);
                     videoPlayer.removeEventListener('canplay', onCanPlay);
-                    videoPlayer.removeEventListener('error', onError);
-                };
-                
+                    videoPlayer.removeEventListener('error',   onError);
+                }
+
                 videoPlayer.addEventListener('canplay', onCanPlay);
-                videoPlayer.addEventListener('error', onError);
-                
+                videoPlayer.addEventListener('error',   onError);
+
                 currentChannelIndex = index;
             }
             
