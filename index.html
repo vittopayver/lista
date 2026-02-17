@@ -83,7 +83,10 @@
         }
         
         body.light-theme .chat-title {
-            color: #0f0f0f;
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         body.light-theme .chat-close-btn {
@@ -317,8 +320,8 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
             touch-action: none;
         }
@@ -329,8 +332,8 @@
         
         .chat-drawer.expanded {
             height: calc(100vh - 90px);
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
         
         .chat-header {
@@ -340,15 +343,15 @@
             padding: 16px 20px;
             border-bottom: 1px solid #2a2a2a;
             background: #1f1f1f;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             cursor: grab;
             position: relative;
         }
         
         .chat-drawer.expanded .chat-header {
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
         
         .chat-header:active {
@@ -370,7 +373,10 @@
         .chat-title {
             font-size: 18px;
             font-weight: 600;
-            color: #f1f1f1;
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-top: 8px;
         }
         
