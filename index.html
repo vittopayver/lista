@@ -8,6 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Player IPTV</title>
 
+    <!-- HLS.js - CARREGAMENTO PRIORITÁRIO -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
     <!-- ═══════════════════════════════════════════════════════════
          CSS  TV  (aplicado sempre; sobrescrito em mobile abaixo)
          ═══════════════════════════════════════════════════════════ -->
@@ -566,7 +569,7 @@
 <div class="tv-wrapper">
     <div class="tv-container" id="tv-container">
 
-        <video id="video-player-tv" preload="auto" muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+        <video id="video-player-tv" preload="auto" muted playsinline webkit-playsinline></video>
 
         <div class="tv-click-overlay" id="tv-click-overlay"></div>
 
@@ -629,7 +632,7 @@
 
         <!-- Video Wrapper -->
         <div class="mob-video-wrapper" id="mob-video-wrapper">
-            <video id="video-player-mob" preload="auto" muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+            <video id="video-player-mob" preload="auto" muted playsinline webkit-playsinline></video>
 
             <div class="mob-click-overlay" id="mob-click-overlay"></div>
 
@@ -790,77 +793,98 @@ function parsePlaylist(data) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// SISTEMA DE FALLBACK E PROXY PARA STREAMING ONLINE
+// SISTEMA HLS.JS PARA STREAMING M3U8
 // ═══════════════════════════════════════════════════════════════════
-function createVideoSource(video, url) {
-    // Remove sources antigas
-    while (video.firstChild) {
-        video.removeChild(video.firstChild);
+function loadStreamWithHLS(video, url, onSuccess, onError) {
+    if (!window.Hls) {
+        console.error('HLS.js não carregado');
+        onError();
+        return null;
     }
-    
-    // Adiciona novo source com tipo correto
-    const source = document.createElement('source');
-    source.src = url;
-    
-    // Detecta tipo MIME baseado na URL
-    if (url.includes('.m3u8')) {
-        source.type = 'application/x-mpegURL';
-    } else if (url.includes('.mpd')) {
-        source.type = 'application/dash+xml';
-    } else if (url.includes('.mp4')) {
-        source.type = 'video/mp4';
-    }
-    
-    video.appendChild(source);
-}
 
-// Função para tentar carregar HLS.js se necessário
-function tryLoadHLS(video, url, onSuccess, onError) {
-    if (url.includes('.m3u8') && !video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Tenta carregar HLS.js dinamicamente
-        if (typeof Hls !== 'undefined') {
-            if (Hls.isSupported()) {
-                const hls = new Hls({
-                    enableWorker: true,
-                    lowLatencyMode: true,
-                    backBufferLength: 90
-                });
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, onSuccess);
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) {
-                        onError();
-                    }
-                });
-                return hls;
-            }
-        } else {
-            // Tenta carregar HLS.js da CDN
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-            script.onload = () => {
-                if (Hls.isSupported()) {
-                    const hls = new Hls({
-                        enableWorker: true,
-                        lowLatencyMode: true,
-                        backBufferLength: 90
-                    });
-                    hls.loadSource(url);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, onSuccess);
-                    hls.on(Hls.Events.ERROR, (event, data) => {
-                        if (data.fatal) {
-                            onError();
-                        }
-                    });
-                }
-            };
-            script.onerror = onError;
-            document.head.appendChild(script);
-        }
+    // Para Safari iOS que suporta HLS nativamente
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
+        video.addEventListener('loadedmetadata', onSuccess, { once: true });
+        video.addEventListener('error', onError, { once: true });
+        video.load();
+        return null;
     }
-    return null;
+
+    // Para outros navegadores, usa HLS.js
+    if (Hls.isSupported()) {
+        const hls = new Hls({
+            debug: false,
+            enableWorker: true,
+            lowLatencyMode: true,
+            backBufferLength: 90,
+            maxBufferLength: 30,
+            maxMaxBufferLength: 600,
+            maxBufferSize: 60 * 1000 * 1000,
+            maxBufferHole: 0.5,
+            highBufferWatchdogPeriod: 2,
+            nudgeOffset: 0.1,
+            nudgeMaxRetry: 3,
+            maxFragLookUpTolerance: 0.25,
+            liveSyncDurationCount: 3,
+            liveMaxLatencyDurationCount: 10,
+            liveDurationInfinity: false,
+            liveBackBufferLength: 0,
+            maxLiveSyncPlaybackRate: 1,
+            manifestLoadingTimeOut: 10000,
+            manifestLoadingMaxRetry: 3,
+            manifestLoadingRetryDelay: 1000,
+            manifestLoadingMaxRetryTimeout: 64000,
+            levelLoadingTimeOut: 10000,
+            levelLoadingMaxRetry: 4,
+            levelLoadingRetryDelay: 1000,
+            levelLoadingMaxRetryTimeout: 64000,
+            fragLoadingTimeOut: 20000,
+            fragLoadingMaxRetry: 6,
+            fragLoadingRetryDelay: 1000,
+            fragLoadingMaxRetryTimeout: 64000,
+            startFragPrefetch: true,
+            testBandwidth: true,
+            progressive: true,
+            xhrSetup: function(xhr, url) {
+                // Headers personalizados se necessário
+                xhr.withCredentials = false;
+            }
+        });
+
+        hls.loadSource(url);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            onSuccess();
+        });
+
+        hls.on(Hls.Events.ERROR, function(event, data) {
+            if (data.fatal) {
+                switch(data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        console.error('Erro de rede, tentando recuperar...');
+                        hls.startLoad();
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.error('Erro de mídia, tentando recuperar...');
+                        hls.recoverMediaError();
+                        break;
+                    default:
+                        console.error('Erro fatal irrecuperável');
+                        hls.destroy();
+                        onError();
+                        break;
+                }
+            }
+        });
+
+        return hls;
+    } else {
+        console.error('HLS não suportado neste navegador');
+        onError();
+        return null;
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -1045,12 +1069,13 @@ if (!IS_MOBILE) {
         focusedIdx = 0;
     }
 
-    // ── Play ──
+    // ── Play com HLS.js ──
     function playChannel(index, isRetry) {
         if (index < 0 || index >= channels.length) return;
+        
         clearStall(); rmStall();
         
-        // Limpa HLS anterior
+        // Destroi HLS anterior
         if (currentHls) {
             try {
                 currentHls.destroy();
@@ -1067,9 +1092,15 @@ if (!IS_MOBILE) {
         video.classList.remove('ready');
         channelEls.forEach((el, i) => el.classList.toggle('active', i === index));
 
-        const onErr = () => { cleanup(); triggerError(); };
+        const onErr = () => { 
+            cleanup(); 
+            triggerError(); 
+        };
+        
         const onCan = () => {
-            cleanup(); errorCount = 0; video.muted = false;
+            cleanup(); 
+            errorCount = 0; 
+            video.muted = false;
             seekLastMin().then(() => {
                 setTimeout(() => {
                     loadingScr.classList.remove('show');
@@ -1083,26 +1114,18 @@ if (!IS_MOBILE) {
         };
         
         const loadTmr = setTimeout(() => {
-            if (loadingScr.classList.contains('show')) { cleanup(); triggerError(); }
+            if (loadingScr.classList.contains('show')) { 
+                cleanup(); 
+                triggerError(); 
+            }
         }, 15000);
         
         function cleanup() {
             clearTimeout(loadTmr);
-            video.removeEventListener('canplay', onCan);
-            video.removeEventListener('error',   onErr);
         }
         
-        // Tenta carregar com HLS.js se necessário
-        currentHls = tryLoadHLS(video, rawUrl, onCan, onErr);
-        
-        if (!currentHls) {
-            // Método tradicional
-            createVideoSource(video, rawUrl);
-            video.load();
-            video.addEventListener('canplay', onCan);
-            video.addEventListener('error',   onErr);
-        }
-        
+        // Usa HLS.js para todos os streams
+        currentHls = loadStreamWithHLS(video, rawUrl, onCan, onErr);
         currentIndex = index;
     }
 
@@ -1433,12 +1456,13 @@ if (IS_MOBILE) {
             if (channels_.length > 0) playChannel(0);
         }
 
-        // ── Play ──
+        // ── Play com HLS.js ──
         function playChannel(index, isRetry) {
             if (index < 0 || index >= channels.length) return;
+            
             clearStall(); rmStall();
             
-            // Limpa HLS anterior
+            // Destroi HLS anterior
             if (currentHls) {
                 try {
                     currentHls.destroy();
@@ -1456,33 +1480,38 @@ if (IS_MOBILE) {
             document.querySelectorAll('.mob-channel-item').forEach((el, i) => el.classList.toggle('active', i === index));
             videoTitle.textContent = ch.name;
 
-            const onErr = () => { cleanup(); triggerError(); };
-            const onCan = () => {
-                cleanup(); errorCount = 0; video.muted = false;
-                progressDiv.classList.add('show');
-                video.play().catch(() => {});
-                setTimeout(() => { loadingScr.classList.remove('show'); hideErrors(); showControls(); addStall(); }, 300);
+            const onErr = () => { 
+                cleanup(); 
+                triggerError(); 
             };
             
-            const loadTmr = setTimeout(() => { if (loadingScr.classList.contains('show')) { cleanup(); triggerError(); } }, 15000);
+            const onCan = () => {
+                cleanup(); 
+                errorCount = 0; 
+                video.muted = false;
+                progressDiv.classList.add('show');
+                video.play().catch(() => {});
+                setTimeout(() => { 
+                    loadingScr.classList.remove('show'); 
+                    hideErrors(); 
+                    showControls(); 
+                    addStall(); 
+                }, 300);
+            };
+            
+            const loadTmr = setTimeout(() => { 
+                if (loadingScr.classList.contains('show')) { 
+                    cleanup(); 
+                    triggerError(); 
+                } 
+            }, 15000);
             
             function cleanup() { 
                 clearTimeout(loadTmr); 
-                video.removeEventListener('canplay', onCan); 
-                video.removeEventListener('error', onErr); 
             }
             
-            // Tenta carregar com HLS.js se necessário
-            currentHls = tryLoadHLS(video, rawUrl, onCan, onErr);
-            
-            if (!currentHls) {
-                // Método tradicional
-                createVideoSource(video, rawUrl);
-                video.load();
-                video.addEventListener('canplay', onCan);
-                video.addEventListener('error',   onErr);
-            }
-            
+            // Usa HLS.js para todos os streams
+            currentHls = loadStreamWithHLS(video, rawUrl, onCan, onErr);
             currentIndex = index;
         }
 
