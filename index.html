@@ -1222,14 +1222,6 @@
                 <div class="spinner"></div>
             </div>
 
-            <!-- Tela de Erro: Tente novamente -->
-            <div class="player-error-screen" id="player-error-retry">
-                <div class="player-error-icon">⚠️</div>
-                <div class="player-error-title">Não foi possível reproduzir</div>
-                <div class="player-error-subtitle">Toque no botão abaixo ou clique no canal novamente para tentar uma nova conexão.</div>
-                <button class="player-error-btn" id="player-retry-btn">Tentar novamente</button>
-            </div>
-
             <!-- Tela de Erro: Canal indisponível -->
             <div class="player-error-screen unavailable" id="player-error-unavailable">
                 <div class="player-error-icon">📡</div>
@@ -1354,9 +1346,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             const affiliateCountBadge = document.getElementById('affiliate-count-badge');
             const chatContent = document.getElementById('chat-content');
 
-            const playerErrorRetry = document.getElementById('player-error-retry');
             const playerErrorUnavailable = document.getElementById('player-error-unavailable');
-            const playerRetryBtn = document.getElementById('player-retry-btn');
             const playerUnavailableBtn = document.getElementById('player-unavailable-btn');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
@@ -1369,7 +1359,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             let hideControlsTimeout = null;
             let isFullscreen = false;
             let isLandscape = false;
-            let errorCount = 0;
 
             // ===== OBFUSCAÇÃO =====
             const urlProxy = new Map();
@@ -1610,11 +1599,10 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const affiliates = channel.affiliates || [];
                 if (affiliateIdx < 0 || affiliateIdx >= affiliates.length) return;
 
-                currentAffiliateIndex = affiliateIdx + 1; // 0=principal, 1..n=filiais
+                currentAffiliateIndex = affiliateIdx + 1;
 
                 _clearStall();
                 _removeStallListeners();
-                errorCount = 0;
 
                 hideAllErrorScreens();
                 loadingScreen.classList.add('show');
@@ -1631,7 +1619,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const onError = () => { cleanupLoad(); _triggerError(); };
                 const onCanPlay = () => {
                     cleanupLoad();
-                    errorCount = 0;
                     videoPlayer.muted = false;
                     document.getElementById('progress-divider').classList.add('show');
                     videoPlayer.play().catch(() => {});
@@ -1734,14 +1721,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
             // ===== ERRO =====
             function hideAllErrorScreens() {
-                playerErrorRetry.classList.remove('show');
                 playerErrorUnavailable.classList.remove('show');
-            }
-
-            function showRetryScreen() {
-                loadingScreen.classList.remove('show');
-                hideAllErrorScreens();
-                playerErrorRetry.classList.add('show');
             }
 
             function showUnavailableScreen() {
@@ -1749,11 +1729,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 hideAllErrorScreens();
                 playerErrorUnavailable.classList.add('show');
             }
-
-            playerRetryBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (currentChannelIndex >= 0) playChannel(currentChannelIndex, true);
-            });
 
             playerUnavailableBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -1770,8 +1745,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 _clearStall();
                 _removeStallListeners();
                 loadingScreen.classList.remove('show');
-                errorCount++;
-                if (errorCount === 1) showRetryScreen(); else showUnavailableScreen();
+                showUnavailableScreen();
             }
             function _onTimeUpdate() { _clearStall(); }
             function _onPlaying() { _clearStall(); }
@@ -2070,7 +2044,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 _removeStallListeners();
 
                 if (!isRetry) {
-                    errorCount = 0;
                     currentAffiliateIndex = 0; // principal
                 }
 
@@ -2093,7 +2066,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const onError = () => { cleanupLoad(); _triggerError(); };
                 const onCanPlay = () => {
                     cleanupLoad();
-                    errorCount = 0;
                     videoPlayer.muted = false;
                     document.getElementById('progress-divider').classList.add('show');
                     videoPlayer.play().catch(() => {});
