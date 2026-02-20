@@ -1532,8 +1532,8 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
 
-                // Título da gaveta = só o nome do canal
-                drawerTitle.textContent = channel.name;
+                // Título da gaveta = nome atual em reprodução (pode ser filial)
+                drawerTitle.textContent = videoTitle.textContent || channel.name;
 
                 // Badge de contagem
                 if (affiliates.length > 0) {
