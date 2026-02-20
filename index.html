@@ -1536,9 +1536,10 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
                 // Badge de contagem
                 if (affiliates.length > 0) {
-                    affiliateCountBadge.textContent = affiliates.length + ' plays';
+                    const total = affiliates.length + 1; // +1 = link principal
+                    affiliateCountBadge.textContent = total + ' plays';
                     affiliateCountBadge.style.display = 'inline-flex';
-                    affiliateBadge.textContent = affiliates.length;
+                    affiliateBadge.textContent = total;
                     affiliateBadge.classList.add('show');
                 } else {
                     affiliateCountBadge.style.display = 'none';
@@ -1557,15 +1558,19 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     return;
                 }
 
-                // Lista de filiais
+                // Lista: principal (idx=-1) + filiais
                 chatContent.innerHTML = '';
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
 
-                affiliates.forEach((af, idx) => {
+                // Todos os itens: [principal, ...filiais]
+                const allItems = [{ token: channel.url, label: `${channel.name} 1`, sub: 'Link principal', isMain: true }, ...affiliates.map((af, i) => ({ token: af, label: `${channel.name} ${i + 2}`, sub: `Link alternativo ${i + 1}`, isMain: false }))];
+
+                allItems.forEach((entry, idx) => {
+                    // currentAffiliateIndex: 0 = principal, 1..n = filiais (idx 0 = principal aqui)
+                    const isActive = idx === currentAffiliateIndex;
                     const item = document.createElement('div');
-                    item.className = 'affiliate-item' + (idx === currentAffiliateIndex - 1 ? ' active-affiliate' : '');
-                    // currentAffiliateIndex 0 = principal, 1..n = filiais
+                    item.className = 'affiliate-item' + (isActive ? ' active-affiliate' : '');
                     item.innerHTML = `
                         <div class="affiliate-logo-wrap">
                             ${channel.logo
@@ -1573,15 +1578,22 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                                 : `<div class="affiliate-logo-fallback">${channel.name.charAt(0)}</div>`}
                         </div>
                         <div class="affiliate-info">
-                            <div class="affiliate-label">Play ${idx + 1}</div>
-                            <div class="affiliate-sublabel">Link alternativo ${idx + 1}</div>
+                            <div class="affiliate-label">${entry.label}</div>
+                            <div class="affiliate-sublabel">${entry.sub}</div>
                         </div>
                         <div class="affiliate-live-dot"></div>
-                        <div class="affiliate-play-icon">${idx === currentAffiliateIndex - 1 ? '▶' : '○'}</div>
+                        <div class="affiliate-play-icon">${isActive ? '▶' : '○'}</div>
                     `;
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        playAffiliate(channelIndex, idx);
+                        if (idx === 0) {
+                            // Toca o principal
+                            playChannel(channelIndex, true);
+                            currentAffiliateIndex = 0;
+                            renderAffiliates(channelIndex);
+                        } else {
+                            playAffiliate(channelIndex, idx - 1);
+                        }
                     });
                     list.appendChild(item);
                 });
@@ -1589,14 +1601,14 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 chatContent.appendChild(list);
             }
 
-            // Toca uma filial específica (idx = índice dentro de affiliates[])
+            // Toca uma filial específica (affiliateIdx = índice dentro de affiliates[])
             function playAffiliate(channelIndex, affiliateIdx) {
                 if (channelIndex < 0 || channelIndex >= channels.length) return;
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
                 if (affiliateIdx < 0 || affiliateIdx >= affiliates.length) return;
 
-                currentAffiliateIndex = affiliateIdx + 1; // +1 porque 0 = principal
+                currentAffiliateIndex = affiliateIdx + 1; // 0=principal, 1..n=filiais
 
                 _clearStall();
                 _removeStallListeners();
@@ -1606,7 +1618,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 loadingScreen.classList.add('show');
                 document.getElementById('progress-divider').classList.remove('show');
 
-                videoTitle.textContent = channel.name + ' — Filial ' + (affiliateIdx + 1);
+                videoTitle.textContent = channel.name;
 
                 const token = affiliates[affiliateIdx];
                 videoPlayer.src = token;
@@ -2004,7 +2016,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                         <div class="channel-info">
                             <div class="channel-name-row">
                                 <div class="channel-name">${channel.name}</div>
-                                ${hasAffiliates ? `<div class="channel-plays-badge">+${channel.affiliates.length}</div>` : ''}
+                                ${hasAffiliates ? `<div class="channel-plays-badge">${channel.affiliates.length + 1} plays</div>` : ''}
                             </div>
                             <div class="channel-meta">
                                 <div class="live-indicator">
