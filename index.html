@@ -770,8 +770,8 @@
 
         /* Logo na gaveta de plays */
         .affiliate-logo-wrap {
-            width: 36px;
-            height: 36px;
+            width: 100px;
+            height: 60px;
             border-radius: 8px;
             background: linear-gradient(135deg, #a000ff, #2d5bff);
             display: flex;
@@ -779,17 +779,18 @@
             justify-content: center;
             flex-shrink: 0;
             overflow: hidden;
-            padding: 4px;
+            padding: 0;
         }
 
         .affiliate-logo-img {
-            width: 100%;
-            height: 100%;
+            width: 100px;
+            height: 65px;
             object-fit: contain;
+            flex-shrink: 0;
         }
 
         .affiliate-logo-fallback {
-            font-size: 16px;
+            font-size: 28px;
             font-weight: 700;
             color: white;
         }
@@ -1564,7 +1565,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 list.className = 'affiliates-list';
 
                 // Todos os itens: [principal, ...filiais]
-                const allItems = [{ token: channel.url, label: `${channel.name} 1`, sub: 'Link principal', isMain: true }, ...affiliates.map((af, i) => ({ token: af, label: `${channel.name} ${i + 2}`, sub: `Link alternativo ${i + 1}`, isMain: false }))];
+                const allItems = [{ token: channel.url, label: channel.name, sub: 'Ao vivo', isMain: true }, ...affiliates.map((af, i) => ({ token: af, label: `${channel.name} ${i + 2}`, sub: 'Ao vivo', isMain: false }))];
 
                 allItems.forEach((entry, idx) => {
                     // currentAffiliateIndex: 0 = principal, 1..n = filiais (idx 0 = principal aqui)
