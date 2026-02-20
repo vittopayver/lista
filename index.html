@@ -897,7 +897,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 5;
+            z-index: 2;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.4s ease;
@@ -907,13 +907,14 @@
 
         .player-error-screen.show {
             opacity: 1;
-            pointer-events: all;
+            pointer-events: none;
         }
 
         .player-error-icon {
             font-size: 40px;
             margin-bottom: 12px;
             line-height: 1;
+            opacity: 0.5;
         }
 
         .player-error-title {
@@ -1214,7 +1215,14 @@
                         G-Hub Tv
                     </div>
                     <div class="spacer"></div>
-                    <button class="control-btn" id="fullscreen-btn">⛶</button>
+                    <button class="control-btn" id="fullscreen-btn">
+                        <svg id="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+                            <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                            <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+                            <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
             
@@ -1614,9 +1622,9 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 videoPlayer.src = token;
                 videoPlayer.load();
 
-                const onError = () => { cleanupLoad(); _triggerError(); };
+                const onError = () => { cleanup(); _triggerError(); };
                 const onCanPlay = () => {
-                    cleanupLoad();
+                    cleanup();
                     videoPlayer.muted = false;
                     document.getElementById('progress-divider').classList.add('show');
                     videoPlayer.play().catch(() => {});
@@ -1628,11 +1636,9 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     }, 300);
                 };
 
-                const loadTimer = setTimeout(() => {
-                    if (loadingScreen.classList.contains('show')) { cleanupLoad(); _triggerError(); }
-                }, 15000);
+                const loadTimer = setTimeout(() => { cleanup(); _triggerError(); }, 15000);
 
-                function cleanupLoad() {
+                function cleanup() {
                     clearTimeout(loadTimer);
                     videoPlayer.removeEventListener('canplay', onCanPlay);
                     videoPlayer.removeEventListener('error', onError);
@@ -1640,8 +1646,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
                 videoPlayer.addEventListener('canplay', onCanPlay);
                 videoPlayer.addEventListener('error', onError);
-
-                // Atualiza visual dos itens
                 renderAffiliates(channelIndex, affiliateName);
             }
             
@@ -1833,9 +1837,30 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
             async function exitFullscreen() { exitFullscreenSync(); }
             
+            function updateFsIcon() {
+                const fsIcon = document.getElementById('fs-icon');
+                if (!fsIcon) return;
+                if (isFullscreen) {
+                    fsIcon.innerHTML = `
+                        <path d="M8 3v3a2 2 0 0 1-2 2H3"/>
+                        <path d="M21 8h-3a2 2 0 0 1-2-2V3"/>
+                        <path d="M3 16h3a2 2 0 0 1 2 2v3"/>
+                        <path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
+                    `;
+                } else {
+                    fsIcon.innerHTML = `
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+                        <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                        <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+                        <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+                    `;
+                }
+            }
+
             fullscreenBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (!isFullscreen) enterFullscreen(); else exitFullscreenSync();
+                updateFsIcon();
             });
             
             window.addEventListener('orientationchange', function() {
@@ -2055,9 +2080,9 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
 
-                const onError = () => { cleanupLoad(); _triggerError(); };
+                const onError = () => { cleanup(); _triggerError(); };
                 const onCanPlay = () => {
-                    cleanupLoad();
+                    cleanup();
                     videoPlayer.muted = false;
                     document.getElementById('progress-divider').classList.add('show');
                     videoPlayer.play().catch(() => {});
@@ -2069,11 +2094,9 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     }, 300);
                 };
 
-                const loadTimer = setTimeout(() => {
-                    if (loadingScreen.classList.contains('show')) { cleanupLoad(); _triggerError(); }
-                }, 15000);
+                const loadTimer = setTimeout(() => { cleanup(); _triggerError(); }, 15000);
 
-                function cleanupLoad() {
+                function cleanup() {
                     clearTimeout(loadTimer);
                     videoPlayer.removeEventListener('canplay', onCanPlay);
                     videoPlayer.removeEventListener('error', onError);
