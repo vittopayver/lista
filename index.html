@@ -1527,13 +1527,13 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             let isExpanded = false;
 
             // Renderiza a lista de filiais na gaveta para o canal atual
-            function renderAffiliates(channelIndex) {
+            function renderAffiliates(channelIndex, currentName) {
                 if (channelIndex < 0 || channelIndex >= channels.length) return;
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
 
-                // Título da gaveta = nome atual em reprodução (pode ser filial)
-                drawerTitle.textContent = videoTitle.textContent || channel.name;
+                // Título da gaveta = nome passado explicitamente ou nome do canal
+                drawerTitle.textContent = currentName || channel.name;
 
                 // Badge de contagem
                 if (affiliates.length > 0) {
@@ -1591,10 +1591,9 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
                         if (idx === 0) {
-                            // Toca o principal
                             playChannel(channelIndex, true);
                             currentAffiliateIndex = 0;
-                            renderAffiliates(channelIndex);
+                            renderAffiliates(channelIndex, channel.name);
                         } else {
                             playAffiliate(channelIndex, idx - 1);
                         }
@@ -1659,11 +1658,11 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 videoPlayer.addEventListener('error', onError);
 
                 // Atualiza visual dos itens
-                renderAffiliates(channelIndex);
+                renderAffiliates(channelIndex, affiliateName);
             }
             
             function openChat() {
-                renderAffiliates(currentChannelIndex);
+                renderAffiliates(currentChannelIndex, videoTitle.textContent);
                 chatDrawer.classList.add('open');
                 activateBackHandler();
             }
