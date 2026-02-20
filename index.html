@@ -181,7 +181,7 @@
             width: 100%;
             padding-top: 56.25%;
             background: #000;
-            overflow: visible;
+            overflow: hidden;
             flex-shrink: 0;
         }
 
@@ -845,7 +845,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -893,7 +893,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: rgba(0, 0, 0, 0.75);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1532,12 +1532,12 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
 
-                // Título da gaveta = nome do canal + " (Filiais)"
-                drawerTitle.textContent = channel.name + ' (Filiais)';
+                // Título da gaveta = só o nome do canal
+                drawerTitle.textContent = channel.name;
 
                 // Badge de contagem
                 if (affiliates.length > 0) {
-                    const total = affiliates.length + 1; // +1 = link principal
+                    const total = affiliates.length + 1;
                     affiliateCountBadge.textContent = total + ' plays';
                     affiliateCountBadge.style.display = 'inline-flex';
                     affiliateBadge.textContent = total;
@@ -1564,35 +1564,11 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
 
-                // Array com todos os itens: primeiro o principal, depois as filiais
-                // Para os nomes, precisamos extrair da playlist original - como não temos os nomes específicos,
-                // vamos usar o nome do canal + um identificador para cada filial
-                // Mas como você mencionou que na playlist os nomes já estão nos #EXTINF de cada URL,
-                // precisamos modificar a estrutura para armazenar os nomes específicos
-                
-                // Por enquanto, vamos criar um array de nomes baseado no canal principal
-                // Isso será melhorado quando tivermos os nomes específicos da playlist
-                const mainName = channel.name;
-                
-                // Para o principal, usamos o nome do canal
-                const mainItem = {
-                    token: channel.url,
-                    label: mainName,
-                    sub: 'Ao vivo',
-                    isMain: true
-                };
-                
-                // Para as filiais, criamos labels com o nome base + "Filial X" por enquanto
-                // Idealmente, isso viria da playlist
-                const affiliateItems = affiliates.map((af, i) => ({
-                    token: af,
-                    label: `${mainName} ${i + 2}`, // Isso será substituído quando tivermos os nomes reais
-                    sub: 'Ao vivo',
-                    isMain: false
-                }));
-                
-                // Combinar todos os itens
-                const allItems = [mainItem, ...affiliateItems];
+                // Todos os itens: [principal, ...filiais]
+                const allItems = [
+                    { token: channel.url, label: channel.name || 'Ao vivo', isMain: true },
+                    ...affiliates.map(af => ({ token: af.token, label: af.name || 'Ao vivo', isMain: false }))
+                ];
 
                 allItems.forEach((entry, idx) => {
                     // currentAffiliateIndex: 0 = principal, 1..n = filiais (idx 0 = principal aqui)
@@ -1607,7 +1583,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                         </div>
                         <div class="affiliate-info">
                             <div class="affiliate-label">${entry.label}</div>
-                            <div class="affiliate-sublabel">${entry.sub}</div>
+                            <div class="affiliate-sublabel">Ao vivo</div>
                         </div>
                         <div class="affiliate-live-dot"></div>
                         <div class="affiliate-play-icon">${isActive ? '▶' : '○'}</div>
@@ -1646,9 +1622,11 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 loadingScreen.classList.add('show');
                 document.getElementById('progress-divider').classList.remove('show');
 
-                videoTitle.textContent = channel.name;
+                const affiliateName = affiliates[affiliateIdx].name || channel.name;
+                videoTitle.textContent = affiliateName;
+                drawerTitle.textContent = affiliateName;
 
-                const token = affiliates[affiliateIdx];
+                const token = affiliates[affiliateIdx].token;
                 videoPlayer.src = token;
                 videoPlayer.load();
 
@@ -1967,60 +1945,74 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             
             function parsePlaylist(data) {
                 const lines = data.split('\n');
-                channels = [];
-                
+                const grouped = new Map(); // tvg-id → channel object
+                const order = []; // preserve insertion order
+
                 let i = 0;
                 while (i < lines.length) {
                     const line = lines[i].trim();
-                    
+
                     if (line.startsWith('#EXTINF:')) {
                         const info = line.substring(8);
                         const commaIdx = info.indexOf(',');
                         const attributes = commaIdx >= 0 ? info.substring(0, commaIdx) : info;
-                        const name = commaIdx >= 0 ? info.substring(commaIdx + 1).trim() : '';
-                        
-                        // Coletar TODOS os URLs consecutivos após o #EXTINF
-                        let urls = [];
+                        const entryName = commaIdx >= 0 ? info.substring(commaIdx + 1).trim() : '';
+
+                        // Próxima linha não vazia = URL
+                        let url = '';
                         let j = i + 1;
                         while (j < lines.length) {
-                            const nextLine = lines[j].trim();
-                            if (nextLine === '' || nextLine.startsWith('#')) break;
-                            if (nextLine.startsWith('http') || nextLine.startsWith('rtmp') || nextLine.startsWith('rtsp')) {
-                                urls.push(nextLine);
-                                j++;
-                            } else {
-                                break;
-                            }
+                            const next = lines[j].trim();
+                            if (next === '') { j++; continue; }
+                            if (next.startsWith('#')) break;
+                            url = next;
+                            j++;
+                            break;
                         }
-                        
-                        if (urls.length > 0) {
+
+                        if (url) {
                             let logo = '';
                             const logoMatch = attributes.match(/tvg-logo="([^"]*)"/);
                             if (logoMatch) logo = logoMatch[1];
-                            
+
                             let group = '';
                             const groupMatch = attributes.match(/group-title="([^"]*)"/);
                             if (groupMatch) group = groupMatch[1];
-                            
-                            // Primeiro URL = principal; restantes = filiais
-                            const mainToken = obfuscateUrl(urls[0]);
-                            const affiliateTokens = urls.slice(1).map(u => obfuscateUrl(u));
-                            
-                            channels.push({
-                                name: name,
-                                url: mainToken,       // URL principal (obfuscada)
-                                affiliates: affiliateTokens, // URLs filiais (obfuscadas)
-                                logo: logo,
-                                group: group
-                            });
+
+                            let tvgId = '';
+                            const idMatch = attributes.match(/tvg-id="([^"]*)"/);
+                            if (idMatch) tvgId = idMatch[1].toLowerCase().trim();
+
+                            // Usar tvg-id como chave de agrupamento; fallback = nome base
+                            const key = tvgId || entryName.toLowerCase();
+
+                            if (!grouped.has(key)) {
+                                // Primeiro = principal
+                                const entry = {
+                                    name: entryName,
+                                    url: obfuscateUrl(url),
+                                    affiliates: [], // { name, token }
+                                    logo: logo,
+                                    group: group
+                                };
+                                grouped.set(key, entry);
+                                order.push(key);
+                            } else {
+                                // Demais = filiais com nome próprio
+                                grouped.get(key).affiliates.push({
+                                    name: entryName,
+                                    token: obfuscateUrl(url)
+                                });
+                            }
                         }
-                        
+
                         i = j;
                         continue;
                     }
                     i++;
                 }
-                
+
+                channels = order.map(k => grouped.get(k));
                 renderChannels();
             }
             
@@ -2091,6 +2083,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 });
 
                 videoTitle.textContent = channel.name;
+                drawerTitle.textContent = channel.name;
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
 
@@ -2127,7 +2120,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 // Atualiza badge de filiais no botão
                 const affiliateCount = (channel.affiliates || []).length;
                 if (affiliateCount > 0) {
-                    affiliateBadge.textContent = affiliateCount + 1;
+                    affiliateBadge.textContent = affiliateCount + 1; // +1 = principal
                     affiliateBadge.classList.add('show');
                 } else {
                     affiliateBadge.classList.remove('show');
