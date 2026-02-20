@@ -1532,8 +1532,8 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
 
-                // Título da gaveta = só o nome do canal
-                drawerTitle.textContent = channel.name;
+                // Título da gaveta = nome do canal + " (Filiais)"
+                drawerTitle.textContent = channel.name + ' (Filiais)';
 
                 // Badge de contagem
                 if (affiliates.length > 0) {
@@ -1564,8 +1564,35 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
 
-                // Todos os itens: [principal, ...filiais]
-                const allItems = [{ token: channel.url, label: channel.name, sub: 'Ao vivo', isMain: true }, ...affiliates.map((af, i) => ({ token: af, label: `${channel.name} ${i + 2}`, sub: 'Ao vivo', isMain: false }))];
+                // Array com todos os itens: primeiro o principal, depois as filiais
+                // Para os nomes, precisamos extrair da playlist original - como não temos os nomes específicos,
+                // vamos usar o nome do canal + um identificador para cada filial
+                // Mas como você mencionou que na playlist os nomes já estão nos #EXTINF de cada URL,
+                // precisamos modificar a estrutura para armazenar os nomes específicos
+                
+                // Por enquanto, vamos criar um array de nomes baseado no canal principal
+                // Isso será melhorado quando tivermos os nomes específicos da playlist
+                const mainName = channel.name;
+                
+                // Para o principal, usamos o nome do canal
+                const mainItem = {
+                    token: channel.url,
+                    label: mainName,
+                    sub: 'Ao vivo',
+                    isMain: true
+                };
+                
+                // Para as filiais, criamos labels com o nome base + "Filial X" por enquanto
+                // Idealmente, isso viria da playlist
+                const affiliateItems = affiliates.map((af, i) => ({
+                    token: af,
+                    label: `${mainName} ${i + 2}`, // Isso será substituído quando tivermos os nomes reais
+                    sub: 'Ao vivo',
+                    isMain: false
+                }));
+                
+                // Combinar todos os itens
+                const allItems = [mainItem, ...affiliateItems];
 
                 allItems.forEach((entry, idx) => {
                     // currentAffiliateIndex: 0 = principal, 1..n = filiais (idx 0 = principal aqui)
@@ -2100,7 +2127,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 // Atualiza badge de filiais no botão
                 const affiliateCount = (channel.affiliates || []).length;
                 if (affiliateCount > 0) {
-                    affiliateBadge.textContent = affiliateCount;
+                    affiliateBadge.textContent = affiliateCount + 1;
                     affiliateBadge.classList.add('show');
                 } else {
                     affiliateBadge.classList.remove('show');
