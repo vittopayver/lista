@@ -100,12 +100,34 @@
         body.light-theme .chat-header::before {
             background: #d0d0d0;
         }
-        
-        body.light-theme .chat-unavailable-title {
+
+        body.light-theme .affiliate-item {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+        }
+
+        body.light-theme .affiliate-item:hover {
+            background: #f0f0f0;
+        }
+
+        body.light-theme .affiliate-item.active-affiliate {
+            border-color: #a000ff;
+            background: #f5eeff;
+        }
+
+        body.light-theme .affiliate-number {
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+        }
+
+        body.light-theme .affiliate-label {
             color: #0f0f0f;
         }
-        
-        body.light-theme .chat-unavailable-text {
+
+        body.light-theme .affiliate-sublabel {
+            color: #606060;
+        }
+
+        body.light-theme .no-affiliates-text {
             color: #606060;
         }
         
@@ -289,6 +311,7 @@
             width: 40px;
             height: 40px;
             transition: background 0.2s;
+            position: relative;
         }
         
         .chat-btn:hover {
@@ -303,11 +326,35 @@
             width: 20px;
             height: 20px;
         }
+
+        /* Badge de contagem de filiais */
+        .affiliate-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            display: none;
+        }
+
+        .affiliate-badge.show {
+            display: flex;
+        }
         
         .player-container.fullscreen .chat-btn {
             display: none !important;
         }
         
+        /* ===== GAVETA DE FILIAIS ===== */
         .chat-drawer {
             position: fixed;
             bottom: 0;
@@ -347,6 +394,7 @@
             border-top-right-radius: 10px;
             cursor: grab;
             position: relative;
+            flex-shrink: 0;
         }
         
         .chat-drawer.expanded .chat-header {
@@ -371,13 +419,33 @@
         }
         
         .chat-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
             background: linear-gradient(135deg, #a000ff, #2d5bff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-top: 8px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .affiliate-count-badge {
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
         }
         
         .chat-close-btn {
@@ -395,7 +463,6 @@
             border-radius: 50%;
             transition: background 0.2s;
             line-height: 1;
-            margin-top: 8px;
         }
         
         .chat-close-btn:hover {
@@ -406,36 +473,116 @@
             transform: scale(0.9);
         }
         
+        /* ===== LISTA DE FILIAIS ===== */
         .chat-content {
             flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+        }
+
+        .affiliates-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .affiliate-item {
             display: flex;
             align-items: center;
+            gap: 14px;
+            background: #252525;
+            border: 1.5px solid #333;
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            position: relative;
+        }
+
+        .affiliate-item:hover {
+            background: #2e2e2e;
+            border-color: #555;
+        }
+
+        .affiliate-item:active {
+            transform: scale(0.98);
+        }
+
+        .affiliate-item.active-affiliate {
+            border-color: #a000ff;
+            background: #1e0030;
+        }
+
+        /* affiliate-number replaced by affiliate-logo-wrap */
+
+        .affiliate-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .affiliate-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #f1f1f1;
+            margin-bottom: 2px;
+        }
+
+        .affiliate-sublabel {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .affiliate-live-dot {
+            width: 7px;
+            height: 7px;
+            background: #a000ff;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .affiliate-item.active-affiliate .affiliate-live-dot {
+            background: #00e676;
+        }
+
+        .affiliate-play-icon {
+            color: #666;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .affiliate-item.active-affiliate .affiliate-play-icon {
+            color: #a000ff;
+        }
+
+        /* Sem filiais */
+        .no-affiliates {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            padding: 32px;
-            overflow-y: auto;
-        }
-        
-        .chat-unavailable {
+            padding: 40px 20px;
             text-align: center;
-            color: #aaa;
+            height: 100%;
         }
-        
-        .chat-unavailable-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+
+        .no-affiliates-icon {
+            font-size: 44px;
+            margin-bottom: 14px;
             opacity: 0.5;
         }
-        
-        .chat-unavailable-title {
-            font-size: 18px;
+
+        .no-affiliates-title {
+            font-size: 16px;
             font-weight: 600;
             color: #f1f1f1;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-        
-        .chat-unavailable-text {
-            font-size: 14px;
+
+        .no-affiliates-text {
+            font-size: 13px;
             color: #888;
+            line-height: 1.5;
         }
         
         .video-controls {
@@ -581,13 +728,19 @@
             font-weight: 700;
             color: #a000ff;
         }
-        
-        .channel-info {
-            flex: 1;
-            min-width: 0;
-            padding-top: 2px;
+
+        .thumbnail-plays-badge {
+            display: none; /* removido */
         }
-        
+
+        /* Nome + badge na mesma linha */
+        .channel-name-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            justify-content: space-between;
+        }
+
         .channel-name {
             font-size: 14px;
             font-weight: 500;
@@ -599,7 +752,55 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             line-height: 1.4;
+            flex: 1;
         }
+
+        .channel-plays-badge {
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 1px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Logo na gaveta de plays */
+        .affiliate-logo-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #a000ff, #2d5bff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            padding: 4px;
+        }
+
+        .affiliate-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .affiliate-logo-fallback {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .channel-info {
+            flex: 1;
+            min-width: 0;
+            padding-top: 2px;
+        }
+        
+        /* channel-name now defined in channel-name-row block above */
         
         .channel-meta {
             display: flex;
@@ -752,7 +953,6 @@
             transform: scale(0.96);
         }
 
-        /* Variante "canal indisponível" — ícone e botão diferentes */
         .player-error-screen.unavailable .player-error-icon {
             opacity: 0.5;
         }
@@ -991,20 +1191,22 @@
         <div class="video-wrapper" id="video-wrapper">
             <video id="video-player" preload="auto" muted playsinline webkit-playsinline></video>
             
-            <!-- Overlay de toque: cobre toda a área do player -->
             <div class="click-overlay" id="click-overlay"></div>
             
-            <!-- Header (z-index acima do overlay) -->
+            <!-- Header -->
             <div class="video-header" id="video-header">
                 <div class="video-title" id="video-title">Carregando...</div>
-                <button class="chat-btn" id="chat-btn">
+                <button class="chat-btn" id="chat-btn" title="Filiais do canal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
                     </svg>
+                    <span class="affiliate-badge" id="affiliate-badge"></span>
                 </button>
             </div>
             
-            <!-- Controls (z-index acima do overlay) -->
+            <!-- Controls -->
             <div class="video-controls" id="video-controls">
                 <div class="controls-row">
                     <div class="live-badge">
@@ -1055,17 +1257,17 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
         </div>
     </div>
     
-    <!-- Gaveta do Chat -->
+    <!-- Gaveta de Filiais -->
     <div class="chat-drawer" id="chat-drawer">
         <div class="chat-header" id="chat-header">
-            <div class="chat-title">Chat ao vivo</div>
-            <button class="chat-close-btn" id="chat-close-btn">×</button>
-        </div>
-        <div class="chat-content">
-            <div class="chat-unavailable">
-                <div class="chat-unavailable-title">Chat não disponível</div>
-                <div class="chat-unavailable-text">O chat ao vivo não está disponível para este canal</div>
+            <div class="chat-title" id="drawer-title">Filiais do canal</div>
+            <div class="chat-header-right">
+                <span class="affiliate-count-badge" id="affiliate-count-badge"></span>
+                <button class="chat-close-btn" id="chat-close-btn">×</button>
             </div>
+        </div>
+        <div class="chat-content" id="chat-content">
+            <!-- Preenchido dinamicamente -->
         </div>
     </div>
 
@@ -1078,7 +1280,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const threshold = 160;
                 const widthThreshold = window.outerWidth - window.innerWidth > threshold;
                 const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                
                 if (widthThreshold || heightThreshold) {
                     window.location.reload();
                 }
@@ -1087,40 +1288,23 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             document.addEventListener('contextmenu', e => e.preventDefault());
             
             document.addEventListener('keydown', e => {
-                if (e.keyCode === 123) {
-                    e.preventDefault();
-                    return false;
-                }
-                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) {
-                    e.preventDefault();
-                    return false;
-                }
-                if (e.ctrlKey && e.keyCode === 85) {
-                    e.preventDefault();
-                    return false;
-                }
-                if (e.ctrlKey && e.keyCode === 83) {
-                    e.preventDefault();
-                    return false;
-                }
+                if (e.keyCode === 123) { e.preventDefault(); return false; }
+                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) { e.preventDefault(); return false; }
+                if (e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; }
+                if (e.ctrlKey && e.keyCode === 83) { e.preventDefault(); return false; }
             });
             
             setInterval(devtoolsDetector, 1000);
-            
             document.onselectstart = () => false;
             document.oncopy = () => false;
         })();
         
         document.addEventListener('DOMContentLoaded', function() {
-            // ===== DETECÇÃO E APLICAÇÃO DO TEMA DO NAVEGADOR =====
+            // ===== TEMA =====
             function applyTheme() {
-                const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
                 const prefersLightScheme = window.matchMedia('(prefers-color-scheme: light)');
-                
                 if (prefersLightScheme.matches) {
                     document.body.classList.add('light-theme');
-                } else if (prefersDarkScheme.matches) {
-                    document.body.classList.remove('light-theme');
                 } else {
                     document.body.classList.remove('light-theme');
                 }
@@ -1129,19 +1313,10 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             applyTheme();
             
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                if (e.matches) {
-                    document.body.classList.remove('light-theme');
-                } else {
-                    document.body.classList.add('light-theme');
-                }
+                document.body.classList.toggle('light-theme', !e.matches);
             });
-            
             window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-                if (e.matches) {
-                    document.body.classList.add('light-theme');
-                } else {
-                    document.body.classList.remove('light-theme');
-                }
+                document.body.classList.toggle('light-theme', e.matches);
             });
             
             // ===== DETECÇÃO DE NAVEGADOR =====
@@ -1169,14 +1344,16 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             const videoControls = document.getElementById('video-controls');
             const fullscreenBtn = document.getElementById('fullscreen-btn');
             const progressDividerFill = document.getElementById('progress-divider-fill');
-            const progressDividerBall = document.getElementById('progress-divider-ball');
             const chatBtn = document.getElementById('chat-btn');
             const chatDrawer = document.getElementById('chat-drawer');
             const chatHeader = document.getElementById('chat-header');
             const chatCloseBtn = document.getElementById('chat-close-btn');
             const rotationOverlay = document.getElementById('rotation-overlay');
+            const drawerTitle = document.getElementById('drawer-title');
+            const affiliateBadge = document.getElementById('affiliate-badge');
+            const affiliateCountBadge = document.getElementById('affiliate-count-badge');
+            const chatContent = document.getElementById('chat-content');
 
-            // Referências das telas de erro
             const playerErrorRetry = document.getElementById('player-error-retry');
             const playerErrorUnavailable = document.getElementById('player-error-unavailable');
             const playerRetryBtn = document.getElementById('player-retry-btn');
@@ -1186,84 +1363,15 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             
             let channels = [];
             let currentChannelIndex = -1;
+            // Índice da URL filial sendo reproduzida (0 = principal)
+            let currentAffiliateIndex = 0;
             let controlsVisible = false;
             let hideControlsTimeout = null;
             let isFullscreen = false;
             let isLandscape = false;
-
-            // ===== CONTROLE DE ERROS =====
-            // errorCount: quantas falhas consecutivas ocorreram no canal atual
             let errorCount = 0;
 
-            function hideAllErrorScreens() {
-                playerErrorRetry.classList.remove('show');
-                playerErrorUnavailable.classList.remove('show');
-            }
-
-            function showRetryScreen() {
-                loadingScreen.classList.remove('show');
-                hideAllErrorScreens();
-                playerErrorRetry.classList.add('show');
-            }
-
-            function showUnavailableScreen() {
-                loadingScreen.classList.remove('show');
-                hideAllErrorScreens();
-                playerErrorUnavailable.classList.add('show');
-            }
-
-            // Botão "Tentar novamente" — recarrega o canal atual
-            playerRetryBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (currentChannelIndex >= 0) {
-                    playChannel(currentChannelIndex, true);
-                }
-            });
-
-            // Botão "Escolher outro canal" — fecha a tela e rola a lista para o topo
-            playerUnavailableBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                hideAllErrorScreens();
-                document.getElementById('channels-section').scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            // ===== CONTROLE DO BOTÃO VOLTAR =====
-            let backHandlerActive = false;
-
-            function activateBackHandler() {
-                if (backHandlerActive) return;
-                backHandlerActive = true;
-                window.history.pushState({ appState: true }, '');
-            }
-
-            function deactivateBackHandler() {
-                backHandlerActive = false;
-            }
-
-            window.addEventListener('popstate', async function(e) {
-                if (!e.state || !e.state.appState) {
-                    deactivateBackHandler();
-                    return;
-                }
-
-                if (isFullscreen) {
-                    await exitFullscreen();
-                    enableKeepScreenOn();
-                    if (chatDrawer.classList.contains('open')) {
-                        activateBackHandler();
-                    }
-                    return;
-                }
-
-                if (chatDrawer.classList.contains('open')) {
-                    closeChat();
-                    return;
-                }
-
-                deactivateBackHandler();
-                window.history.back();
-            });
-            
+            // ===== OBFUSCAÇÃO =====
             const urlProxy = new Map();
             let urlCounter = 0;
             
@@ -1279,9 +1387,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             
             const originalSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'src');
             Object.defineProperty(videoPlayer, 'src', {
-                get: function() {
-                    return '[PROTECTED]';
-                },
+                get: function() { return '[PROTECTED]'; },
                 set: function(value) {
                     if (value.startsWith('__vid_')) {
                         const realUrl = deobfuscateUrl(value);
@@ -1294,13 +1400,11 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             });
             
             Object.defineProperty(videoPlayer, 'currentSrc', {
-                get: function() {
-                    return '[PROTECTED]';
-                },
+                get: function() { return '[PROTECTED]'; },
                 configurable: false
             });
 
-            // ===== BLOQUEIO DE ESCURECIMENTO =====
+            // ===== WAKE LOCK =====
             let wakeLock = null;
             let screenKeepAliveInterval = null;
             let noSleepVideo = null;
@@ -1312,9 +1416,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                         wakeLock = await navigator.wakeLock.request('screen');
                         wakeLock.addEventListener('release', () => {
                             wakeLock = null;
-                            if (document.visibilityState === 'visible') {
-                                setTimeout(tryWakeLockAPI, 200);
-                            }
+                            if (document.visibilityState === 'visible') setTimeout(tryWakeLockAPI, 200);
                         });
                         return true;
                     }
@@ -1333,24 +1435,16 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 noSleepVideo.style.cssText = 'position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0.001;pointer-events:none;z-index:-1;';
                 const mp4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28ybXA0MQAAAAhmcmVlAAAA/21kYXQAAAA=';
                 const webm = 'data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8oEEQvOBCEKChHdlYm1Ch4ECQoWBAhhTgGcBAAAAAAAVkhFNm3RALE27i1OrhBVJqWZTrIHfTbuMU6uEFlSua1OsggEwTbuMU6uEHFO7a1OsggI27AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmAAAAAAAEAAAABgIBIwAA';
-                const source1 = document.createElement('source');
-                source1.src = mp4;
-                source1.type = 'video/mp4';
-                const source2 = document.createElement('source');
-                source2.src = webm;
-                source2.type = 'video/webm';
-                noSleepVideo.appendChild(source1);
-                noSleepVideo.appendChild(source2);
+                const s1 = document.createElement('source'); s1.src = mp4; s1.type = 'video/mp4';
+                const s2 = document.createElement('source'); s2.src = webm; s2.type = 'video/webm';
+                noSleepVideo.appendChild(s1);
+                noSleepVideo.appendChild(s2);
                 document.body.appendChild(noSleepVideo);
                 noSleepVideo.play().catch(() => {});
             }
 
             function stopNoSleepVideo() {
-                if (noSleepVideo) {
-                    noSleepVideo.pause();
-                    noSleepVideo.remove();
-                    noSleepVideo = null;
-                }
+                if (noSleepVideo) { noSleepVideo.pause(); noSleepVideo.remove(); noSleepVideo = null; }
             }
 
             function startScreenActivity() {
@@ -1359,17 +1453,11 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 ghost.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-999;';
                 document.body.appendChild(ghost);
                 let tick = 0;
-                screenKeepAliveInterval = setInterval(() => {
-                    ghost.style.transform = `translateX(${tick % 2}px)`;
-                    tick++;
-                }, 20000);
+                screenKeepAliveInterval = setInterval(() => { ghost.style.transform = `translateX(${tick % 2}px)`; tick++; }, 20000);
             }
 
             function stopScreenActivity() {
-                if (screenKeepAliveInterval) {
-                    clearInterval(screenKeepAliveInterval);
-                    screenKeepAliveInterval = null;
-                }
+                if (screenKeepAliveInterval) { clearInterval(screenKeepAliveInterval); screenKeepAliveInterval = null; }
             }
 
             async function enableKeepScreenOn() {
@@ -1379,19 +1467,14 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             }
 
             async function forceWakeLock() {
-                if (wakeLock && !wakeLock.released) {
-                    try { await wakeLock.release(); } catch (_) {}
-                    wakeLock = null;
-                }
+                if (wakeLock && !wakeLock.released) { try { await wakeLock.release(); } catch (_) {} wakeLock = null; }
                 await enableKeepScreenOn();
             }
 
             async function releaseWakeLock() {
                 stopScreenActivity();
                 stopNoSleepVideo();
-                if (wakeLock && !wakeLock.released) {
-                    try { await wakeLock.release(); } catch (_) {}
-                }
+                if (wakeLock && !wakeLock.released) { try { await wakeLock.release(); } catch (_) {} }
                 wakeLock = null;
             }
 
@@ -1401,28 +1484,168 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 if (document.visibilityState === 'visible') {
                     await enableKeepScreenOn();
                     if (videoPlayer && videoPlayer.paused && currentChannelIndex >= 0) {
-                        videoPlayer.play().catch(err => console.log('Autoplay bloqueado'));
+                        videoPlayer.play().catch(() => {});
                     }
-                    if (isFullscreen) {
-                        hideAddressBar();
-                    }
+                    if (isFullscreen) hideAddressBar();
                 }
             });
 
             document.addEventListener('touchstart', () => {
-                if (document.visibilityState === 'visible') {
-                    enableKeepScreenOn();
-                }
+                if (document.visibilityState === 'visible') enableKeepScreenOn();
             }, { passive: true });
             
-            // ===== FUNCIONALIDADE DO CHAT =====
+            // ===== CONTROLE DO BOTÃO VOLTAR =====
+            let backHandlerActive = false;
+
+            function activateBackHandler() {
+                if (backHandlerActive) return;
+                backHandlerActive = true;
+                window.history.pushState({ appState: true }, '');
+            }
+
+            function deactivateBackHandler() { backHandlerActive = false; }
+
+            window.addEventListener('popstate', async function(e) {
+                if (!e.state || !e.state.appState) { deactivateBackHandler(); return; }
+                if (isFullscreen) {
+                    await exitFullscreen();
+                    enableKeepScreenOn();
+                    if (chatDrawer.classList.contains('open')) activateBackHandler();
+                    return;
+                }
+                if (chatDrawer.classList.contains('open')) { closeChat(); return; }
+                deactivateBackHandler();
+                window.history.back();
+            });
+            
+            // ===== GAVETA DE FILIAIS =====
             let isDragging = false;
             let startY = 0;
             let currentY = 0;
             let drawerHeight = 0;
             let isExpanded = false;
+
+            // Renderiza a lista de filiais na gaveta para o canal atual
+            function renderAffiliates(channelIndex) {
+                if (channelIndex < 0 || channelIndex >= channels.length) return;
+                const channel = channels[channelIndex];
+                const affiliates = channel.affiliates || [];
+
+                // Título da gaveta = só o nome do canal
+                drawerTitle.textContent = channel.name;
+
+                // Badge de contagem
+                if (affiliates.length > 0) {
+                    affiliateCountBadge.textContent = affiliates.length + ' plays';
+                    affiliateCountBadge.style.display = 'inline-flex';
+                    affiliateBadge.textContent = affiliates.length;
+                    affiliateBadge.classList.add('show');
+                } else {
+                    affiliateCountBadge.style.display = 'none';
+                    affiliateBadge.classList.remove('show');
+                }
+
+                // Sem plays
+                if (affiliates.length === 0) {
+                    chatContent.innerHTML = `
+                        <div class="no-affiliates">
+                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:linear-gradient(135deg,#a000ff,#2d5bff);padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}
+                            <div class="no-affiliates-title">Sem plays alternativos</div>
+                            <div class="no-affiliates-text">Este canal não possui links alternativos cadastrados.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Lista de filiais
+                chatContent.innerHTML = '';
+                const list = document.createElement('div');
+                list.className = 'affiliates-list';
+
+                affiliates.forEach((af, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'affiliate-item' + (idx === currentAffiliateIndex - 1 ? ' active-affiliate' : '');
+                    // currentAffiliateIndex 0 = principal, 1..n = filiais
+                    item.innerHTML = `
+                        <div class="affiliate-logo-wrap">
+                            ${channel.logo
+                                ? `<img src="${channel.logo}" alt="${channel.name}" class="affiliate-logo-img">`
+                                : `<div class="affiliate-logo-fallback">${channel.name.charAt(0)}</div>`}
+                        </div>
+                        <div class="affiliate-info">
+                            <div class="affiliate-label">Play ${idx + 1}</div>
+                            <div class="affiliate-sublabel">Link alternativo ${idx + 1}</div>
+                        </div>
+                        <div class="affiliate-live-dot"></div>
+                        <div class="affiliate-play-icon">${idx === currentAffiliateIndex - 1 ? '▶' : '○'}</div>
+                    `;
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        playAffiliate(channelIndex, idx);
+                    });
+                    list.appendChild(item);
+                });
+
+                chatContent.appendChild(list);
+            }
+
+            // Toca uma filial específica (idx = índice dentro de affiliates[])
+            function playAffiliate(channelIndex, affiliateIdx) {
+                if (channelIndex < 0 || channelIndex >= channels.length) return;
+                const channel = channels[channelIndex];
+                const affiliates = channel.affiliates || [];
+                if (affiliateIdx < 0 || affiliateIdx >= affiliates.length) return;
+
+                currentAffiliateIndex = affiliateIdx + 1; // +1 porque 0 = principal
+
+                _clearStall();
+                _removeStallListeners();
+                errorCount = 0;
+
+                hideAllErrorScreens();
+                loadingScreen.classList.add('show');
+                document.getElementById('progress-divider').classList.remove('show');
+
+                videoTitle.textContent = channel.name + ' — Filial ' + (affiliateIdx + 1);
+
+                const token = affiliates[affiliateIdx];
+                videoPlayer.src = token;
+                videoPlayer.load();
+
+                const onError = () => { cleanupLoad(); _triggerError(); };
+                const onCanPlay = () => {
+                    cleanupLoad();
+                    errorCount = 0;
+                    videoPlayer.muted = false;
+                    document.getElementById('progress-divider').classList.add('show');
+                    videoPlayer.play().catch(() => {});
+                    setTimeout(() => {
+                        loadingScreen.classList.remove('show');
+                        hideAllErrorScreens();
+                        showControls();
+                        _attachStallListeners();
+                    }, 300);
+                };
+
+                const loadTimer = setTimeout(() => {
+                    if (loadingScreen.classList.contains('show')) { cleanupLoad(); _triggerError(); }
+                }, 15000);
+
+                function cleanupLoad() {
+                    clearTimeout(loadTimer);
+                    videoPlayer.removeEventListener('canplay', onCanPlay);
+                    videoPlayer.removeEventListener('error', onError);
+                }
+
+                videoPlayer.addEventListener('canplay', onCanPlay);
+                videoPlayer.addEventListener('error', onError);
+
+                // Atualiza visual dos itens
+                renderAffiliates(channelIndex);
+            }
             
             function openChat() {
+                renderAffiliates(currentChannelIndex);
                 chatDrawer.classList.add('open');
                 activateBackHandler();
             }
@@ -1462,10 +1685,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 if (deltaY > 0) {
                     const newHeight = Math.min(window.innerHeight - 90, drawerHeight + deltaY);
                     chatDrawer.style.height = newHeight + 'px';
-                    if (newHeight >= window.innerHeight - 100) {
-                        chatDrawer.classList.add('expanded');
-                        isExpanded = true;
-                    }
+                    if (newHeight >= window.innerHeight - 100) { chatDrawer.classList.add('expanded'); isExpanded = true; }
                 } else {
                     const newHeight = Math.max(window.innerHeight * 0.55, drawerHeight + deltaY);
                     chatDrawer.style.height = newHeight + 'px';
@@ -1478,8 +1698,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 if (!isDragging) return;
                 isDragging = false;
                 chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
-                const finalY = currentY;
-                const deltaY = startY - finalY;
+                const deltaY = startY - currentY;
                 if (deltaY < -100) {
                     closeChat();
                 } else if (deltaY > 200 || isExpanded) {
@@ -1492,201 +1711,165 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     isExpanded = false;
                 }
             });
+
+            // ===== ERRO =====
+            function hideAllErrorScreens() {
+                playerErrorRetry.classList.remove('show');
+                playerErrorUnavailable.classList.remove('show');
+            }
+
+            function showRetryScreen() {
+                loadingScreen.classList.remove('show');
+                hideAllErrorScreens();
+                playerErrorRetry.classList.add('show');
+            }
+
+            function showUnavailableScreen() {
+                loadingScreen.classList.remove('show');
+                hideAllErrorScreens();
+                playerErrorUnavailable.classList.add('show');
+            }
+
+            playerRetryBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (currentChannelIndex >= 0) playChannel(currentChannelIndex, true);
+            });
+
+            playerUnavailableBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                hideAllErrorScreens();
+                document.getElementById('channels-section').scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ===== STALL DETECTOR =====
+            const STALL_LIMIT = 20000;
+            let _stallTimer = null;
+
+            function _clearStall() { if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; } }
+            function _triggerError() {
+                _clearStall();
+                _removeStallListeners();
+                loadingScreen.classList.remove('show');
+                errorCount++;
+                if (errorCount === 1) showRetryScreen(); else showUnavailableScreen();
+            }
+            function _onTimeUpdate() { _clearStall(); }
+            function _onPlaying() { _clearStall(); }
+            function _onWaiting() { if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT); }
+            function _onStalled() { if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT); }
+            function _onVideoError() { _triggerError(); }
+
+            function _removeStallListeners() {
+                videoPlayer.removeEventListener('timeupdate', _onTimeUpdate);
+                videoPlayer.removeEventListener('playing', _onPlaying);
+                videoPlayer.removeEventListener('waiting', _onWaiting);
+                videoPlayer.removeEventListener('stalled', _onStalled);
+                videoPlayer.removeEventListener('error', _onVideoError);
+            }
+
+            function _attachStallListeners() {
+                _removeStallListeners();
+                videoPlayer.addEventListener('timeupdate', _onTimeUpdate);
+                videoPlayer.addEventListener('playing', _onPlaying);
+                videoPlayer.addEventListener('waiting', _onWaiting);
+                videoPlayer.addEventListener('stalled', _onStalled);
+                videoPlayer.addEventListener('error', _onVideoError);
+            }
             
-            // ===== DETECÇÃO DE ORIENTAÇÃO =====
+            // ===== ORIENTAÇÃO / FULLSCREEN =====
             function checkOrientation() {
                 const orientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
                 isLandscape = orientation === 'landscape';
                 return orientation;
             }
             
-            // ===== FUNÇÃO PARA ESCONDER BARRAS DO NAVEGADOR =====
             function hideAddressBar() {
                 window.scrollTo(0, 1);
                 document.body.focus();
-                setTimeout(() => {
-                    window.scrollTo(0, 0);
-                }, 50);
+                setTimeout(() => { window.scrollTo(0, 0); }, 50);
                 if (window.visualViewport) {
-                    const viewport = window.visualViewport;
-                    window.scrollTo(0, Math.max(0, viewport.offsetTop));
+                    window.scrollTo(0, Math.max(0, window.visualViewport.offsetTop));
                 }
             }
             
-            // ===== FULLSCREEN =====
             async function enterFullscreen() {
                 try {
                     isFullscreen = true;
                     playerContainer.classList.add('fullscreen');
-
                     activateBackHandler();
-
                     await forceWakeLock();
                     setTimeout(enableKeepScreenOn, 600);
                     setTimeout(enableKeepScreenOn, 1500);
-                    
                     const currentOrientation = checkOrientation();
-                    if (currentOrientation === 'portrait') {
-                        rotationOverlay.classList.add('show');
-                    }
-                    
+                    if (currentOrientation === 'portrait') rotationOverlay.classList.add('show');
                     const elem = document.documentElement;
                     let fullscreenSuccess = false;
-                    
-                    try {
-                        if (elem.requestFullscreen) {
-                            await elem.requestFullscreen({ navigationUI: "hide" });
-                            fullscreenSuccess = true;
-                        }
-                    } catch (err) {}
-                    
-                    if (!fullscreenSuccess) {
+                    const attempts = ['requestFullscreen', 'webkitRequestFullscreen', 'mozRequestFullScreen', 'msRequestFullscreen'];
+                    for (const method of attempts) {
                         try {
-                            if (elem.webkitRequestFullscreen) {
-                                await elem.webkitRequestFullscreen();
-                                fullscreenSuccess = true;
-                            }
+                            if (elem[method]) { await elem[method]({ navigationUI: 'hide' }); fullscreenSuccess = true; break; }
                         } catch (err) {}
                     }
-                    
-                    if (!fullscreenSuccess) {
-                        try {
-                            if (elem.webkitEnterFullscreen) {
-                                elem.webkitEnterFullscreen();
-                                fullscreenSuccess = true;
-                            }
-                        } catch (err) {}
-                    }
-                    
-                    if (!fullscreenSuccess) {
-                        try {
-                            if (elem.mozRequestFullScreen) {
-                                await elem.mozRequestFullScreen();
-                                fullscreenSuccess = true;
-                            }
-                        } catch (err) {}
-                    }
-                    
-                    if (!fullscreenSuccess) {
-                        try {
-                            if (elem.msRequestFullscreen) {
-                                await elem.msRequestFullscreen();
-                                fullscreenSuccess = true;
-                            }
-                        } catch (err) {}
-                    }
-                    
                     hideAddressBar();
-                    setTimeout(hideAddressBar, 100);
-                    setTimeout(hideAddressBar, 300);
-                    setTimeout(hideAddressBar, 500);
-                    setTimeout(hideAddressBar, 1000);
-                    
+                    [100, 300, 500, 1000].forEach(d => setTimeout(hideAddressBar, d));
                     if (screen.orientation && screen.orientation.lock) {
-                        const lockAttempts = ['landscape', 'landscape-primary', 'landscape-secondary'];
-                        for (const orientation of lockAttempts) {
-                            try {
-                                await screen.orientation.lock(orientation);
-                                rotationOverlay.classList.remove('show');
-                                break;
-                            } catch (err) {}
+                        for (const o of ['landscape', 'landscape-primary', 'landscape-secondary']) {
+                            try { await screen.orientation.lock(o); rotationOverlay.classList.remove('show'); break; } catch (_) {}
                         }
                     }
-                    
-                } catch (err) {
-                    rotationOverlay.classList.remove('show');
-                }
+                } catch (err) { rotationOverlay.classList.remove('show'); }
             }
             
-            // ===== SAIR DO FULLSCREEN =====
             function exitFullscreenSync() {
                 videoWrapper.classList.add('transitioning');
-
                 isFullscreen = false;
                 playerContainer.classList.remove('fullscreen');
                 rotationOverlay.classList.remove('show');
                 deactivateBackHandler();
-
-                if (screen.orientation && screen.orientation.unlock) {
-                    try { screen.orientation.unlock(); } catch (_) {}
-                }
-
+                if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch (_) {} }
                 const revealOnChange = () => {
-                    requestAnimationFrame(() => {
-                        videoWrapper.classList.remove('transitioning');
-                        enableKeepScreenOn();
-                    });
+                    requestAnimationFrame(() => { videoWrapper.classList.remove('transitioning'); enableKeepScreenOn(); });
                     document.removeEventListener('fullscreenchange', revealOnChange);
                     document.removeEventListener('webkitfullscreenchange', revealOnChange);
                 };
-
                 document.addEventListener('fullscreenchange', revealOnChange);
                 document.addEventListener('webkitfullscreenchange', revealOnChange);
-
                 if (document.fullscreenElement) {
-                    document.exitFullscreen().catch(() => {
-                        setTimeout(() => videoWrapper.classList.remove('transitioning'), 150);
-                    });
+                    document.exitFullscreen().catch(() => { setTimeout(() => videoWrapper.classList.remove('transitioning'), 150); });
                 } else if (document.webkitFullscreenElement) {
                     document.webkitExitFullscreen();
                 } else {
                     document.removeEventListener('fullscreenchange', revealOnChange);
                     document.removeEventListener('webkitfullscreenchange', revealOnChange);
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            videoWrapper.classList.remove('transitioning');
-                            enableKeepScreenOn();
-                        });
-                    });
+                    requestAnimationFrame(() => { requestAnimationFrame(() => { videoWrapper.classList.remove('transitioning'); enableKeepScreenOn(); }); });
                 }
             }
 
-            async function exitFullscreen() {
-                exitFullscreenSync();
-            }
+            async function exitFullscreen() { exitFullscreenSync(); }
             
             fullscreenBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                if (!isFullscreen) {
-                    enterFullscreen();
-                } else {
-                    exitFullscreenSync();
-                }
+                if (!isFullscreen) enterFullscreen(); else exitFullscreenSync();
             });
             
             window.addEventListener('orientationchange', function() {
-                const newOrientation = checkOrientation();
-                if (isFullscreen && newOrientation === 'landscape') {
-                    rotationOverlay.classList.remove('show');
-                }
+                if (isFullscreen && checkOrientation() === 'landscape') rotationOverlay.classList.remove('show');
                 if (isFullscreen) hideAddressBar();
             });
             
             window.addEventListener('resize', function() {
-                const newOrientation = checkOrientation();
-                if (isFullscreen && newOrientation === 'landscape') {
-                    rotationOverlay.classList.remove('show');
-                }
+                if (isFullscreen && checkOrientation() === 'landscape') rotationOverlay.classList.remove('show');
                 if (isFullscreen) hideAddressBar();
             });
             
-            // ===== EVENTOS DE FULLSCREEN =====
             function onFullscreenChange() {
-                const isNowFullscreen = !!(
-                    document.fullscreenElement ||
-                    document.webkitFullscreenElement ||
-                    document.mozFullScreenElement ||
-                    document.msFullscreenElement
-                );
-
+                const isNowFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
                 if (!isNowFullscreen && isFullscreen) {
                     isFullscreen = false;
                     playerContainer.classList.remove('fullscreen');
                     rotationOverlay.classList.remove('show');
                     deactivateBackHandler();
-                    if (screen.orientation && screen.orientation.unlock) {
-                        try { screen.orientation.unlock(); } catch (_) {}
-                    }
+                    if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch (_) {} }
                     enableKeepScreenOn();
                 } else if (isNowFullscreen) {
                     hideAddressBar();
@@ -1712,14 +1895,8 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 controlsVisible = true;
                 videoHeader.classList.add('show');
                 videoControls.classList.add('show');
-                
-                if (hideControlsTimeout) {
-                    clearTimeout(hideControlsTimeout);
-                }
-                
-                hideControlsTimeout = setTimeout(() => {
-                    hideControls();
-                }, 3000);
+                if (hideControlsTimeout) clearTimeout(hideControlsTimeout);
+                hideControlsTimeout = setTimeout(() => { hideControls(); }, 3000);
             }
             
             function hideControls() {
@@ -1729,63 +1906,54 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             }
             
             clickOverlay.addEventListener('click', function(e) {
-                if (chatDrawer.classList.contains('open')) {
-                    closeChat();
-                    return;
-                }
-                if (controlsVisible) {
-                    hideControls();
-                } else {
-                    showControls();
-                }
+                if (chatDrawer.classList.contains('open')) { closeChat(); return; }
+                if (controlsVisible) hideControls(); else showControls();
             });
 
             clickOverlay.addEventListener('touchend', function(e) {
                 e.preventDefault();
-                if (chatDrawer.classList.contains('open')) {
-                    closeChat();
-                    return;
-                }
-                if (controlsVisible) {
-                    hideControls();
-                } else {
-                    showControls();
-                }
+                if (chatDrawer.classList.contains('open')) { closeChat(); return; }
+                if (controlsVisible) hideControls(); else showControls();
             }, { passive: false });
             
-            // Carregar playlist
+            // ===== PLAYLIST =====
             function loadPlaylist(url) {
                 channelsList.innerHTML = '<div class="loading">Carregando canais...</div>';
-                
                 fetch(url)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Erro ao carregar');
-                        return response.text();
-                    })
-                    .then(data => {
-                        parsePlaylist(data);
-                    })
-                    .catch(error => {
-                        channelsList.innerHTML = '<div class="error">Erro ao carregar a playlist</div>';
-                    });
+                    .then(response => { if (!response.ok) throw new Error('Erro ao carregar'); return response.text(); })
+                    .then(data => { parsePlaylist(data); })
+                    .catch(error => { channelsList.innerHTML = '<div class="error">Erro ao carregar a playlist</div>'; });
             }
             
             function parsePlaylist(data) {
                 const lines = data.split('\n');
                 channels = [];
                 
-                for (let i = 0; i < lines.length; i++) {
+                let i = 0;
+                while (i < lines.length) {
                     const line = lines[i].trim();
                     
                     if (line.startsWith('#EXTINF:')) {
                         const info = line.substring(8);
-                        const parts = info.split(',');
-                        const attributes = parts[0];
-                        const name = parts.slice(1).join(',').trim();
+                        const commaIdx = info.indexOf(',');
+                        const attributes = commaIdx >= 0 ? info.substring(0, commaIdx) : info;
+                        const name = commaIdx >= 0 ? info.substring(commaIdx + 1).trim() : '';
                         
-                        const url = lines[i + 1] ? lines[i + 1].trim() : '';
+                        // Coletar TODOS os URLs consecutivos após o #EXTINF
+                        let urls = [];
+                        let j = i + 1;
+                        while (j < lines.length) {
+                            const nextLine = lines[j].trim();
+                            if (nextLine === '' || nextLine.startsWith('#')) break;
+                            if (nextLine.startsWith('http') || nextLine.startsWith('rtmp') || nextLine.startsWith('rtsp')) {
+                                urls.push(nextLine);
+                                j++;
+                            } else {
+                                break;
+                            }
+                        }
                         
-                        if (url && !url.startsWith('#')) {
+                        if (urls.length > 0) {
                             let logo = '';
                             const logoMatch = attributes.match(/tvg-logo="([^"]*)"/);
                             if (logoMatch) logo = logoMatch[1];
@@ -1794,16 +1962,23 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                             const groupMatch = attributes.match(/group-title="([^"]*)"/);
                             if (groupMatch) group = groupMatch[1];
                             
-                            const obfuscatedUrl = obfuscateUrl(url);
+                            // Primeiro URL = principal; restantes = filiais
+                            const mainToken = obfuscateUrl(urls[0]);
+                            const affiliateTokens = urls.slice(1).map(u => obfuscateUrl(u));
                             
                             channels.push({
                                 name: name,
-                                url: obfuscatedUrl,
+                                url: mainToken,       // URL principal (obfuscada)
+                                affiliates: affiliateTokens, // URLs filiais (obfuscadas)
                                 logo: logo,
                                 group: group
                             });
                         }
+                        
+                        i = j;
+                        continue;
                     }
+                    i++;
                 }
                 
                 renderChannels();
@@ -1820,12 +1995,17 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 channels.forEach((channel, index) => {
                     const channelItem = document.createElement('div');
                     channelItem.className = 'channel-item';
+                    const hasAffiliates = channel.affiliates && channel.affiliates.length > 0;
                     channelItem.innerHTML = `
                         <div class="channel-thumbnail">
-                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}">` : `<div class="thumbnail-placeholder">${channel.name.charAt(0)}</div>`}
+                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+                            <div class="thumbnail-placeholder" style="${channel.logo ? 'display:none' : ''}">${channel.name.charAt(0)}</div>
                         </div>
                         <div class="channel-info">
-                            <div class="channel-name">${channel.name}</div>
+                            <div class="channel-name-row">
+                                <div class="channel-name">${channel.name}</div>
+                                ${hasAffiliates ? `<div class="channel-plays-badge">+${channel.affiliates.length}</div>` : ''}
+                            </div>
                             <div class="channel-meta">
                                 <div class="live-indicator">
                                     <div class="live-dot"></div>
@@ -1844,78 +2024,20 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     channelsList.appendChild(channelItem);
                 });
                 
-                if (channels.length > 0) {
-                    playChannel(0);
-                }
+                if (channels.length > 0) playChannel(0);
             }
 
-            // ===== REPRODUÇÃO DO CANAL =====
-
-            // Logica de deteccao de travamento:
-            // - Timer SO começa quando o video para ('waiting' ou 'stalled')
-            // - 'timeupdate' ou 'playing' CANCELA o timer — video esta vivo
-            // - Erro so dispara se ficar parado por STALL_LIMIT sem nenhum sinal de vida
-            const STALL_LIMIT = 20000; // 20s parado = stream morto
-            let _stallTimer = null;
-
-            function _clearStall() {
-                if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; }
-            }
-
-            function _triggerError() {
-                _clearStall();
-                _removeStallListeners();
-                loadingScreen.classList.remove('show');
-                errorCount++;
-                if (errorCount === 1) {
-                    showRetryScreen();
-                } else {
-                    showUnavailableScreen();
-                }
-            }
-
-            // Video avancou ou voltou a tocar: cancela contagem de erro
-            function _onTimeUpdate() { _clearStall(); }
-            function _onPlaying()    { _clearStall(); }
-
-            // Video parou de receber dados: inicia contagem
-            // Buffering normal resolve antes dos 20s
-            function _onWaiting() {
-                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
-            }
-            function _onStalled() {
-                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
-            }
-            function _onVideoError() { _triggerError(); }
-
-            function _removeStallListeners() {
-                videoPlayer.removeEventListener('timeupdate', _onTimeUpdate);
-                videoPlayer.removeEventListener('playing',   _onPlaying);
-                videoPlayer.removeEventListener('waiting',   _onWaiting);
-                videoPlayer.removeEventListener('stalled',  _onStalled);
-                videoPlayer.removeEventListener('error',    _onVideoError);
-            }
-
-            function _attachStallListeners() {
-                _removeStallListeners();
-                videoPlayer.addEventListener('timeupdate', _onTimeUpdate);
-                videoPlayer.addEventListener('playing',   _onPlaying);
-                videoPlayer.addEventListener('waiting',   _onWaiting);
-                videoPlayer.addEventListener('stalled',  _onStalled);
-                videoPlayer.addEventListener('error',    _onVideoError);
-                // Nao inicia timer aqui: so conta quando o video parar
-            }
-
-            // isRetry = true quando o usuário clicou em "Tentar novamente"
+            // ===== REPRODUÇÃO DO CANAL PRINCIPAL =====
             function playChannel(index, isRetry) {
                 if (index < 0 || index >= channels.length) return;
 
-                // Para tudo do canal anterior
                 _clearStall();
                 _removeStallListeners();
 
-                // Troca de canal → zera contador de erros
-                if (!isRetry) errorCount = 0;
+                if (!isRetry) {
+                    errorCount = 0;
+                    currentAffiliateIndex = 0; // principal
+                }
 
                 const channel = channels[index];
 
@@ -1932,46 +2054,44 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 videoPlayer.src = channel.url;
                 videoPlayer.load();
 
-                const onError = () => {
-                    cleanupLoad();
-                    _triggerError();
-                };
-
+                const onError = () => { cleanupLoad(); _triggerError(); };
                 const onCanPlay = () => {
                     cleanupLoad();
                     errorCount = 0;
-
                     videoPlayer.muted = false;
                     document.getElementById('progress-divider').classList.add('show');
                     videoPlayer.play().catch(() => {});
-
                     setTimeout(() => {
                         loadingScreen.classList.remove('show');
                         hideAllErrorScreens();
                         showControls();
-                        // Ativa vigilância contínua de travamento
                         _attachStallListeners();
                     }, 300);
                 };
 
-                // Timeout só para a fase de loading inicial (15 s)
                 const loadTimer = setTimeout(() => {
-                    if (loadingScreen.classList.contains('show')) {
-                        cleanupLoad();
-                        _triggerError();
-                    }
+                    if (loadingScreen.classList.contains('show')) { cleanupLoad(); _triggerError(); }
                 }, 15000);
 
                 function cleanupLoad() {
                     clearTimeout(loadTimer);
                     videoPlayer.removeEventListener('canplay', onCanPlay);
-                    videoPlayer.removeEventListener('error',   onError);
+                    videoPlayer.removeEventListener('error', onError);
                 }
 
                 videoPlayer.addEventListener('canplay', onCanPlay);
-                videoPlayer.addEventListener('error',   onError);
+                videoPlayer.addEventListener('error', onError);
 
                 currentChannelIndex = index;
+
+                // Atualiza badge de filiais no botão
+                const affiliateCount = (channel.affiliates || []).length;
+                if (affiliateCount > 0) {
+                    affiliateBadge.textContent = affiliateCount;
+                    affiliateBadge.classList.add('show');
+                } else {
+                    affiliateBadge.classList.remove('show');
+                }
             }
             
             checkOrientation();
