@@ -1227,7 +1227,6 @@
                 <div class="player-error-icon">📡</div>
                 <div class="player-error-title">Canal indisponível no momento</div>
                 <div class="player-error-subtitle">Este canal está temporariamente fora do ar. Tente outro canal ou volte mais tarde.</div>
-                <button class="player-error-btn" id="player-unavailable-btn">Escolher outro canal</button>
             </div>
 
             <!-- Barra Divisória com Progresso -->
@@ -1347,7 +1346,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             const chatContent = document.getElementById('chat-content');
 
             const playerErrorUnavailable = document.getElementById('player-error-unavailable');
-            const playerUnavailableBtn = document.getElementById('player-unavailable-btn');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
             
@@ -1729,12 +1727,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 hideAllErrorScreens();
                 playerErrorUnavailable.classList.add('show');
             }
-
-            playerUnavailableBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                hideAllErrorScreens();
-                document.getElementById('channels-section').scrollTo({ top: 0, behavior: 'smooth' });
-            });
 
             // ===== STALL DETECTOR =====
             const STALL_LIMIT = 20000;
