@@ -7,1193 +7,189 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>G-Hub Tv</title>
-    <!-- HLS.js para suporte universal a streams .m3u8 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        html, body {
-            background: #0f0f0f;
-            color: #f1f1f1;
-            overflow: hidden;
-            height: 100vh;
-            height: 100dvh;
-            position: fixed;
-            width: 100%;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            overscroll-behavior: none;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        body.light-theme {
-            background: #ffffff;
-            color: #0f0f0f;
-        }
-        
-        body.light-theme .player-container {
-            background: #ffffff;
-        }
-        
-        body.light-theme .channels-section {
-            background: #f5f5f5;
-        }
-        
-        body.light-theme .channel-item {
-            border-left: 3px solid transparent;
-        }
-        
-        body.light-theme .channel-item:hover {
-            background: #e8e8e8;
-        }
-        
-        body.light-theme .channel-item.active {
-            background: #e8e8e8;
-            border-left-color: #a000ff;
-        }
-        
-        body.light-theme .channel-thumbnail {
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-        }
-        
-        body.light-theme .channel-name {
-            color: #0f0f0f;
-        }
-        
-        body.light-theme .channel-category,
-        body.light-theme .live-indicator {
-            color: #606060;
-        }
-        
-        body.light-theme .info-text {
-            background: #ffffff;
-            color: #606060;
-        }
-        
-        body.light-theme .chat-drawer {
-            background: #f5f5f5;
-        }
-        
-        body.light-theme .chat-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        body.light-theme .chat-title {
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        body.light-theme .chat-close-btn {
-            color: #606060;
-        }
-        
-        body.light-theme .chat-close-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-        
-        body.light-theme .chat-header::before {
-            background: #d0d0d0;
-        }
-
-        body.light-theme .affiliate-item {
-            background: #ffffff;
-            border: 1px solid #e0e0e0;
-        }
-
-        body.light-theme .affiliate-item:hover {
-            background: #f0f0f0;
-        }
-
-        body.light-theme .affiliate-item.active-affiliate {
-            border-color: #a000ff;
-            background: #f5eeff;
-        }
-
-        body.light-theme .affiliate-number {
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-        }
-
-        body.light-theme .affiliate-label {
-            color: #0f0f0f;
-        }
-
-        body.light-theme .affiliate-sublabel {
-            color: #606060;
-        }
-
-        body.light-theme .no-affiliates-text {
-            color: #606060;
-        }
-        
-        body.light-theme .loading,
-        body.light-theme .error {
-            color: #606060;
-        }
-        
-        body.light-theme .error {
-            color: #a000ff;
-        }
-        
-        body.light-theme ::-webkit-scrollbar-track {
-            background: #f5f5f5;
-        }
-        
-        body.light-theme ::-webkit-scrollbar-thumb {
-            background: #c0c0c0;
-        }
-        
-        body.light-theme ::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
-        }
-        
-        body.light-theme .browser-block {
-            background: #ffffff;
-        }
-        
-        body.light-theme .browser-block-title {
-            color: #0f0f0f;
-        }
-        
-        body.light-theme .browser-block-message {
-            color: #606060;
-        }
-        
-        .player-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
-            background: #0f0f0f;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%;
-            background: #000;
-            overflow: visible;
-            flex-shrink: 0;
-        }
-
-        #video-player {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #000;
-            display: block;
-        }
-
-        .video-wrapper.transitioning {
-            visibility: hidden;
-        }
-
-        .progress-divider {
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(to right, #a000ff, #2d5bff);
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .progress-divider.show {
-            opacity: 1;
-        }
-
-        .progress-divider-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(to right, #a000ff, #2d5bff);
-            transition: width 0.1s linear;
-            position: relative;
-        }
-
-        .progress-divider-ball {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            width: 10px;
-            height: 10px;
-            background: #2d5bff;
-            border-radius: 50%;
-            box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        }
-
-        body.is-landscape .channels-section {
-            display: none !important;
-        }
-
-        body.is-landscape .progress-divider {
-            display: none !important;
-        }
-
-        body.is-landscape .info-text {
-            display: none !important;
-        }
-
-        body.is-landscape .chat-btn {
-            display: none !important;
-        }
-        
-        .click-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3;
-        }
-        
-        .video-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-            padding: 12px 16px;
-            z-index: 6;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        
-        .video-header.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .video-title {
-            flex: 1;
-            font-size: 16px;
-            font-weight: 400;
-            color: white;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .chat-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            transition: background 0.2s;
-            position: relative;
-        }
-        
-        .chat-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        .chat-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .chat-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Badge de contagem de canais */
-        .affiliate-badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            color: white;
-            font-size: 9px;
-            font-weight: 700;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            display: none;
-        }
-
-        .affiliate-badge.show {
-            display: flex;
-        }
-        
-        .player-container.fullscreen .chat-btn {
-            display: none !important;
-        }
-        
-        /* ===== GAVETA DE CANAIS ===== */
-        .chat-drawer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 56vh;
-            background: #1a1a1a;
-            transform: translateY(100%);
-            transition: transform 0.3s ease, height 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
-            touch-action: none;
-        }
-        
-        .chat-drawer.open {
-            transform: translateY(0);
-        }
-        
-        .chat-drawer.expanded {
-            height: calc(100vh - 90px);
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        
-        .chat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #2a2a2a;
-            background: #1f1f1f;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            cursor: grab;
-            position: relative;
-            flex-shrink: 0;
-        }
-        
-        .chat-drawer.expanded .chat-header {
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        
-        .chat-header:active {
-            cursor: grabbing;
-        }
-        
-        .chat-header::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 4px;
-            background: #444;
-            border-radius: 2px;
-        }
-        
-        .chat-title {
-            font-size: 17px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-top: 8px;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .chat-header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .affiliate-count-badge {
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-        
-        .chat-close-btn {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 32px;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: background 0.2s;
-            line-height: 1;
-        }
-        
-        .chat-close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .chat-close-btn:active {
-            transform: scale(0.9);
-        }
-        
-        /* ===== LISTA DE CANAIS (GAVETA) ===== */
-        .chat-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px 16px;
-        }
-
-        .affiliates-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .affiliate-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: #252525;
-            border: 1.5px solid #333;
-            border-radius: 10px;
-            padding: 12px 14px;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, transform 0.1s;
-            position: relative;
-        }
-
-        .affiliate-item:hover {
-            background: #2e2e2e;
-            border-color: #555;
-        }
-
-        .affiliate-item:active {
-            transform: scale(0.98);
-        }
-
-        .affiliate-item.active-affiliate {
-            border-color: #a000ff;
-            background: #1e0030;
-        }
-
-        .affiliate-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .affiliate-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #f1f1f1;
-            margin-bottom: 2px;
-        }
-
-        .affiliate-sublabel {
-            font-size: 11px;
-            color: #888;
-        }
-
-        .affiliate-live-dot {
-            width: 7px;
-            height: 7px;
-            background: #a000ff;
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-
-        .affiliate-item.active-affiliate .affiliate-live-dot {
-            background: #00e676;
-        }
-
-        .affiliate-play-icon {
-            color: #666;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .affiliate-item.active-affiliate .affiliate-play-icon {
-            color: #a000ff;
-        }
-
-        /* Sem canais alternativos */
-        .no-affiliates {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            text-align: center;
-            height: 100%;
-        }
-
-        .no-affiliates-icon {
-            font-size: 44px;
-            margin-bottom: 14px;
-            opacity: 0.5;
-        }
-
-        .no-affiliates-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #f1f1f1;
-            margin-bottom: 6px;
-        }
-
-        .no-affiliates-text {
-            font-size: 13px;
-            color: #888;
-            line-height: 1.5;
-        }
-        
-        .video-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 40px 16px 12px;
-            z-index: 6;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        
-        .video-controls.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .controls-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
-        
-        .control-btn:active {
-            transform: scale(0.9);
-        }
-        
-        .spacer {
-            flex: 1;
-        }
-        
-        .live-badge {
-            background: transparent;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .live-badge-dot {
-            width: 7px;
-            height: 7px;
-            background: #a000ff;
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        .info-text {
-            width: 100%;
-            text-align: center;
-            margin: 0;
-            padding: 10px 30px;
-            font-size: 10px;
-            color: #888;
-            background: #0f0f0f;
-            line-height: 1.4;
-        }
-        
-        .channels-section {
-            flex: 1;
-            background: #0f0f0f;
-            overflow-y: auto;
-            padding: 0;
-        }
-        
-        .channels-list {
-            padding: 8px 0;
-        }
-        
-        .channel-item {
-            display: flex;
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: background 0.2s;
-            gap: 12px;
-            align-items: flex-start;
-            border-left: 3px solid transparent;
-        }
-        
-        .channel-item:hover {
-            background: #272727;
-        }
-        
-        .channel-item.active {
-            background: #272727;
-            border-left-color: #a000ff;
-        }
-        
-        .channel-thumbnail {
-            width: 120px;
-            height: 70px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .channel-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 6px;
-        }
-        
-        .channel-thumbnail::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-        }
-        
-        .thumbnail-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 32px;
-            font-weight: 700;
-            color: #a000ff;
-        }
-
-        .thumbnail-plays-badge {
-            display: none;
-        }
-
-        .channel-name-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            justify-content: space-between;
-        }
-
-        .channel-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #f1f1f1;
-            margin-bottom: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.4;
-            flex: 1;
-        }
-
-        /* Badge de canais na lista principal */
-        .channel-plays-badge {
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 20px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            margin-top: 1px;
-            letter-spacing: 0.3px;
-        }
-
-        /* Logo na gaveta de canais */
-        .affiliate-logo-wrap {
-            width: 100px;
-            height: 60px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            overflow: hidden;
-            padding: 0;
-        }
-
-        .affiliate-logo-img {
-            width: 90px;
-            height: 65px;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
-
-        .affiliate-logo-fallback {
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-        }
-        
-        .channel-info {
-            flex: 1;
-            min-width: 0;
-            padding-top: 2px;
-        }
-        
-        .channel-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-top: 4px;
-        }
-        
-        .channel-category {
-            font-size: 12px;
-            color: #aaa;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            color: #aaa;
-        }
-        
-        .live-dot {
-            width: 6px;
-            height: 6px;
-            background: #a000ff;
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(0.8); }
-        }
-        
-        .loading-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        
-        .loading-screen.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #a000ff;
-            border-right-color: #2d5bff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .loading, .error {
-            text-align: center;
-            padding: 32px 16px;
-            color: #aaa;
-            font-size: 14px;
-        }
-        
-        .error {
-            color: #a000ff;
-        }
-
-        /* ===== TELA DE ERRO NO PLAYER ===== */
-        .player-error-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .player-error-screen.show {
-            opacity: 1;
-            pointer-events: none;
-        }
-
-        .player-error-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-            line-height: 1;
-            opacity: 0.5;
-        }
-
-        .player-error-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #f1f1f1;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-
-        .player-error-subtitle {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 18px;
-            line-height: 1.5;
-            max-width: 260px;
-        }
-
-        .player-error-btn {
-            background: linear-gradient(135deg, #a000ff, #2d5bff);
-            color: #fff;
-            border: none;
-            padding: 10px 28px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-            letter-spacing: 0.3px;
-        }
-
-        .player-error-btn:hover {
-            opacity: 0.85;
-        }
-
-        .player-error-btn:active {
-            transform: scale(0.96);
-        }
-
-        .player-error-screen.unavailable .player-error-icon {
-            opacity: 0.5;
-        }
-
-        .player-error-screen.unavailable .player-error-btn {
-            background: #333;
-            color: #ccc;
-        }
-
-        .player-error-screen.unavailable .player-error-btn:hover {
-            background: #444;
-        }
-        
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #0f0f0f;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #3f3f3f;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #5f5f5f;
-        }
-
-        .player-container.fullscreen {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            z-index: 999999 !important;
-        }
-
-        .player-container.fullscreen .video-wrapper {
-            padding-top: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        .player-container.fullscreen .channels-section {
-            display: none !important;
-        }
-        
-        .player-container.fullscreen .progress-divider {
-            display: none !important;
-        }
-        
-        .player-container.fullscreen .info-text {
-            display: none !important;
-        }
-        
-        html:fullscreen,
-        html:-webkit-full-screen,
-        html:-moz-full-screen,
-        html:-ms-fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            overflow: hidden !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        body:fullscreen,
-        body:-webkit-full-screen,
-        body:-moz-full-screen,
-        body:-ms-fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            overflow: hidden !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        :fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            overflow: hidden !important;
-        }
-        
-        :-webkit-full-screen {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            overflow: hidden !important;
-        }
-        
-        :-moz-full-screen {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            overflow: hidden !important;
-        }
-        
-        :-ms-fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            overflow: hidden !important;
-        }
-        
-        .browser-block {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0f0f0f;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 32px;
-            text-align: center;
-        }
-        
-        .browser-block.show {
-            display: flex;
-        }
-        
-        .browser-block-logo {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 24px;
-            object-fit: contain;
-        }
-        
-        .browser-block-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #f1f1f1;
-            margin-bottom: 16px;
-        }
-        
-        .browser-block-message {
-            font-size: 16px;
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            max-width: 400px;
-        }
-        
-        .browser-block-btn {
-            background: #0066ff;
-            color: white;
-            border: none;
-            padding: 16px 48px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.3s;
-        }
-        
-        .browser-block-btn:hover {
-            background: #0052cc;
-        }
-        
-        .browser-block-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .rotation-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-        
-        .rotation-overlay.show {
-            display: flex;
-        }
-        
-        .rotation-icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-            animation: rotate-hint 2s ease-in-out infinite;
-        }
-        
-        @keyframes rotate-hint {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
-        }
-        
-        .rotation-text {
-            font-size: 18px;
-            text-align: center;
-            padding: 0 32px;
-            line-height: 1.6;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { background: #0f0f0f; color: #f1f1f1; overflow: hidden; height: 100vh; height: 100dvh; position: fixed; width: 100%; transition: background-color 0.3s ease, color 0.3s ease; overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
+        body.light-theme { background: #ffffff; color: #0f0f0f; }
+        body.light-theme .player-container { background: #ffffff; }
+        body.light-theme .channels-section { background: #f5f5f5; }
+        body.light-theme .channel-item { border-left: 3px solid transparent; }
+        body.light-theme .channel-item:hover { background: #e8e8e8; }
+        body.light-theme .channel-item.active { background: #e8e8e8; border-left-color: #a000ff; }
+        body.light-theme .channel-thumbnail { background: linear-gradient(135deg, #a000ff, #2d5bff); }
+        body.light-theme .channel-name { color: #0f0f0f; }
+        body.light-theme .channel-category, body.light-theme .live-indicator { color: #606060; }
+        body.light-theme .info-text { background: #ffffff; color: #606060; }
+        body.light-theme .chat-drawer { background: #f5f5f5; }
+        body.light-theme .chat-header { background: #ffffff; border-bottom: 1px solid #e0e0e0; }
+        body.light-theme .chat-title { background: linear-gradient(135deg, #a000ff, #2d5bff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        body.light-theme .chat-close-btn { color: #606060; }
+        body.light-theme .chat-close-btn:hover { background: rgba(0, 0, 0, 0.05); }
+        body.light-theme .chat-header::before { background: #d0d0d0; }
+        body.light-theme .affiliate-item { background: #ffffff; border: 1px solid #e0e0e0; }
+        body.light-theme .affiliate-item:hover { background: #f0f0f0; }
+        body.light-theme .affiliate-item.active-affiliate { border-color: #a000ff; background: #f5eeff; }
+        body.light-theme .affiliate-number { background: linear-gradient(135deg, #a000ff, #2d5bff); }
+        body.light-theme .affiliate-label { color: #0f0f0f; }
+        body.light-theme .affiliate-sublabel { color: #606060; }
+        body.light-theme .no-affiliates-text { color: #606060; }
+        body.light-theme .loading, body.light-theme .error { color: #606060; }
+        body.light-theme .error { color: #a000ff; }
+        body.light-theme ::-webkit-scrollbar-track { background: #f5f5f5; }
+        body.light-theme ::-webkit-scrollbar-thumb { background: #c0c0c0; }
+        body.light-theme ::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+        body.light-theme .browser-block { background: #ffffff; }
+        body.light-theme .browser-block-title { color: #0f0f0f; }
+        body.light-theme .browser-block-message { color: #606060; }
+        .player-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh; background: #0f0f0f; display: flex; flex-direction: column; }
+        .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: visible; flex-shrink: 0; }
+        #video-player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+        .video-wrapper.transitioning { visibility: hidden; }
+        .progress-divider { width: 100%; height: 2px; background: linear-gradient(to right, #a000ff, #2d5bff); position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-divider.show { opacity: 1; }
+        .progress-divider-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: linear-gradient(to right, #a000ff, #2d5bff); transition: width 0.1s linear; position: relative; }
+        .progress-divider-ball { position: absolute; top: 50%; right: 0; transform: translateY(-50%); width: 10px; height: 10px; background: #2d5bff; border-radius: 50%; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+        body.is-landscape .channels-section { display: none !important; }
+        body.is-landscape .progress-divider { display: none !important; }
+        body.is-landscape .info-text { display: none !important; }
+        body.is-landscape .chat-btn { display: none !important; }
+        .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; }
+        .video-header { position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); padding: 12px 16px; z-index: 6; display: flex; align-items: center; gap: 12px; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+        .video-header.show { opacity: 1; pointer-events: all; }
+        .video-title { flex: 1; font-size: 16px; font-weight: 400; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chat-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px; border-radius: 50%; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: background 0.2s; position: relative; }
+        .chat-btn:hover { background: rgba(255,255,255,0.15); }
+        .chat-btn:active { transform: scale(0.95); }
+        .chat-btn svg { width: 20px; height: 20px; }
+        .affiliate-badge { position: absolute; top: 4px; right: 4px; background: linear-gradient(135deg, #a000ff, #2d5bff); color: white; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1; display: none; }
+        .affiliate-badge.show { display: flex; }
+        .player-container.fullscreen .chat-btn { display: none !important; }
+        .chat-drawer { position: fixed; bottom: 0; left: 0; right: 0; height: 56vh; background: #1a1a1a; transform: translateY(100%); transition: transform 0.3s ease, height 0.3s ease; z-index: 1000; display: flex; flex-direction: column; border-top-left-radius: 10px; border-top-right-radius: 10px; box-shadow: 0 -4px 12px rgba(0,0,0,0.3); touch-action: none; }
+        .chat-drawer.open { transform: translateY(0); }
+        .chat-drawer.expanded { height: calc(100vh - 90px); border-top-left-radius: 10px; border-top-right-radius: 10px; }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #2a2a2a; background: #1f1f1f; border-top-left-radius: 10px; border-top-right-radius: 10px; cursor: grab; position: relative; flex-shrink: 0; }
+        .chat-drawer.expanded .chat-header { border-top-left-radius: 10px; border-top-right-radius: 10px; }
+        .chat-header:active { cursor: grabbing; }
+        .chat-header::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: #444; border-radius: 2px; }
+        .chat-title { font-size: 17px; font-weight: 600; background: linear-gradient(135deg, #a000ff, #2d5bff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 8px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chat-header-right { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .affiliate-count-badge { background: linear-gradient(135deg, #a000ff, #2d5bff); color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .chat-close-btn { background: none; border: none; color: #aaa; font-size: 32px; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; line-height: 1; }
+        .chat-close-btn:hover { background: rgba(255,255,255,0.1); }
+        .chat-close-btn:active { transform: scale(0.9); }
+        .chat-content { flex: 1; overflow-y: auto; padding: 12px 16px; }
+        .affiliates-list { display: flex; flex-direction: column; gap: 10px; }
+        .affiliate-item { display: flex; align-items: center; gap: 14px; background: #252525; border: 1.5px solid #333; border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s; position: relative; }
+        .affiliate-item:hover { background: #2e2e2e; border-color: #555; }
+        .affiliate-item:active { transform: scale(0.98); }
+        .affiliate-item.active-affiliate { border-color: #a000ff; background: #1e0030; }
+        .affiliate-info { flex: 1; min-width: 0; }
+        .affiliate-label { font-size: 14px; font-weight: 500; color: #f1f1f1; margin-bottom: 2px; }
+        .affiliate-sublabel { font-size: 11px; color: #888; }
+        .affiliate-live-dot { width: 7px; height: 7px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+        .affiliate-item.active-affiliate .affiliate-live-dot { background: #00e676; }
+        .affiliate-play-icon { color: #666; font-size: 18px; flex-shrink: 0; }
+        .affiliate-item.active-affiliate .affiliate-play-icon { color: #a000ff; }
+        .no-affiliates { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; height: 100%; }
+        .no-affiliates-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.5; }
+        .no-affiliates-title { font-size: 16px; font-weight: 600; color: #f1f1f1; margin-bottom: 6px; }
+        .no-affiliates-text { font-size: 13px; color: #888; line-height: 1.5; }
+        .video-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 40px 16px 12px; z-index: 6; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+        .video-controls.show { opacity: 1; pointer-events: all; }
+        .controls-row { display: flex; align-items: center; gap: 12px; }
+        .control-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        .control-btn:active { transform: scale(0.9); }
+        .spacer { flex: 1; }
+        .live-badge { background: transparent; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: 500; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .live-badge-dot { width: 7px; height: 7px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        .info-text { width: 100%; text-align: center; margin: 0; padding: 10px 30px; font-size: 10px; color: #888; background: #0f0f0f; line-height: 1.4; }
+        .channels-section { flex: 1; background: #0f0f0f; overflow-y: auto; padding: 0; }
+        .channels-list { padding: 8px 0; }
+        .channel-item { display: flex; padding: 8px 16px; cursor: pointer; transition: background 0.2s; gap: 12px; align-items: flex-start; border-left: 3px solid transparent; }
+        .channel-item:hover { background: #272727; }
+        .channel-item.active { background: #272727; border-left-color: #a000ff; }
+        .channel-thumbnail { width: 120px; height: 70px; border-radius: 8px; background: linear-gradient(135deg, #a000ff, #2d5bff); flex-shrink: 0; position: relative; overflow: hidden; }
+        .channel-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+        .channel-thumbnail::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; }
+        .thumbnail-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: 700; color: #a000ff; }
+        .thumbnail-plays-badge { display: none; }
+        .channel-name-row { display: flex; align-items: flex-start; gap: 6px; justify-content: space-between; }
+        .channel-name { font-size: 14px; font-weight: 500; color: #f1f1f1; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; flex: 1; }
+        .channel-plays-badge { background: linear-gradient(135deg, #a000ff, #2d5bff); color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.3px; }
+        .affiliate-logo-wrap { width: 100px; height: 60px; border-radius: 8px; background: linear-gradient(135deg, #a000ff, #2d5bff); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0; }
+        .affiliate-logo-img { width: 90px; height: 65px; object-fit: contain; flex-shrink: 0; }
+        .affiliate-logo-fallback { font-size: 28px; font-weight: 700; color: white; }
+        .channel-info { flex: 1; min-width: 0; padding-top: 2px; }
+        .channel-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+        .channel-category { font-size: 12px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .live-indicator { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #aaa; }
+        .live-dot { width: 6px; height: 6px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.8); } }
+        .loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .loading-screen.show { opacity: 1; pointer-events: all; }
+        .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #a000ff; border-right-color: #2d5bff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading, .error { text-align: center; padding: 32px 16px; color: #aaa; font-size: 14px; }
+        .error { color: #a000ff; }
+        .player-error-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 20px; text-align: center; }
+        .player-error-screen.show { opacity: 1; pointer-events: none; }
+        .player-error-icon { font-size: 40px; margin-bottom: 12px; line-height: 1; opacity: 0.5; }
+        .player-error-title { font-size: 15px; font-weight: 600; color: #f1f1f1; margin-bottom: 6px; line-height: 1.4; }
+        .player-error-subtitle { font-size: 12px; color: #888; margin-bottom: 18px; line-height: 1.5; max-width: 260px; }
+        .player-error-btn { background: linear-gradient(135deg, #a000ff, #2d5bff); color: #fff; border: none; padding: 10px 28px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.3px; }
+        .player-error-btn:hover { opacity: 0.85; }
+        .player-error-btn:active { transform: scale(0.96); }
+        .player-error-screen.unavailable .player-error-icon { opacity: 0.5; }
+        .player-error-screen.unavailable .player-error-btn { background: #333; color: #ccc; }
+        .player-error-screen.unavailable .player-error-btn:hover { background: #444; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0f0f; }
+        ::-webkit-scrollbar-thumb { background: #3f3f3f; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5f5f5f; }
+        .player-container.fullscreen { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; height: 100dvh !important; z-index: 999999 !important; }
+        .player-container.fullscreen .video-wrapper { padding-top: 0 !important; width: 100% !important; height: 100% !important; }
+        .player-container.fullscreen .channels-section { display: none !important; }
+        .player-container.fullscreen .progress-divider { display: none !important; }
+        .player-container.fullscreen .info-text { display: none !important; }
+        html:fullscreen, html:-webkit-full-screen, html:-moz-full-screen, html:-ms-fullscreen { width: 100vw !important; height: 100vh !important; height: 100dvh !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+        body:fullscreen, body:-webkit-full-screen, body:-moz-full-screen, body:-ms-fullscreen { width: 100vw !important; height: 100vh !important; height: 100dvh !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+        :fullscreen { width: 100vw !important; height: 100vh !important; height: 100dvh !important; overflow: hidden !important; }
+        :-webkit-full-screen { width: 100vw !important; height: 100vh !important; height: 100dvh !important; overflow: hidden !important; }
+        :-moz-full-screen { width: 100vw !important; height: 100vh !important; height: 100dvh !important; overflow: hidden !important; }
+        :-ms-fullscreen { width: 100vw !important; height: 100vh !important; height: 100dvh !important; overflow: hidden !important; }
+        .browser-block { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f0f0f; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; }
+        .browser-block.show { display: flex; }
+        .browser-block-logo { width: 100px; height: 100px; margin-bottom: 24px; object-fit: contain; }
+        .browser-block-title { font-size: 24px; font-weight: 600; color: #f1f1f1; margin-bottom: 16px; }
+        .browser-block-message { font-size: 16px; color: #aaa; line-height: 1.6; margin-bottom: 32px; max-width: 400px; }
+        .browser-block-btn { background: #0066ff; color: white; border: none; padding: 16px 48px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.3s; }
+        .browser-block-btn:hover { background: #0052cc; }
+        .browser-block-btn:active { transform: scale(0.98); }
+        .rotation-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .rotation-overlay.show { display: flex; }
+        .rotation-icon { font-size: 64px; margin-bottom: 24px; animation: rotate-hint 2s ease-in-out infinite; }
+        @keyframes rotate-hint { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
+        .rotation-text { font-size: 18px; text-align: center; padding: 0 32px; line-height: 1.6; }
     </style>
 </head>
 <body>
-    <!-- Tela de Bloqueio de Navegador -->
     <div class="browser-block" id="browser-block">
         <img src="https://raw.githubusercontent.com/vittopayver/tv/refs/heads/main/img/internet.png" alt="G-Hub TV" class="browser-block-logo">
         <div class="browser-block-title">HeyTap Browser</div>
-        <div class="browser-block-message">
-            Para assistir à G-Hub TV, você precisa usar o navegador HeyTap. 
-            Baixe o aplicativo oficial caso não tenha no seu dispositivo.
-        </div>
-        <a href="https://play.google.com/store/apps/details?id=com.heytap.browser" class="browser-block-btn" target="_blank">
-            Baixar Agora 
-        </a>
+        <div class="browser-block-message">Para assistir à G-Hub TV, você precisa usar o navegador HeyTap. Baixe o aplicativo oficial caso não tenha no seu dispositivo.</div>
+        <a href="https://play.google.com/store/apps/details?id=com.heytap.browser" class="browser-block-btn" target="_blank">Baixar Agora</a>
     </div>
     
-    <!-- Overlay de Rotação -->
     <div class="rotation-overlay" id="rotation-overlay">
         <div class="rotation-icon">📱</div>
         <div class="rotation-text">Por favor, rotacione seu dispositivo para o modo paisagem para aproveitar a tela cheia</div>
     </div>
     
     <div class="player-container" id="player-container">
-        <!-- Video Wrapper -->
         <div class="video-wrapper" id="video-wrapper">
             <video id="video-player" preload="auto" muted playsinline webkit-playsinline></video>
-            
             <div class="click-overlay" id="click-overlay"></div>
-            
-            <!-- Header -->
             <div class="video-header" id="video-header">
                 <div class="video-title" id="video-title">Carregando...</div>
                 <button class="chat-btn" id="chat-btn" title="Canais da lista">
@@ -1205,57 +201,35 @@
                     <span class="affiliate-badge" id="affiliate-badge"></span>
                 </button>
             </div>
-            
-            <!-- Controls -->
             <div class="video-controls" id="video-controls">
                 <div class="controls-row">
-                    <div class="live-badge">
-                        <div class="live-badge-dot"></div>
-                        G-Hub Tv
-                    </div>
+                    <div class="live-badge"><div class="live-badge-dot"></div>G-Hub Tv</div>
                     <div class="spacer"></div>
                     <button class="control-btn" id="fullscreen-btn">
                         <svg id="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                            <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
-                            <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
-                            <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
-                            <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                            <path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
                         </svg>
                     </button>
                 </div>
             </div>
-            
-            <div class="loading-screen" id="loading-screen">
-                <div class="spinner"></div>
-            </div>
-
-            <!-- Tela de Erro: Canal indisponível -->
+            <div class="loading-screen" id="loading-screen"><div class="spinner"></div></div>
             <div class="player-error-screen unavailable" id="player-error-unavailable">
                 <div class="player-error-icon">📡</div>
                 <div class="player-error-title">Canal indisponível no momento</div>
                 <div class="player-error-subtitle">Este canal está temporariamente fora do ar. Tente outro canal ou volte mais tarde.</div>
             </div>
-
-            <!-- Barra Divisória com Progresso -->
             <div class="progress-divider" id="progress-divider">
                 <div class="progress-divider-fill" id="progress-divider-fill"></div>
                 <div class="progress-divider-ball" id="progress-divider-ball"></div>
             </div>
         </div>
-        
-        <!-- Texto Informativo -->
-        <div class="info-text">
-De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, com canais sempre atualizados.        </div>
-        
-        <!-- Channels Section -->
+        <div class="info-text">De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, com canais sempre atualizados.</div>
         <div class="channels-section" id="channels-section">
-            <div class="channels-list" id="channels-list">
-                <div class="loading">Carregando canais...</div>
-            </div>
+            <div class="channels-list" id="channels-list"><div class="loading">Carregando canais...</div></div>
         </div>
     </div>
     
-    <!-- Gaveta de Canais da Lista -->
     <div class="chat-drawer" id="chat-drawer">
         <div class="chat-header" id="chat-header">
             <div class="chat-title" id="drawer-title">Canais da lista</div>
@@ -1264,34 +238,26 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 <button class="chat-close-btn" id="chat-close-btn">×</button>
             </div>
         </div>
-        <div class="chat-content" id="chat-content">
-            <!-- Preenchido dinamicamente -->
-        </div>
+        <div class="chat-content" id="chat-content"></div>
     </div>
 
     <script>
         // ===== PROTEÇÃO CONTRA INSPEÇÃO =====
         (function() {
             'use strict';
-            
             const devtoolsDetector = () => {
                 const threshold = 160;
-                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                if (widthThreshold || heightThreshold) {
+                if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
                     window.location.reload();
                 }
             };
-            
             document.addEventListener('contextmenu', e => e.preventDefault());
-            
             document.addEventListener('keydown', e => {
                 if (e.keyCode === 123) { e.preventDefault(); return false; }
                 if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) { e.preventDefault(); return false; }
                 if (e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; }
                 if (e.ctrlKey && e.keyCode === 83) { e.preventDefault(); return false; }
             });
-            
             setInterval(devtoolsDetector, 1000);
             document.onselectstart = () => false;
             document.oncopy = () => false;
@@ -1300,57 +266,44 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
         document.addEventListener('DOMContentLoaded', function() {
             // ===== TEMA =====
             function applyTheme() {
-                const prefersLightScheme = window.matchMedia('(prefers-color-scheme: light)');
-                if (prefersLightScheme.matches) {
-                    document.body.classList.add('light-theme');
-                } else {
-                    document.body.classList.remove('light-theme');
-                }
+                if (window.matchMedia('(prefers-color-scheme: light)').matches) document.body.classList.add('light-theme');
+                else document.body.classList.remove('light-theme');
             }
-            
             applyTheme();
-            
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                document.body.classList.toggle('light-theme', !e.matches);
-            });
-            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-                document.body.classList.toggle('light-theme', e.matches);
-            });
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => document.body.classList.toggle('light-theme', !e.matches));
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => document.body.classList.toggle('light-theme', e.matches));
             
             // ===== DETECÇÃO DE NAVEGADOR =====
             function isHeyTapBrowser() {
-                const userAgent = navigator.userAgent.toLowerCase();
-                return userAgent.includes('heytapbrowser') || 
-                       userAgent.includes('heytap') ||
-                       userAgent.includes('oppo');
+                const ua = navigator.userAgent.toLowerCase();
+                return ua.includes('heytapbrowser') || ua.includes('heytap') || ua.includes('oppo');
             }
-            
             if (!isHeyTapBrowser()) {
                 document.getElementById('browser-block').classList.add('show');
                 document.getElementById('player-container').style.display = 'none';
                 return;
             }
             
-            const videoPlayer = document.getElementById('video-player');
-            const playerContainer = document.getElementById('player-container');
-            const videoWrapper = document.getElementById('video-wrapper');
-            const channelsList = document.getElementById('channels-list');
-            const clickOverlay = document.getElementById('click-overlay');
-            const loadingScreen = document.getElementById('loading-screen');
-            const videoHeader = document.getElementById('video-header');
-            const videoTitle = document.getElementById('video-title');
-            const videoControls = document.getElementById('video-controls');
-            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const videoPlayer       = document.getElementById('video-player');
+            const playerContainer   = document.getElementById('player-container');
+            const videoWrapper      = document.getElementById('video-wrapper');
+            const channelsList      = document.getElementById('channels-list');
+            const clickOverlay      = document.getElementById('click-overlay');
+            const loadingScreen     = document.getElementById('loading-screen');
+            const videoHeader       = document.getElementById('video-header');
+            const videoTitle        = document.getElementById('video-title');
+            const videoControls     = document.getElementById('video-controls');
+            const fullscreenBtn     = document.getElementById('fullscreen-btn');
             const progressDividerFill = document.getElementById('progress-divider-fill');
-            const chatBtn = document.getElementById('chat-btn');
-            const chatDrawer = document.getElementById('chat-drawer');
-            const chatHeader = document.getElementById('chat-header');
-            const chatCloseBtn = document.getElementById('chat-close-btn');
-            const rotationOverlay = document.getElementById('rotation-overlay');
-            const drawerTitle = document.getElementById('drawer-title');
-            const affiliateBadge = document.getElementById('affiliate-badge');
+            const chatBtn           = document.getElementById('chat-btn');
+            const chatDrawer        = document.getElementById('chat-drawer');
+            const chatHeader        = document.getElementById('chat-header');
+            const chatCloseBtn      = document.getElementById('chat-close-btn');
+            const rotationOverlay   = document.getElementById('rotation-overlay');
+            const drawerTitle       = document.getElementById('drawer-title');
+            const affiliateBadge    = document.getElementById('affiliate-badge');
             const affiliateCountBadge = document.getElementById('affiliate-count-badge');
-            const chatContent = document.getElementById('chat-content');
+            const chatContent       = document.getElementById('chat-content');
             const playerErrorUnavailable = document.getElementById('player-error-unavailable');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
@@ -1365,149 +318,135 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
             // ===== HLS INSTANCE MANAGER =====
             let hlsInstance = null;
-
             function destroyHls() {
-                if (hlsInstance) {
-                    hlsInstance.destroy();
-                    hlsInstance = null;
-                }
+                if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
             }
 
-            /**
-             * Carrega qualquer URL no player de forma universal:
-             * - HLS nativo (Safari/iOS): usa <video src> diretamente
-             * - HLS não nativo: usa hls.js
-             * - Outros formatos (mp4, ts, etc): usa <video src> diretamente
-             */
+            // ===== loadMediaUrl — ÚNICA FUNÇÃO ALTERADA =====
+            // Suporta qualquer stream: HLS com ou sem .m3u8 na URL, mp4, ts, etc.
+            // Estratégia: HLS.js primeiro → fallback para <video src> nativo se falhar.
             function loadMediaUrl(realUrl, onReady, onFail) {
                 destroyHls();
                 videoPlayer.removeAttribute('src');
-                videoPlayer.load();
+                try { videoPlayer.load(); } catch(_) {}
 
-                const isHls = /\.m3u8/i.test(realUrl) || /hls/i.test(realUrl);
+                // ── Tenta com HLS.js (suporta qualquer stream ao vivo, inclusive sem .m3u8 na URL)
+                if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                    let done = false;
 
-                if (isHls && Hls.isSupported()) {
-                    // Usar hls.js para navegadores sem suporte nativo
+                    const timer = setTimeout(function() {
+                        if (done) return;
+                        done = true;
+                        destroyHls();
+                        tryNative(onReady, onFail); // Fallback nativo se timeout
+                    }, 20000);
+
                     const hls = new Hls({
                         enableWorker: true,
-                        lowLatencyMode: true,
-                        backBufferLength: 30,
-                        maxBufferLength: 60,
-                        maxMaxBufferLength: 120,
-                        fragLoadingTimeOut: 15000,
-                        manifestLoadingTimeOut: 15000,
-                        levelLoadingTimeOut: 15000,
+                        lowLatencyMode: false,
+                        backBufferLength: 60,
+                        maxBufferLength: 90,
+                        maxMaxBufferLength: 180,
+                        fragLoadingTimeOut: 20000,
+                        manifestLoadingTimeOut: 20000,
+                        levelLoadingTimeOut: 20000,
+                        fragLoadingMaxRetry: 3,
+                        manifestLoadingMaxRetry: 3,
+                        levelLoadingMaxRetry: 3,
                     });
                     hlsInstance = hls;
-
                     hls.loadSource(realUrl);
                     hls.attachMedia(videoPlayer);
 
                     hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        if (done) return;
+                        done = true;
+                        clearTimeout(timer);
                         onReady();
                     });
 
                     hls.on(Hls.Events.ERROR, function(event, data) {
-                        if (data.fatal) {
-                            destroyHls();
-                            onFail();
+                        if (!data.fatal || done) return;
+                        if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                            hls.recoverMediaError(); // Tenta recuperar erro de codec
+                            return;
                         }
+                        done = true;
+                        clearTimeout(timer);
+                        destroyHls();
+                        tryNative(onReady, onFail); // Fallback nativo se HLS.js falhar
                     });
 
-                } else if (isHls && videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Safari com suporte nativo a HLS
-                    videoPlayer.src = realUrl;
-                    videoPlayer.load();
+                    return;
+                }
 
-                    const onCanPlay = () => { cleanup(); onReady(); };
-                    const onErr = () => { cleanup(); onFail(); };
-                    const timer = setTimeout(() => { cleanup(); onFail(); }, 15000);
+                // ── Fallback direto: HLS nativo (Safari) ou qualquer outro formato
+                tryNative(onReady, onFail);
 
+                function tryNative(readyCb, failCb) {
+                    destroyHls();
+                    let done = false;
+                    const timer = setTimeout(function() {
+                        if (done) return;
+                        done = true; cleanup(); failCb();
+                    }, 20000);
                     function cleanup() {
                         clearTimeout(timer);
-                        videoPlayer.removeEventListener('canplay', onCanPlay);
+                        videoPlayer.removeEventListener('canplay', onOk);
+                        videoPlayer.removeEventListener('loadeddata', onOk);
                         videoPlayer.removeEventListener('error', onErr);
                     }
-
-                    videoPlayer.addEventListener('canplay', onCanPlay);
+                    function onOk() { if (done) return; done = true; cleanup(); readyCb(); }
+                    function onErr() { if (done) return; done = true; cleanup(); failCb(); }
+                    videoPlayer.addEventListener('canplay', onOk);
+                    videoPlayer.addEventListener('loadeddata', onOk);
                     videoPlayer.addEventListener('error', onErr);
-
-                } else {
-                    // Outros formatos (mp4, ts, etc.)
                     videoPlayer.src = realUrl;
                     videoPlayer.load();
-
-                    const onCanPlay = () => { cleanup(); onReady(); };
-                    const onErr = () => { cleanup(); onFail(); };
-                    const timer = setTimeout(() => { cleanup(); onFail(); }, 15000);
-
-                    function cleanup() {
-                        clearTimeout(timer);
-                        videoPlayer.removeEventListener('canplay', onCanPlay);
-                        videoPlayer.removeEventListener('error', onErr);
-                    }
-
-                    videoPlayer.addEventListener('canplay', onCanPlay);
-                    videoPlayer.addEventListener('error', onErr);
                 }
             }
 
             // ===== OBFUSCAÇÃO =====
             const urlProxy = new Map();
             let urlCounter = 0;
-            
             const obfuscateUrl = (url) => {
                 const token = `__vid_${urlCounter++}_${Math.random().toString(36).substr(2, 9)}`;
                 urlProxy.set(token, url);
                 return token;
             };
-            
-            const deobfuscateUrl = (token) => {
-                return urlProxy.get(token) || '';
-            };
+            const deobfuscateUrl = (token) => urlProxy.get(token) || '';
 
             // ===== WAKE LOCK =====
-            let wakeLock = null;
-            let screenKeepAliveInterval = null;
-            let noSleepVideo = null;
+            let wakeLock = null, screenKeepAliveInterval = null, noSleepVideo = null;
 
             async function tryWakeLockAPI() {
                 try {
                     if ('wakeLock' in navigator && document.visibilityState === 'visible') {
                         if (wakeLock && !wakeLock.released) return true;
                         wakeLock = await navigator.wakeLock.request('screen');
-                        wakeLock.addEventListener('release', () => {
-                            wakeLock = null;
-                            if (document.visibilityState === 'visible') setTimeout(tryWakeLockAPI, 200);
-                        });
+                        wakeLock.addEventListener('release', () => { wakeLock = null; if (document.visibilityState === 'visible') setTimeout(tryWakeLockAPI, 200); });
                         return true;
                     }
-                } catch (err) {}
+                } catch(err) {}
                 return false;
             }
 
             function startNoSleepVideo() {
                 if (noSleepVideo) return;
                 noSleepVideo = document.createElement('video');
-                noSleepVideo.setAttribute('playsinline', '');
-                noSleepVideo.setAttribute('webkit-playsinline', '');
-                noSleepVideo.setAttribute('muted', '');
-                noSleepVideo.muted = true;
-                noSleepVideo.loop = true;
+                noSleepVideo.setAttribute('playsinline', ''); noSleepVideo.setAttribute('webkit-playsinline', ''); noSleepVideo.setAttribute('muted', '');
+                noSleepVideo.muted = true; noSleepVideo.loop = true;
                 noSleepVideo.style.cssText = 'position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0.001;pointer-events:none;z-index:-1;';
                 const mp4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28ybXA0MQAAAAhmcmVlAAAA/21kYXQAAAA=';
                 const webm = 'data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8oEEQvOBCEKChHdlYm1Ch4ECQoWBAhhTgGcBAAAAAAAVkhFNm3RALE27i1OrhBVJqWZTrIHfTbuMU6uEFlSua1OsggEwTbuMU6uEHFO7a1OsggI27AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmAAAAAAAEAAAABgIBIwAA';
                 const s1 = document.createElement('source'); s1.src = mp4; s1.type = 'video/mp4';
                 const s2 = document.createElement('source'); s2.src = webm; s2.type = 'video/webm';
-                noSleepVideo.appendChild(s1);
-                noSleepVideo.appendChild(s2);
+                noSleepVideo.appendChild(s1); noSleepVideo.appendChild(s2);
                 document.body.appendChild(noSleepVideo);
                 noSleepVideo.play().catch(() => {});
             }
 
-            function stopNoSleepVideo() {
-                if (noSleepVideo) { noSleepVideo.pause(); noSleepVideo.remove(); noSleepVideo = null; }
-            }
+            function stopNoSleepVideo() { if (noSleepVideo) { noSleepVideo.pause(); noSleepVideo.remove(); noSleepVideo = null; } }
 
             function startScreenActivity() {
                 if (screenKeepAliveInterval) return;
@@ -1518,26 +457,12 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 screenKeepAliveInterval = setInterval(() => { ghost.style.transform = `translateX(${tick % 2}px)`; tick++; }, 20000);
             }
 
-            function stopScreenActivity() {
-                if (screenKeepAliveInterval) { clearInterval(screenKeepAliveInterval); screenKeepAliveInterval = null; }
-            }
+            function stopScreenActivity() { if (screenKeepAliveInterval) { clearInterval(screenKeepAliveInterval); screenKeepAliveInterval = null; } }
 
-            async function enableKeepScreenOn() {
-                await tryWakeLockAPI();
-                startNoSleepVideo();
-                startScreenActivity();
-            }
-
+            async function enableKeepScreenOn() { await tryWakeLockAPI(); startNoSleepVideo(); startScreenActivity(); }
             async function forceWakeLock() {
-                if (wakeLock && !wakeLock.released) { try { await wakeLock.release(); } catch (_) {} wakeLock = null; }
+                if (wakeLock && !wakeLock.released) { try { await wakeLock.release(); } catch(_) {} wakeLock = null; }
                 await enableKeepScreenOn();
-            }
-
-            async function releaseWakeLock() {
-                stopScreenActivity();
-                stopNoSleepVideo();
-                if (wakeLock && !wakeLock.released) { try { await wakeLock.release(); } catch (_) {} }
-                wakeLock = null;
             }
 
             enableKeepScreenOn();
@@ -1545,55 +470,36 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             document.addEventListener('visibilitychange', async () => {
                 if (document.visibilityState === 'visible') {
                     await enableKeepScreenOn();
-                    if (videoPlayer && videoPlayer.paused && currentChannelIndex >= 0) {
-                        videoPlayer.play().catch(() => {});
-                    }
+                    if (videoPlayer && videoPlayer.paused && currentChannelIndex >= 0) videoPlayer.play().catch(() => {});
                     if (isFullscreen) hideAddressBar();
                 }
             });
-
-            document.addEventListener('touchstart', () => {
-                if (document.visibilityState === 'visible') enableKeepScreenOn();
-            }, { passive: true });
+            document.addEventListener('touchstart', () => { if (document.visibilityState === 'visible') enableKeepScreenOn(); }, { passive: true });
             
-            // ===== CONTROLE DO BOTÃO VOLTAR =====
+            // ===== BOTÃO VOLTAR =====
             let backHandlerActive = false;
-
-            function activateBackHandler() {
-                if (backHandlerActive) return;
-                backHandlerActive = true;
-                window.history.pushState({ appState: true }, '');
-            }
-
+            function activateBackHandler() { if (backHandlerActive) return; backHandlerActive = true; window.history.pushState({ appState: true }, ''); }
             function deactivateBackHandler() { backHandlerActive = false; }
 
             window.addEventListener('popstate', async function(e) {
                 if (!e.state || !e.state.appState) { deactivateBackHandler(); return; }
                 if (isFullscreen) {
-                    await exitFullscreen();
-                    enableKeepScreenOn();
+                    await exitFullscreen(); enableKeepScreenOn();
                     if (chatDrawer.classList.contains('open')) activateBackHandler();
                     return;
                 }
                 if (chatDrawer.classList.contains('open')) { closeChat(); return; }
-                deactivateBackHandler();
-                window.history.back();
+                deactivateBackHandler(); window.history.back();
             });
             
-            // ===== GAVETA DE CANAIS =====
-            let isDragging = false;
-            let startY = 0;
-            let currentY = 0;
-            let drawerHeight = 0;
-            let isExpanded = false;
+            // ===== GAVETA =====
+            let isDragging = false, startY = 0, currentY = 0, drawerHeight = 0, isExpanded = false;
 
             function renderAffiliates(channelIndex, currentName) {
                 if (channelIndex < 0 || channelIndex >= channels.length) return;
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
-
                 drawerTitle.textContent = currentName || channel.name;
-
                 if (affiliates.length > 0) {
                     const total = affiliates.length + 1;
                     affiliateCountBadge.textContent = total + ' canais';
@@ -1604,57 +510,29 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     affiliateCountBadge.style.display = 'none';
                     affiliateBadge.classList.remove('show');
                 }
-
                 if (affiliates.length === 0) {
-                    chatContent.innerHTML = `
-                        <div class="no-affiliates">
-                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:linear-gradient(135deg,#a000ff,#2d5bff);padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}
-                            <div class="no-affiliates-title">Sem canais alternativos</div>
-                            <div class="no-affiliates-text">Este canal não possui strimeng similares.</div>
-                        </div>
-                    `;
+                    chatContent.innerHTML = `<div class="no-affiliates">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:linear-gradient(135deg,#a000ff,#2d5bff);padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}<div class="no-affiliates-title">Sem canais alternativos</div><div class="no-affiliates-text">Este canal não possui strimeng similares.</div></div>`;
                     return;
                 }
-
                 chatContent.innerHTML = '';
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
-
                 const allItems = [
                     { token: channel.url, label: channel.name || 'Ao vivo', isMain: true },
                     ...affiliates.map(af => ({ token: af.token, label: af.name || 'Ao vivo', isMain: false }))
                 ];
-
                 allItems.forEach((entry, idx) => {
                     const isActive = idx === currentAffiliateIndex;
                     const item = document.createElement('div');
                     item.className = 'affiliate-item' + (isActive ? ' active-affiliate' : '');
-                    item.innerHTML = `
-                        <div class="affiliate-logo-wrap">
-                            ${channel.logo
-                                ? `<img src="${channel.logo}" alt="${channel.name}" class="affiliate-logo-img">`
-                                : `<div class="affiliate-logo-fallback">${channel.name.charAt(0)}</div>`}
-                        </div>
-                        <div class="affiliate-info">
-                            <div class="affiliate-label">${entry.label}</div>
-                            <div class="affiliate-sublabel">Ao vivo</div>
-                        </div>
-                        <div class="affiliate-live-dot"></div>
-                        <div class="affiliate-play-icon">${isActive ? '▶' : '○'}</div>
-                    `;
+                    item.innerHTML = `<div class="affiliate-logo-wrap">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" class="affiliate-logo-img">` : `<div class="affiliate-logo-fallback">${channel.name.charAt(0)}</div>`}</div><div class="affiliate-info"><div class="affiliate-label">${entry.label}</div><div class="affiliate-sublabel">Ao vivo</div></div><div class="affiliate-live-dot"></div><div class="affiliate-play-icon">${isActive ? '▶' : '○'}</div>`;
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        if (idx === 0) {
-                            playChannel(channelIndex, true);
-                            currentAffiliateIndex = 0;
-                            renderAffiliates(channelIndex, channel.name);
-                        } else {
-                            playAffiliate(channelIndex, idx - 1);
-                        }
+                        if (idx === 0) { playChannel(channelIndex, true); currentAffiliateIndex = 0; renderAffiliates(channelIndex, channel.name); }
+                        else { playAffiliate(channelIndex, idx - 1); }
                     });
                     list.appendChild(item);
                 });
-
                 chatContent.appendChild(list);
             }
 
@@ -1663,153 +541,67 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
                 if (affiliateIdx < 0 || affiliateIdx >= affiliates.length) return;
-
                 currentAffiliateIndex = affiliateIdx + 1;
-
-                _clearStall();
-                _removeStallListeners();
-                destroyHls();
-
+                _clearStall(); _removeStallListeners(); destroyHls();
                 hideAllErrorScreens();
                 loadingScreen.classList.add('show');
                 document.getElementById('progress-divider').classList.remove('show');
-
                 const affiliateName = affiliates[affiliateIdx].name || channel.name;
                 videoTitle.textContent = affiliateName;
                 drawerTitle.textContent = affiliateName;
-
                 const realUrl = deobfuscateUrl(affiliates[affiliateIdx].token);
-
-                loadMediaUrl(
-                    realUrl,
-                    () => {
-                        // onReady
-                        videoPlayer.muted = false;
-                        document.getElementById('progress-divider').classList.add('show');
-                        videoPlayer.play().catch(() => {});
-                        setTimeout(() => {
-                            loadingScreen.classList.remove('show');
-                            hideAllErrorScreens();
-                            showControls();
-                            _attachStallListeners();
-                        }, 300);
-                    },
-                    () => {
-                        // onFail
-                        _triggerError();
-                    }
-                );
-
+                loadMediaUrl(realUrl, () => {
+                    videoPlayer.muted = false;
+                    document.getElementById('progress-divider').classList.add('show');
+                    videoPlayer.play().catch(() => {});
+                    setTimeout(() => { loadingScreen.classList.remove('show'); hideAllErrorScreens(); showControls(); _attachStallListeners(); }, 300);
+                }, () => { _triggerError(); });
                 renderAffiliates(channelIndex, affiliateName);
             }
             
-            function openChat() {
-                renderAffiliates(currentChannelIndex, null);
-                chatContent.scrollTop = 0;
-                chatDrawer.classList.add('open');
-                activateBackHandler();
-            }
-            
+            function openChat() { renderAffiliates(currentChannelIndex, null); chatContent.scrollTop = 0; chatDrawer.classList.add('open'); activateBackHandler(); }
             function closeChat() {
                 chatDrawer.classList.remove('open');
-                setTimeout(() => {
-                    chatDrawer.style.height = '56vh';
-                    chatDrawer.classList.remove('expanded');
-                    isExpanded = false;
-                    chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
-                }, 300);
+                setTimeout(() => { chatDrawer.style.height = '56vh'; chatDrawer.classList.remove('expanded'); isExpanded = false; chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease'; }, 300);
             }
             
-            chatBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                openChat();
-            });
-            
-            chatCloseBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                closeChat();
-            });
+            chatBtn.addEventListener('click', e => { e.stopPropagation(); openChat(); });
+            chatCloseBtn.addEventListener('click', e => { e.stopPropagation(); closeChat(); });
             
             chatHeader.addEventListener('touchstart', function(e) {
                 if (!chatDrawer.classList.contains('open')) return;
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                drawerHeight = chatDrawer.offsetHeight;
-                chatDrawer.style.transition = 'none';
+                isDragging = true; startY = e.touches[0].clientY; drawerHeight = chatDrawer.offsetHeight; chatDrawer.style.transition = 'none';
             }, { passive: true });
-            
             chatHeader.addEventListener('touchmove', function(e) {
                 if (!isDragging) return;
                 currentY = e.touches[0].clientY;
                 const deltaY = startY - currentY;
-                if (deltaY > 0) {
-                    const newHeight = Math.min(window.innerHeight - 90, drawerHeight + deltaY);
-                    chatDrawer.style.height = newHeight + 'px';
-                    if (newHeight >= window.innerHeight - 100) { chatDrawer.classList.add('expanded'); isExpanded = true; }
-                } else {
-                    const newHeight = Math.max(window.innerHeight * 0.55, drawerHeight + deltaY);
-                    chatDrawer.style.height = newHeight + 'px';
-                    chatDrawer.classList.remove('expanded');
-                    isExpanded = false;
-                }
+                if (deltaY > 0) { const h = Math.min(window.innerHeight - 90, drawerHeight + deltaY); chatDrawer.style.height = h + 'px'; if (h >= window.innerHeight - 100) { chatDrawer.classList.add('expanded'); isExpanded = true; } }
+                else { const h = Math.max(window.innerHeight * 0.55, drawerHeight + deltaY); chatDrawer.style.height = h + 'px'; chatDrawer.classList.remove('expanded'); isExpanded = false; }
             }, { passive: true });
-            
             chatHeader.addEventListener('touchend', function(e) {
                 if (!isDragging) return;
-                isDragging = false;
-                chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
+                isDragging = false; chatDrawer.style.transition = 'transform 0.3s ease, height 0.3s ease';
                 const deltaY = startY - currentY;
-                if (deltaY < -100) {
-                    closeChat();
-                } else if (deltaY > 200 || isExpanded) {
-                    chatDrawer.style.height = 'calc(100vh - 90px)';
-                    chatDrawer.classList.add('expanded');
-                    isExpanded = true;
-                } else {
-                    chatDrawer.style.height = '56vh';
-                    chatDrawer.classList.remove('expanded');
-                    isExpanded = false;
-                }
+                if (deltaY < -100) { closeChat(); }
+                else if (deltaY > 200 || isExpanded) { chatDrawer.style.height = 'calc(100vh - 90px)'; chatDrawer.classList.add('expanded'); isExpanded = true; }
+                else { chatDrawer.style.height = '56vh'; chatDrawer.classList.remove('expanded'); isExpanded = false; }
             });
 
             // ===== ERRO =====
-            function hideAllErrorScreens() {
-                playerErrorUnavailable.classList.remove('show');
-            }
-
-            function showUnavailableScreen() {
-                loadingScreen.classList.remove('show');
-                hideAllErrorScreens();
-                playerErrorUnavailable.classList.add('show');
-            }
+            function hideAllErrorScreens() { playerErrorUnavailable.classList.remove('show'); }
+            function showUnavailableScreen() { loadingScreen.classList.remove('show'); hideAllErrorScreens(); playerErrorUnavailable.classList.add('show'); }
 
             // ===== STALL DETECTOR =====
-            // Aguarda mais tempo antes de declarar erro (carregamento natural)
             const STALL_LIMIT = 30000;
             let _stallTimer = null;
-
             function _clearStall() { if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; } }
-            function _triggerError() {
-                _clearStall();
-                _removeStallListeners();
-                loadingScreen.classList.remove('show');
-                showUnavailableScreen();
-            }
+            function _triggerError() { _clearStall(); _removeStallListeners(); loadingScreen.classList.remove('show'); showUnavailableScreen(); }
             function _onTimeUpdate() { _clearStall(); }
-            function _onPlaying() {
-                _clearStall();
-                // Remove a tela de erro se o vídeo começa a tocar normalmente
-                hideAllErrorScreens();
-                loadingScreen.classList.remove('show');
-            }
-            function _onWaiting() {
-                // Apenas mostra o spinner, NÃO a tela de erro imediatamente
-                loadingScreen.classList.add('show');
-                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
-            }
+            function _onPlaying() { _clearStall(); hideAllErrorScreens(); loadingScreen.classList.remove('show'); }
+            function _onWaiting() { loadingScreen.classList.add('show'); if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT); }
             function _onStalled() { if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT); }
             function _onVideoError() { _triggerError(); }
-
             function _removeStallListeners() {
                 videoPlayer.removeEventListener('timeupdate', _onTimeUpdate);
                 videoPlayer.removeEventListener('playing', _onPlaying);
@@ -1817,7 +609,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 videoPlayer.removeEventListener('stalled', _onStalled);
                 videoPlayer.removeEventListener('error', _onVideoError);
             }
-
             function _attachStallListeners() {
                 _removeStallListeners();
                 videoPlayer.addEventListener('timeupdate', _onTimeUpdate);
@@ -1828,160 +619,83 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             }
             
             // ===== ORIENTAÇÃO / FULLSCREEN =====
-            function checkOrientation() {
-                const orientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
-                isLandscape = orientation === 'landscape';
-                return orientation;
-            }
-            
+            function checkOrientation() { isLandscape = window.innerWidth > window.innerHeight; return isLandscape ? 'landscape' : 'portrait'; }
             function hideAddressBar() {
-                window.scrollTo(0, 1);
-                document.body.focus();
+                window.scrollTo(0, 1); document.body.focus();
                 setTimeout(() => { window.scrollTo(0, 0); }, 50);
-                if (window.visualViewport) {
-                    window.scrollTo(0, Math.max(0, window.visualViewport.offsetTop));
-                }
+                if (window.visualViewport) window.scrollTo(0, Math.max(0, window.visualViewport.offsetTop));
             }
             
             async function enterFullscreen() {
                 try {
-                    isFullscreen = true;
-                    playerContainer.classList.add('fullscreen');
-                    activateBackHandler();
-                    await forceWakeLock();
-                    setTimeout(enableKeepScreenOn, 600);
-                    setTimeout(enableKeepScreenOn, 1500);
-                    const currentOrientation = checkOrientation();
-                    if (currentOrientation === 'portrait') rotationOverlay.classList.add('show');
+                    isFullscreen = true; playerContainer.classList.add('fullscreen'); activateBackHandler();
+                    await forceWakeLock(); setTimeout(enableKeepScreenOn, 600); setTimeout(enableKeepScreenOn, 1500);
+                    if (checkOrientation() === 'portrait') rotationOverlay.classList.add('show');
                     const elem = document.documentElement;
-                    let fullscreenSuccess = false;
-                    const attempts = ['requestFullscreen', 'webkitRequestFullscreen', 'mozRequestFullScreen', 'msRequestFullscreen'];
-                    for (const method of attempts) {
-                        try {
-                            if (elem[method]) { await elem[method]({ navigationUI: 'hide' }); fullscreenSuccess = true; break; }
-                        } catch (err) {}
+                    for (const m of ['requestFullscreen','webkitRequestFullscreen','mozRequestFullScreen','msRequestFullscreen']) {
+                        try { if (elem[m]) { await elem[m]({ navigationUI: 'hide' }); break; } } catch(err) {}
                     }
-                    hideAddressBar();
-                    [100, 300, 500, 1000].forEach(d => setTimeout(hideAddressBar, d));
+                    hideAddressBar(); [100,300,500,1000].forEach(d => setTimeout(hideAddressBar, d));
                     if (screen.orientation && screen.orientation.lock) {
-                        for (const o of ['landscape', 'landscape-primary', 'landscape-secondary']) {
-                            try { await screen.orientation.lock(o); rotationOverlay.classList.remove('show'); break; } catch (_) {}
+                        for (const o of ['landscape','landscape-primary','landscape-secondary']) {
+                            try { await screen.orientation.lock(o); rotationOverlay.classList.remove('show'); break; } catch(_) {}
                         }
                     }
-                } catch (err) { rotationOverlay.classList.remove('show'); }
-            }
-            
-            function exitFullscreenSync() {
-                videoWrapper.classList.add('transitioning');
-                isFullscreen = false;
-                playerContainer.classList.remove('fullscreen');
-                rotationOverlay.classList.remove('show');
-                deactivateBackHandler();
-                if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch (_) {} }
-                const revealOnChange = () => {
-                    requestAnimationFrame(() => { videoWrapper.classList.remove('transitioning'); enableKeepScreenOn(); });
-                    document.removeEventListener('fullscreenchange', revealOnChange);
-                    document.removeEventListener('webkitfullscreenchange', revealOnChange);
-                };
-                document.addEventListener('fullscreenchange', revealOnChange);
-                document.addEventListener('webkitfullscreenchange', revealOnChange);
-                if (document.fullscreenElement) {
-                    document.exitFullscreen().catch(() => { setTimeout(() => videoWrapper.classList.remove('transitioning'), 150); });
-                } else if (document.webkitFullscreenElement) {
-                    document.webkitExitFullscreen();
-                } else {
-                    document.removeEventListener('fullscreenchange', revealOnChange);
-                    document.removeEventListener('webkitfullscreenchange', revealOnChange);
-                    requestAnimationFrame(() => { requestAnimationFrame(() => { videoWrapper.classList.remove('transitioning'); enableKeepScreenOn(); }); });
-                }
+                } catch(err) { rotationOverlay.classList.remove('show'); }
             }
 
+            function exitFullscreenSync() {
+                videoWrapper.classList.add('transitioning'); isFullscreen = false;
+                playerContainer.classList.remove('fullscreen'); rotationOverlay.classList.remove('show'); deactivateBackHandler();
+                if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch(_) {} }
+                const reveal = () => { requestAnimationFrame(() => { videoWrapper.classList.remove('transitioning'); enableKeepScreenOn(); }); document.removeEventListener('fullscreenchange', reveal); document.removeEventListener('webkitfullscreenchange', reveal); };
+                document.addEventListener('fullscreenchange', reveal); document.addEventListener('webkitfullscreenchange', reveal);
+                if (document.fullscreenElement) document.exitFullscreen().catch(() => { setTimeout(() => videoWrapper.classList.remove('transitioning'), 150); });
+                else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+                else { document.removeEventListener('fullscreenchange', reveal); document.removeEventListener('webkitfullscreenchange', reveal); requestAnimationFrame(() => { requestAnimationFrame(() => { videoWrapper.classList.remove('transitioning'); enableKeepScreenOn(); }); }); }
+            }
             async function exitFullscreen() { exitFullscreenSync(); }
             
             function updateFsIcon() {
                 const fsIcon = document.getElementById('fs-icon');
                 if (!fsIcon) return;
-                if (isFullscreen) {
-                    fsIcon.innerHTML = `
-                        <path d="M8 3v3a2 2 0 0 1-2 2H3"/>
-                        <path d="M21 8h-3a2 2 0 0 1-2-2V3"/>
-                        <path d="M3 16h3a2 2 0 0 1 2 2v3"/>
-                        <path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
-                    `;
-                } else {
-                    fsIcon.innerHTML = `
-                        <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
-                        <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
-                        <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
-                        <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
-                    `;
-                }
+                fsIcon.innerHTML = isFullscreen
+                    ? `<path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>`
+                    : `<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>`;
             }
 
-            fullscreenBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (!isFullscreen) enterFullscreen(); else exitFullscreenSync();
-                updateFsIcon();
-            });
-            
-            window.addEventListener('orientationchange', function() {
-                if (isFullscreen && checkOrientation() === 'landscape') rotationOverlay.classList.remove('show');
-                if (isFullscreen) hideAddressBar();
-            });
-            
-            window.addEventListener('resize', function() {
-                if (isFullscreen && checkOrientation() === 'landscape') rotationOverlay.classList.remove('show');
-                if (isFullscreen) hideAddressBar();
-            });
+            fullscreenBtn.addEventListener('click', function(e) { e.stopPropagation(); if (!isFullscreen) enterFullscreen(); else exitFullscreenSync(); updateFsIcon(); });
+            window.addEventListener('orientationchange', function() { if (isFullscreen && checkOrientation() === 'landscape') rotationOverlay.classList.remove('show'); if (isFullscreen) hideAddressBar(); });
+            window.addEventListener('resize', function() { if (isFullscreen && checkOrientation() === 'landscape') rotationOverlay.classList.remove('show'); if (isFullscreen) hideAddressBar(); });
             
             function onFullscreenChange() {
-                const isNowFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-                if (!isNowFullscreen && isFullscreen) {
-                    isFullscreen = false;
-                    playerContainer.classList.remove('fullscreen');
-                    rotationOverlay.classList.remove('show');
-                    deactivateBackHandler();
-                    if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch (_) {} }
-                    enableKeepScreenOn();
-                } else if (isNowFullscreen) {
-                    hideAddressBar();
-                    enableKeepScreenOn();
-                }
+                const nowFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+                if (!nowFs && isFullscreen) { isFullscreen = false; playerContainer.classList.remove('fullscreen'); rotationOverlay.classList.remove('show'); deactivateBackHandler(); if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch(_) {} } enableKeepScreenOn(); }
+                else if (nowFs) { hideAddressBar(); enableKeepScreenOn(); }
             }
-            
             document.addEventListener('fullscreenchange', onFullscreenChange);
             document.addEventListener('webkitfullscreenchange', onFullscreenChange);
             document.addEventListener('mozfullscreenchange', onFullscreenChange);
             document.addEventListener('MSFullscreenChange', onFullscreenChange);
             
-            // Progress Bar
             videoPlayer.addEventListener('timeupdate', function() {
                 if (videoPlayer.duration && isFinite(videoPlayer.duration)) {
-                    const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-                    progressDividerFill.style.width = progress + '%';
+                    progressDividerFill.style.width = (videoPlayer.currentTime / videoPlayer.duration * 100) + '%';
                 }
             });
             
             // ===== CONTROLES =====
             function showControls() {
-                controlsVisible = true;
-                videoHeader.classList.add('show');
-                videoControls.classList.add('show');
+                controlsVisible = true; videoHeader.classList.add('show'); videoControls.classList.add('show');
                 if (hideControlsTimeout) clearTimeout(hideControlsTimeout);
-                hideControlsTimeout = setTimeout(() => { hideControls(); }, 3000);
+                hideControlsTimeout = setTimeout(hideControls, 3000);
             }
-            
-            function hideControls() {
-                controlsVisible = false;
-                videoHeader.classList.remove('show');
-                videoControls.classList.remove('show');
-            }
+            function hideControls() { controlsVisible = false; videoHeader.classList.remove('show'); videoControls.classList.remove('show'); }
             
             clickOverlay.addEventListener('click', function(e) {
                 if (chatDrawer.classList.contains('open')) { closeChat(); return; }
                 if (controlsVisible) hideControls(); else showControls();
             });
-
             clickOverlay.addEventListener('touchend', function(e) {
                 e.preventDefault();
                 if (chatDrawer.classList.contains('open')) { closeChat(); return; }
@@ -1992,180 +706,87 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             function loadPlaylist(url) {
                 channelsList.innerHTML = '<div class="loading">Carregando canais...</div>';
                 fetch(url)
-                    .then(response => { if (!response.ok) throw new Error('Erro ao carregar'); return response.text(); })
-                    .then(data => { parsePlaylist(data); })
-                    .catch(error => { channelsList.innerHTML = '<div class="error">Erro ao carregar a playlist</div>'; });
+                    .then(r => { if (!r.ok) throw new Error('Erro'); return r.text(); })
+                    .then(data => parsePlaylist(data))
+                    .catch(() => { channelsList.innerHTML = '<div class="error">Erro ao carregar a playlist</div>'; });
             }
             
             function parsePlaylist(data) {
                 const lines = data.split('\n');
                 const grouped = new Map();
                 const order = [];
-
                 let i = 0;
                 while (i < lines.length) {
                     const line = lines[i].trim();
-
                     if (line.startsWith('#EXTINF:')) {
                         const info = line.substring(8);
                         const commaIdx = info.indexOf(',');
                         const attributes = commaIdx >= 0 ? info.substring(0, commaIdx) : info;
                         const entryName = commaIdx >= 0 ? info.substring(commaIdx + 1).trim() : '';
-
-                        let url = '';
-                        let j = i + 1;
+                        let url = '', j = i + 1;
                         while (j < lines.length) {
                             const next = lines[j].trim();
                             if (next === '') { j++; continue; }
                             if (next.startsWith('#')) break;
-                            url = next;
-                            j++;
-                            break;
+                            url = next; j++; break;
                         }
-
                         if (url) {
-                            let logo = '';
-                            const logoMatch = attributes.match(/tvg-logo="([^"]*)"/);
-                            if (logoMatch) logo = logoMatch[1];
-
-                            let group = '';
-                            const groupMatch = attributes.match(/group-title="([^"]*)"/);
-                            if (groupMatch) group = groupMatch[1];
-
-                            let tvgId = '';
-                            const idMatch = attributes.match(/tvg-id="([^"]*)"/);
-                            if (idMatch) tvgId = idMatch[1].toLowerCase().trim();
-
+                            let logo = ''; const logoMatch = attributes.match(/tvg-logo="([^"]*)"/); if (logoMatch) logo = logoMatch[1];
+                            let group = ''; const groupMatch = attributes.match(/group-title="([^"]*)"/); if (groupMatch) group = groupMatch[1];
+                            let tvgId = ''; const idMatch = attributes.match(/tvg-id="([^"]*)"/); if (idMatch) tvgId = idMatch[1].toLowerCase().trim();
                             const key = tvgId || entryName.toLowerCase();
-
                             if (!grouped.has(key)) {
-                                const entry = {
-                                    name: entryName,
-                                    url: obfuscateUrl(url),
-                                    affiliates: [],
-                                    logo: logo,
-                                    group: group
-                                };
-                                grouped.set(key, entry);
+                                grouped.set(key, { name: entryName, url: obfuscateUrl(url), affiliates: [], logo, group });
                                 order.push(key);
                             } else {
-                                grouped.get(key).affiliates.push({
-                                    name: entryName,
-                                    token: obfuscateUrl(url)
-                                });
+                                grouped.get(key).affiliates.push({ name: entryName, token: obfuscateUrl(url) });
                             }
                         }
-
-                        i = j;
-                        continue;
+                        i = j; continue;
                     }
                     i++;
                 }
-
                 channels = order.map(k => grouped.get(k));
                 renderChannels();
             }
             
             function renderChannels() {
-                if (channels.length === 0) {
-                    channelsList.innerHTML = '<div class="error">Nenhum canal encontrado</div>';
-                    return;
-                }
-                
+                if (channels.length === 0) { channelsList.innerHTML = '<div class="error">Nenhum canal encontrado</div>'; return; }
                 channelsList.innerHTML = '';
-                
                 channels.forEach((channel, index) => {
-                    const channelItem = document.createElement('div');
-                    channelItem.className = 'channel-item';
-                    const hasAffiliates = channel.affiliates && channel.affiliates.length > 0;
-                    channelItem.innerHTML = `
-                        <div class="channel-thumbnail">
-                            ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                            <div class="thumbnail-placeholder" style="${channel.logo ? 'display:none' : ''}">${channel.name.charAt(0)}</div>
-                        </div>
-                        <div class="channel-info">
-                            <div class="channel-name-row">
-                                <div class="channel-name">${channel.name}</div>
-                                ${hasAffiliates ? `<div class="channel-plays-badge">${channel.affiliates.length + 1} canais</div>` : ''}
-                            </div>
-                            <div class="channel-meta">
-                                <div class="live-indicator">
-                                    <div class="live-dot"></div>
-                                    <span>Ao vivo</span>
-                                </div>
-                                <div class="channel-category">${channel.group || 'Geral'}</div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    channelItem.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        playChannel(index);
-                    });
-                    
-                    channelsList.appendChild(channelItem);
+                    const item = document.createElement('div');
+                    item.className = 'channel-item';
+                    const hasAff = channel.affiliates && channel.affiliates.length > 0;
+                    item.innerHTML = `<div class="channel-thumbnail">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}<div class="thumbnail-placeholder" style="${channel.logo ? 'display:none' : ''}">${channel.name.charAt(0)}</div></div><div class="channel-info"><div class="channel-name-row"><div class="channel-name">${channel.name}</div>${hasAff ? `<div class="channel-plays-badge">${channel.affiliates.length + 1} canais</div>` : ''}</div><div class="channel-meta"><div class="live-indicator"><div class="live-dot"></div><span>Ao vivo</span></div><div class="channel-category">${channel.group || 'Geral'}</div></div></div>`;
+                    item.addEventListener('click', e => { e.stopPropagation(); playChannel(index); });
+                    channelsList.appendChild(item);
                 });
-                
                 if (channels.length > 0) playChannel(0);
             }
 
-            // ===== REPRODUÇÃO DO CANAL PRINCIPAL =====
+            // ===== REPRODUÇÃO =====
             function playChannel(index, isRetry) {
                 if (index < 0 || index >= channels.length) return;
-
-                _clearStall();
-                _removeStallListeners();
-                destroyHls();
-
-                if (!isRetry) {
-                    currentAffiliateIndex = 0;
-                }
-
+                _clearStall(); _removeStallListeners(); destroyHls();
+                if (!isRetry) currentAffiliateIndex = 0;
                 const channel = channels[index];
-
                 hideAllErrorScreens();
                 loadingScreen.classList.add('show');
                 document.getElementById('progress-divider').classList.remove('show');
-
-                document.querySelectorAll('.channel-item').forEach((item, i) => {
-                    item.classList.remove('active');
-                    if (i === index) item.classList.add('active');
-                });
-
+                document.querySelectorAll('.channel-item').forEach((el, i) => { el.classList.toggle('active', i === index); });
                 videoTitle.textContent = channel.name;
                 drawerTitle.textContent = channel.name;
-
                 const realUrl = deobfuscateUrl(channel.url);
-
-                loadMediaUrl(
-                    realUrl,
-                    () => {
-                        // onReady — vídeo pronto para tocar
-                        videoPlayer.muted = false;
-                        document.getElementById('progress-divider').classList.add('show');
-                        videoPlayer.play().catch(() => {});
-                        setTimeout(() => {
-                            loadingScreen.classList.remove('show');
-                            hideAllErrorScreens();
-                            showControls();
-                            _attachStallListeners();
-                        }, 300);
-                    },
-                    () => {
-                        // onFail — só agora exibe erro
-                        _triggerError();
-                    }
-                );
-
+                loadMediaUrl(realUrl, () => {
+                    videoPlayer.muted = false;
+                    document.getElementById('progress-divider').classList.add('show');
+                    videoPlayer.play().catch(() => {});
+                    setTimeout(() => { loadingScreen.classList.remove('show'); hideAllErrorScreens(); showControls(); _attachStallListeners(); }, 300);
+                }, () => { _triggerError(); });
                 currentChannelIndex = index;
-
-                const affiliateCount = (channel.affiliates || []).length;
-                if (affiliateCount > 0) {
-                    affiliateBadge.textContent = affiliateCount + 1;
-                    affiliateBadge.classList.add('show');
-                } else {
-                    affiliateBadge.classList.remove('show');
-                }
+                const affCount = (channel.affiliates || []).length;
+                if (affCount > 0) { affiliateBadge.textContent = affCount + 1; affiliateBadge.classList.add('show'); }
+                else { affiliateBadge.classList.remove('show'); }
             }
             
             checkOrientation();
