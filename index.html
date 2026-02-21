@@ -7,6 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>G-Hub Tv</title>
+    <!-- HLS.js para suporte universal a streams .m3u8 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -176,7 +178,6 @@
             flex-direction: column;
         }
 
-        /* FIX: overflow: visible para a bolinha não ser cortada */
         .video-wrapper {
             position: relative;
             width: 100%;
@@ -328,7 +329,7 @@
             height: 20px;
         }
 
-        /* Badge de contagem de filiais */
+        /* Badge de contagem de canais */
         .affiliate-badge {
             position: absolute;
             top: 4px;
@@ -355,7 +356,7 @@
             display: none !important;
         }
         
-        /* ===== GAVETA DE FILIAIS ===== */
+        /* ===== GAVETA DE CANAIS ===== */
         .chat-drawer {
             position: fixed;
             bottom: 0;
@@ -440,7 +441,6 @@
             margin-top: 8px;
         }
 
-        /* FIX: "filiais" em vez de "plays" no badge da gaveta */
         .affiliate-count-badge {
             background: linear-gradient(135deg, #a000ff, #2d5bff);
             color: white;
@@ -475,7 +475,7 @@
             transform: scale(0.9);
         }
         
-        /* ===== LISTA DE FILIAIS ===== */
+        /* ===== LISTA DE CANAIS (GAVETA) ===== */
         .chat-content {
             flex: 1;
             overflow-y: auto;
@@ -555,7 +555,7 @@
             color: #a000ff;
         }
 
-        /* Sem filiais */
+        /* Sem canais alternativos */
         .no-affiliates {
             display: flex;
             flex-direction: column;
@@ -733,7 +733,6 @@
             display: none;
         }
 
-        /* Nome + badge na mesma linha */
         .channel-name-row {
             display: flex;
             align-items: flex-start;
@@ -755,7 +754,7 @@
             flex: 1;
         }
 
-        /* FIX: badge mostra "filiais" em vez de "plays" na lista de canais */
+        /* Badge de canais na lista principal */
         .channel-plays-badge {
             background: linear-gradient(135deg, #a000ff, #2d5bff);
             color: white;
@@ -769,7 +768,7 @@
             letter-spacing: 0.3px;
         }
 
-        /* Logo na gaveta de filiais */
+        /* Logo na gaveta de canais */
         .affiliate-logo-wrap {
             width: 100px;
             height: 60px;
@@ -1197,7 +1196,7 @@
             <!-- Header -->
             <div class="video-header" id="video-header">
                 <div class="video-title" id="video-title">Carregando...</div>
-                <button class="chat-btn" id="chat-btn" title="Filiais do canal">
+                <button class="chat-btn" id="chat-btn" title="Canais da lista">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                         <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -1256,10 +1255,10 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
         </div>
     </div>
     
-    <!-- Gaveta de Filiais -->
+    <!-- Gaveta de Canais da Lista -->
     <div class="chat-drawer" id="chat-drawer">
         <div class="chat-header" id="chat-header">
-            <div class="chat-title" id="drawer-title">Filiais do canal</div>
+            <div class="chat-title" id="drawer-title">Canais da lista</div>
             <div class="chat-header-right">
                 <span class="affiliate-count-badge" id="affiliate-count-badge"></span>
                 <button class="chat-close-btn" id="chat-close-btn">×</button>
@@ -1352,19 +1351,106 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             const affiliateBadge = document.getElementById('affiliate-badge');
             const affiliateCountBadge = document.getElementById('affiliate-count-badge');
             const chatContent = document.getElementById('chat-content');
-
             const playerErrorUnavailable = document.getElementById('player-error-unavailable');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
             
             let channels = [];
             let currentChannelIndex = -1;
-            // Índice da URL filial sendo reproduzida (0 = principal)
             let currentAffiliateIndex = 0;
             let controlsVisible = false;
             let hideControlsTimeout = null;
             let isFullscreen = false;
             let isLandscape = false;
+
+            // ===== HLS INSTANCE MANAGER =====
+            let hlsInstance = null;
+
+            function destroyHls() {
+                if (hlsInstance) {
+                    hlsInstance.destroy();
+                    hlsInstance = null;
+                }
+            }
+
+            /**
+             * Carrega qualquer URL no player de forma universal:
+             * - HLS nativo (Safari/iOS): usa <video src> diretamente
+             * - HLS não nativo: usa hls.js
+             * - Outros formatos (mp4, ts, etc): usa <video src> diretamente
+             */
+            function loadMediaUrl(realUrl, onReady, onFail) {
+                destroyHls();
+                videoPlayer.removeAttribute('src');
+                videoPlayer.load();
+
+                const isHls = /\.m3u8/i.test(realUrl) || /hls/i.test(realUrl);
+
+                if (isHls && Hls.isSupported()) {
+                    // Usar hls.js para navegadores sem suporte nativo
+                    const hls = new Hls({
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                        backBufferLength: 30,
+                        maxBufferLength: 60,
+                        maxMaxBufferLength: 120,
+                        fragLoadingTimeOut: 15000,
+                        manifestLoadingTimeOut: 15000,
+                        levelLoadingTimeOut: 15000,
+                    });
+                    hlsInstance = hls;
+
+                    hls.loadSource(realUrl);
+                    hls.attachMedia(videoPlayer);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        onReady();
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            destroyHls();
+                            onFail();
+                        }
+                    });
+
+                } else if (isHls && videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Safari com suporte nativo a HLS
+                    videoPlayer.src = realUrl;
+                    videoPlayer.load();
+
+                    const onCanPlay = () => { cleanup(); onReady(); };
+                    const onErr = () => { cleanup(); onFail(); };
+                    const timer = setTimeout(() => { cleanup(); onFail(); }, 15000);
+
+                    function cleanup() {
+                        clearTimeout(timer);
+                        videoPlayer.removeEventListener('canplay', onCanPlay);
+                        videoPlayer.removeEventListener('error', onErr);
+                    }
+
+                    videoPlayer.addEventListener('canplay', onCanPlay);
+                    videoPlayer.addEventListener('error', onErr);
+
+                } else {
+                    // Outros formatos (mp4, ts, etc.)
+                    videoPlayer.src = realUrl;
+                    videoPlayer.load();
+
+                    const onCanPlay = () => { cleanup(); onReady(); };
+                    const onErr = () => { cleanup(); onFail(); };
+                    const timer = setTimeout(() => { cleanup(); onFail(); }, 15000);
+
+                    function cleanup() {
+                        clearTimeout(timer);
+                        videoPlayer.removeEventListener('canplay', onCanPlay);
+                        videoPlayer.removeEventListener('error', onErr);
+                    }
+
+                    videoPlayer.addEventListener('canplay', onCanPlay);
+                    videoPlayer.addEventListener('error', onErr);
+                }
+            }
 
             // ===== OBFUSCAÇÃO =====
             const urlProxy = new Map();
@@ -1379,25 +1465,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             const deobfuscateUrl = (token) => {
                 return urlProxy.get(token) || '';
             };
-            
-            const originalSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'src');
-            Object.defineProperty(videoPlayer, 'src', {
-                get: function() { return '[PROTECTED]'; },
-                set: function(value) {
-                    if (value.startsWith('__vid_')) {
-                        const realUrl = deobfuscateUrl(value);
-                        originalSrcDescriptor.set.call(this, realUrl);
-                    } else {
-                        originalSrcDescriptor.set.call(this, value);
-                    }
-                },
-                configurable: false
-            });
-            
-            Object.defineProperty(videoPlayer, 'currentSrc', {
-                get: function() { return '[PROTECTED]'; },
-                configurable: false
-            });
 
             // ===== WAKE LOCK =====
             let wakeLock = null;
@@ -1513,26 +1580,23 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 window.history.back();
             });
             
-            // ===== GAVETA DE FILIAIS =====
+            // ===== GAVETA DE CANAIS =====
             let isDragging = false;
             let startY = 0;
             let currentY = 0;
             let drawerHeight = 0;
             let isExpanded = false;
 
-            // Renderiza a lista de filiais na gaveta para o canal atual
             function renderAffiliates(channelIndex, currentName) {
                 if (channelIndex < 0 || channelIndex >= channels.length) return;
                 const channel = channels[channelIndex];
                 const affiliates = channel.affiliates || [];
 
-                // Título da gaveta = nome passado explicitamente ou nome do canal
                 drawerTitle.textContent = currentName || channel.name;
 
-                // Badge de contagem — FIX: "filiais" em vez de "plays"
                 if (affiliates.length > 0) {
                     const total = affiliates.length + 1;
-                    affiliateCountBadge.textContent = total + ' filiais';
+                    affiliateCountBadge.textContent = total + ' canais';
                     affiliateCountBadge.style.display = 'inline-flex';
                     affiliateBadge.textContent = total;
                     affiliateBadge.classList.add('show');
@@ -1541,31 +1605,27 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     affiliateBadge.classList.remove('show');
                 }
 
-                // Sem filiais
                 if (affiliates.length === 0) {
                     chatContent.innerHTML = `
                         <div class="no-affiliates">
                             ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:linear-gradient(135deg,#a000ff,#2d5bff);padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}
-                            <div class="no-affiliates-title">Sem filiais alternativas</div>
+                            <div class="no-affiliates-title">Sem canais alternativos</div>
                             <div class="no-affiliates-text">Este canal não possui links alternativos cadastrados.</div>
                         </div>
                     `;
                     return;
                 }
 
-                // Lista: principal (idx=0) + filiais
                 chatContent.innerHTML = '';
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
 
-                // Todos os itens: [principal, ...filiais]
                 const allItems = [
                     { token: channel.url, label: channel.name || 'Ao vivo', isMain: true },
                     ...affiliates.map(af => ({ token: af.token, label: af.name || 'Ao vivo', isMain: false }))
                 ];
 
                 allItems.forEach((entry, idx) => {
-                    // currentAffiliateIndex: 0 = principal, 1..n = filiais
                     const isActive = idx === currentAffiliateIndex;
                     const item = document.createElement('div');
                     item.className = 'affiliate-item' + (isActive ? ' active-affiliate' : '');
@@ -1598,7 +1658,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 chatContent.appendChild(list);
             }
 
-            // Toca uma filial específica (affiliateIdx = índice dentro de affiliates[])
             function playAffiliate(channelIndex, affiliateIdx) {
                 if (channelIndex < 0 || channelIndex >= channels.length) return;
                 const channel = channels[channelIndex];
@@ -1609,6 +1668,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
                 _clearStall();
                 _removeStallListeners();
+                destroyHls();
 
                 hideAllErrorScreens();
                 loadingScreen.classList.add('show');
@@ -1618,42 +1678,33 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 videoTitle.textContent = affiliateName;
                 drawerTitle.textContent = affiliateName;
 
-                const token = affiliates[affiliateIdx].token;
-                videoPlayer.src = token;
-                videoPlayer.load();
+                const realUrl = deobfuscateUrl(affiliates[affiliateIdx].token);
 
-                const onError = () => { cleanup(); _triggerError(); };
-                const onCanPlay = () => {
-                    cleanup();
-                    videoPlayer.muted = false;
-                    document.getElementById('progress-divider').classList.add('show');
-                    videoPlayer.play().catch(() => {});
-                    setTimeout(() => {
-                        loadingScreen.classList.remove('show');
-                        hideAllErrorScreens();
-                        showControls();
-                        _attachStallListeners();
-                    }, 300);
-                };
+                loadMediaUrl(
+                    realUrl,
+                    () => {
+                        // onReady
+                        videoPlayer.muted = false;
+                        document.getElementById('progress-divider').classList.add('show');
+                        videoPlayer.play().catch(() => {});
+                        setTimeout(() => {
+                            loadingScreen.classList.remove('show');
+                            hideAllErrorScreens();
+                            showControls();
+                            _attachStallListeners();
+                        }, 300);
+                    },
+                    () => {
+                        // onFail
+                        _triggerError();
+                    }
+                );
 
-                const loadTimer = setTimeout(() => { cleanup(); _triggerError(); }, 15000);
-
-                function cleanup() {
-                    clearTimeout(loadTimer);
-                    videoPlayer.removeEventListener('canplay', onCanPlay);
-                    videoPlayer.removeEventListener('error', onError);
-                }
-
-                videoPlayer.addEventListener('canplay', onCanPlay);
-                videoPlayer.addEventListener('error', onError);
                 renderAffiliates(channelIndex, affiliateName);
             }
             
-            // FIX: openChat agora reseta scroll E re-renderiza desde o início (posição 0)
             function openChat() {
-                // Re-renderiza a lista com o estado atual (reseta scroll para o topo)
                 renderAffiliates(currentChannelIndex, null);
-                // Após renderizar, volta o scroll ao início
                 chatContent.scrollTop = 0;
                 chatDrawer.classList.add('open');
                 activateBackHandler();
@@ -1733,7 +1784,8 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             }
 
             // ===== STALL DETECTOR =====
-            const STALL_LIMIT = 20000;
+            // Aguarda mais tempo antes de declarar erro (carregamento natural)
+            const STALL_LIMIT = 30000;
             let _stallTimer = null;
 
             function _clearStall() { if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; } }
@@ -1744,8 +1796,17 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                 showUnavailableScreen();
             }
             function _onTimeUpdate() { _clearStall(); }
-            function _onPlaying() { _clearStall(); }
-            function _onWaiting() { if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT); }
+            function _onPlaying() {
+                _clearStall();
+                // Remove a tela de erro se o vídeo começa a tocar normalmente
+                hideAllErrorScreens();
+                loadingScreen.classList.remove('show');
+            }
+            function _onWaiting() {
+                // Apenas mostra o spinner, NÃO a tela de erro imediatamente
+                loadingScreen.classList.add('show');
+                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            }
             function _onStalled() { if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT); }
             function _onVideoError() { _triggerError(); }
 
@@ -1938,8 +1999,8 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
             
             function parsePlaylist(data) {
                 const lines = data.split('\n');
-                const grouped = new Map(); // tvg-id → channel object
-                const order = []; // preserve insertion order
+                const grouped = new Map();
+                const order = [];
 
                 let i = 0;
                 while (i < lines.length) {
@@ -1951,7 +2012,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                         const attributes = commaIdx >= 0 ? info.substring(0, commaIdx) : info;
                         const entryName = commaIdx >= 0 ? info.substring(commaIdx + 1).trim() : '';
 
-                        // Próxima linha não vazia = URL
                         let url = '';
                         let j = i + 1;
                         while (j < lines.length) {
@@ -1976,22 +2036,19 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                             const idMatch = attributes.match(/tvg-id="([^"]*)"/);
                             if (idMatch) tvgId = idMatch[1].toLowerCase().trim();
 
-                            // Usar tvg-id como chave de agrupamento; fallback = nome base
                             const key = tvgId || entryName.toLowerCase();
 
                             if (!grouped.has(key)) {
-                                // Primeiro = principal
                                 const entry = {
                                     name: entryName,
                                     url: obfuscateUrl(url),
-                                    affiliates: [], // { name, token }
+                                    affiliates: [],
                                     logo: logo,
                                     group: group
                                 };
                                 grouped.set(key, entry);
                                 order.push(key);
                             } else {
-                                // Demais = filiais com nome próprio
                                 grouped.get(key).affiliates.push({
                                     name: entryName,
                                     token: obfuscateUrl(url)
@@ -2021,7 +2078,6 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                     const channelItem = document.createElement('div');
                     channelItem.className = 'channel-item';
                     const hasAffiliates = channel.affiliates && channel.affiliates.length > 0;
-                    // FIX: badge mostra "filiais" em vez de "plays"
                     channelItem.innerHTML = `
                         <div class="channel-thumbnail">
                             ${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
@@ -2030,7 +2086,7 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
                         <div class="channel-info">
                             <div class="channel-name-row">
                                 <div class="channel-name">${channel.name}</div>
-                                ${hasAffiliates ? `<div class="channel-plays-badge">${channel.affiliates.length + 1} filiais</div>` : ''}
+                                ${hasAffiliates ? `<div class="channel-plays-badge">${channel.affiliates.length + 1} canais</div>` : ''}
                             </div>
                             <div class="channel-meta">
                                 <div class="live-indicator">
@@ -2059,9 +2115,10 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
                 _clearStall();
                 _removeStallListeners();
+                destroyHls();
 
                 if (!isRetry) {
-                    currentAffiliateIndex = 0; // principal
+                    currentAffiliateIndex = 0;
                 }
 
                 const channel = channels[index];
@@ -2077,40 +2134,34 @@ De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, c
 
                 videoTitle.textContent = channel.name;
                 drawerTitle.textContent = channel.name;
-                videoPlayer.src = channel.url;
-                videoPlayer.load();
 
-                const onError = () => { cleanup(); _triggerError(); };
-                const onCanPlay = () => {
-                    cleanup();
-                    videoPlayer.muted = false;
-                    document.getElementById('progress-divider').classList.add('show');
-                    videoPlayer.play().catch(() => {});
-                    setTimeout(() => {
-                        loadingScreen.classList.remove('show');
-                        hideAllErrorScreens();
-                        showControls();
-                        _attachStallListeners();
-                    }, 300);
-                };
+                const realUrl = deobfuscateUrl(channel.url);
 
-                const loadTimer = setTimeout(() => { cleanup(); _triggerError(); }, 15000);
-
-                function cleanup() {
-                    clearTimeout(loadTimer);
-                    videoPlayer.removeEventListener('canplay', onCanPlay);
-                    videoPlayer.removeEventListener('error', onError);
-                }
-
-                videoPlayer.addEventListener('canplay', onCanPlay);
-                videoPlayer.addEventListener('error', onError);
+                loadMediaUrl(
+                    realUrl,
+                    () => {
+                        // onReady — vídeo pronto para tocar
+                        videoPlayer.muted = false;
+                        document.getElementById('progress-divider').classList.add('show');
+                        videoPlayer.play().catch(() => {});
+                        setTimeout(() => {
+                            loadingScreen.classList.remove('show');
+                            hideAllErrorScreens();
+                            showControls();
+                            _attachStallListeners();
+                        }, 300);
+                    },
+                    () => {
+                        // onFail — só agora exibe erro
+                        _triggerError();
+                    }
+                );
 
                 currentChannelIndex = index;
 
-                // Atualiza badge de filiais no botão
                 const affiliateCount = (channel.affiliates || []).length;
                 if (affiliateCount > 0) {
-                    affiliateBadge.textContent = affiliateCount + 1; // +1 = principal
+                    affiliateBadge.textContent = affiliateCount + 1;
                     affiliateBadge.classList.add('show');
                 } else {
                     affiliateBadge.classList.remove('show');
