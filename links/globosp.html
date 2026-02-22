@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TV</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+  video {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+  }
+</style>
+</head>
+<body>
+<video id="v" controls autoplay playsinline></video>
+
+<script>
+const links = [
+  'http://79.127.243.211:14027/',
+  'http://79.127.238.228:14172/',
+  'http://79.127.238.228:14173/',
+  'http://79.127.238.228:14298/',
+  'http://79.127.238.228:14217/'
+];
+
+const v = document.getElementById('v');
+let index = 0;
+let timer = null;
+let playing = false;
+
+function tryNext() {
+  if (index >= links.length) {
+    index = 0;
+    setTimeout(tryLink, 10000);
+    return;
+  }
+  tryLink();
+}
+
+function tryLink() {
+  clearTimeout(timer);
+  playing = false;
+
+  v.pause();
+  v.removeAttribute('src');
+  v.load();
+
+  v.src = links[index];
+
+  v.onerror = () => {
+    index++;
+    tryNext();
+  };
+
+  v.onplaying = () => {
+    playing = true;
+    clearTimeout(timer);
+  };
+
+  // Se o vídeo parar de jogar (stall/fim de stream), tenta o próximo
+  v.onwaiting = () => {
+    if (playing) {
+      // dá 10s para recuperar antes de pular
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        index++;
+        tryNext();
+      }, 10000);
+    }
+  };
+
+  v.onplaying = () => {
+    playing = true;
+    clearTimeout(timer);
+  };
+
+  v.play().catch(() => {
+    // autoplay bloqueado pelo browser — ignora, controles nativos permitem play manual
+  });
+
+  // Se não entrar em playing em 15s, pula
+  timer = setTimeout(() => {
+    if (!playing) {
+      index++;
+      tryNext();
+    }
+  }, 15000);
+}
+
+tryLink();
+</script>
+</body>
+</html>
