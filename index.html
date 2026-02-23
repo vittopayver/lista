@@ -126,9 +126,16 @@
         .live-indicator { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #aaa; }
         .live-dot { width: 6px; height: 6px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.8); } }
-        /* Spinner: visível por padrão, some apenas no evento 'playing' */
-        .loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; opacity: 1; pointer-events: none; transition: opacity 0.4s ease; }
-        .loading-screen.hidden { opacity: 0; }
+
+        /* === SPINNER: oculto por padrão, aparece só quando necessário === */
+        .loading-screen { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 2; 
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; 
+        }
+        .loading-screen.visible { opacity: 1; }
+
         .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #a000ff; border-right-color: #2d5bff; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading, .error { text-align: center; padding: 32px 16px; color: #aaa; font-size: 14px; }
@@ -214,6 +221,7 @@
                     </button>
                 </div>
             </div>
+            <!-- Spinner: oculto por padrão, aparece só ao selecionar canal -->
             <div class="loading-screen" id="loading-screen"><div class="spinner"></div></div>
             <div class="player-error-screen unavailable" id="player-error-unavailable">
                 <div class="player-error-icon">📡</div>
@@ -317,27 +325,44 @@
             let isFullscreen = false;
             let isLandscape = false;
 
-            // ===== HLS INSTANCE MANAGER =====
-            function destroyHls() {}
-
             // ===== SPINNER =====
-            // Spinner visível por padrão.
-            // Some SOMENTE quando o vídeo dispara 'playing' — garantia de frame real na tela.
-            function showSpinner() { loadingScreen.classList.remove('hidden'); }
-            function hideSpinner() { loadingScreen.classList.add('hidden'); }
+            // Oculto por padrão (sem classe "visible").
+            // Aparece apenas quando um canal é realmente selecionado.
+            // Some quando o vídeo dispara "playing" (frames reais na tela).
+            function showSpinner() { loadingScreen.classList.add('visible'); }
+            function hideSpinner() { loadingScreen.classList.remove('visible'); }
 
-            // ===== loadMediaUrl — carregamento nativo simplificado =====
-            // HLS.js para streams m3u8 → fallback nativo (<video src>) se falhar
-
-
+            // ===== loadMediaUrl =====
+            // Garante que só inicia se URL for válida.
             function loadMediaUrl(realUrl) {
+                if (!realUrl) {
+                    showUnavailableScreen();
+                    return;
+                }
                 showSpinner();
                 hideAllErrorScreens();
                 document.getElementById('progress-divider').classList.remove('show');
-                videoPlayer.src = realUrl;
-                videoPlayer.muted = false;
+
+                // Limpa src anterior para evitar eventos duplicados do vídeo anterior
+                videoPlayer.pause();
+                videoPlayer.removeAttribute('src');
                 videoPlayer.load();
-                videoPlayer.play().catch(() => {});
+
+                // Pequeno delay garante reset completo antes de atribuir nova URL
+                setTimeout(function() {
+                    videoPlayer.src = realUrl;
+                    videoPlayer.muted = false;
+                    videoPlayer.load();
+                    videoPlayer.play().catch(function() {
+                        // Autoplay bloqueado: tenta com mute e depois desmuta
+                        videoPlayer.muted = true;
+                        videoPlayer.play().then(function() {
+                            videoPlayer.muted = false;
+                        }).catch(function() {
+                            // Falha total: mostra erro após 3s se não houver progresso
+                        });
+                    });
+                }, 80);
             }
 
             // ===== OBFUSCAÇÃO =====
@@ -516,35 +541,69 @@
             function showUnavailableScreen() { hideSpinner(); playerErrorUnavailable.classList.add('show'); }
 
             // ===== STALL DETECTOR =====
-            const STALL_LIMIT = 30000;
+            // Tempo estendido para conexões lentas (45s). 
+            // Só inicia APÓS spinner aparecer (ou seja, após canal ser selecionado).
+            const STALL_LIMIT = 45000;
             let _stallTimer = null;
             function _clearStall() { if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; } }
+            function _startStall() {
+                _clearStall();
+                _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+            }
             function _triggerError() { _clearStall(); showUnavailableScreen(); }
 
-            // Eventos do vídeo — adicionados uma única vez, para todos os canais
+            // ===== EVENTOS DO VÍDEO =====
+            // Registrados uma única vez; controlam spinner e erros para todos os canais.
             videoPlayer.addEventListener('playing', function() {
-                // 'playing' dispara somente quando há frames reais sendo renderizados
                 _clearStall();
                 hideSpinner();
                 hideAllErrorScreens();
                 document.getElementById('progress-divider').classList.add('show');
                 showControls();
             });
+
             videoPlayer.addEventListener('timeupdate', function() {
+                // Confirma que frames estão avançando — cancela qualquer stall timer
                 _clearStall();
                 if (videoPlayer.duration && isFinite(videoPlayer.duration)) {
                     progressDividerFill.style.width = (videoPlayer.currentTime / videoPlayer.duration * 100) + '%';
                 }
             });
+
             videoPlayer.addEventListener('waiting', function() {
+                // Buffer vazio: mostra spinner e inicia timer de stall
                 showSpinner();
-                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+                _startStall();
             });
+
             videoPlayer.addEventListener('stalled', function() {
-                if (!_stallTimer) _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
+                // Stream parada: inicia timer de stall (sem mostrar spinner novamente se já visível)
+                _startStall();
             });
+
             videoPlayer.addEventListener('error', function() {
-                _clearStall(); _triggerError();
+                // Erro real de mídia: mostra tela de erro imediatamente
+                _clearStall();
+                if (currentChannelIndex >= 0) {
+                    // Só mostra erro se um canal já estava carregando
+                    _triggerError();
+                } else {
+                    // Erro antes de qualquer canal: apenas oculta spinner silenciosamente
+                    hideSpinner();
+                }
+            });
+
+            videoPlayer.addEventListener('loadstart', function() {
+                // Início do carregamento: garante spinner visível
+                if (currentChannelIndex >= 0) {
+                    showSpinner();
+                    _startStall();
+                }
+            });
+
+            videoPlayer.addEventListener('canplay', function() {
+                // Dados suficientes para iniciar: cancela stall timer provisoriamente
+                _clearStall();
             });
             
             // ===== ORIENTAÇÃO / FULLSCREEN =====
@@ -684,6 +743,7 @@
                     item.addEventListener('click', e => { e.stopPropagation(); playChannel(index); });
                     channelsList.appendChild(item);
                 });
+                // Inicia o primeiro canal automaticamente após render
                 if (channels.length > 0) playChannel(0);
             }
 
@@ -702,6 +762,7 @@
                 const affCount = (channel.affiliates || []).length;
                 if (affCount > 0) { affiliateBadge.textContent = affCount + 1; affiliateBadge.classList.add('show'); }
                 else { affiliateBadge.classList.remove('show'); }
+                // Spinner é iniciado dentro de loadMediaUrl → só aparece quando canal é selecionado
                 loadMediaUrl(deobfuscateUrl(channel.url));
             }
             
