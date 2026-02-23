@@ -196,7 +196,7 @@
     
     <div class="player-container" id="player-container">
         <div class="video-wrapper" id="video-wrapper">
-            <video id="video-player" preload="auto" muted playsinline webkit-playsinline></video>
+            <video id="video-player" preload="auto" playsinline webkit-playsinline></video>
             <div class="click-overlay" id="click-overlay"></div>
             <div class="video-header" id="video-header">
                 <div class="video-title" id="video-title">Carregando...</div>
@@ -332,41 +332,44 @@
             function showSpinner() { loadingScreen.classList.add('visible'); }
             function hideSpinner() { loadingScreen.classList.remove('visible'); }
 
-            // ===== loadMediaUrl =====
-            // Garante que só inicia se URL for válida.
-            // Reseta o contador de retry sempre que um novo canal/URL é carregado.
-            function loadMediaUrl(realUrl) {
-                if (!realUrl) {
-                    showUnavailableScreen();
-                    return;
-                }
+            // ===== ÁUDIO =====
+            function ensureAudio() { videoPlayer.muted = false; videoPlayer.volume = 1; }
 
-                // Salva URL atual para o sistema de retry poder recarregar a mesma URL
+            // ===== loadMediaUrl =====
+            function loadMediaUrl(realUrl) {
+                if (!realUrl) { showUnavailableScreen(); return; }
                 _currentUrl = realUrl;
                 _resetRetryCount();
+                _applyUrl(realUrl);
+            }
 
+            // _applyUrl: aplica URL e inicia reprodução — usada no load inicial e no retry
+            function _applyUrl(url) {
                 showSpinner();
                 hideAllErrorScreens();
                 document.getElementById('progress-divider').classList.remove('show');
 
-                // Limpa src anterior para evitar eventos duplicados do vídeo anterior
                 videoPlayer.pause();
                 videoPlayer.removeAttribute('src');
                 videoPlayer.load();
 
-                // Pequeno delay garante reset completo antes de atribuir nova URL
                 setTimeout(function() {
-                    videoPlayer.src = realUrl;
-                    videoPlayer.muted = false;
+                    ensureAudio();           // garante sem mute antes de atribuir src
+                    videoPlayer.src = url;
                     videoPlayer.load();
-                    videoPlayer.play().catch(function() {
-                        // Autoplay bloqueado: tenta com mute e depois desmuta
-                        videoPlayer.muted = true;
-                        videoPlayer.play().then(function() {
-                            videoPlayer.muted = false;
-                        }).catch(function() {});
-                    });
-                }, 80);
+
+                    var pp = videoPlayer.play();
+                    if (pp !== undefined) {
+                        pp.then(function() {
+                            ensureAudio();   // confirma áudio após play bem-sucedido
+                        }).catch(function() {
+                            // Autoplay bloqueado com áudio → muta só para iniciar
+                            videoPlayer.muted = true;
+                            videoPlayer.play().catch(function() {});
+                            // desmute ocorre no evento 'playing'
+                        });
+                    }
+                }, 100);
             }
 
             // ===== OBFUSCAÇÃO =====
@@ -564,41 +567,28 @@
             function _resetRetryCount() { _retryCount = 0; _isRetrying = false; _clearRetry(); }
 
             function _doRetry() {
-                // Sem URL registrada ou canal inválido: desiste direto
                 if (!_currentUrl || currentChannelIndex < 0) { showUnavailableScreen(); return; }
 
                 _retryCount++;
                 _isRetrying = true;
 
-                // Atualiza texto do spinner para informar a tentativa
-                const spinnerEl = loadingScreen.querySelector('.spinner');
-                if (spinnerEl) {
-                    let label = loadingScreen.querySelector('.retry-label');
-                    if (!label) {
-                        label = document.createElement('div');
-                        label.className = 'retry-label';
-                        label.style.cssText = 'margin-top:14px;font-size:12px;color:#aaa;letter-spacing:0.3px;';
-                        loadingScreen.appendChild(label);
-                    }
-                    label.textContent = `Reconectando… (${_retryCount}/${MAX_RETRIES})`;
+                // Exibe texto de reconexão no spinner (sem animação de pontos)
+                var label = loadingScreen.querySelector('.retry-label');
+                if (!label) {
+                    label = document.createElement('div');
+                    label.className = 'retry-label';
+                    label.style.cssText = 'margin-top:16px;font-size:13px;color:#ccc;text-align:center;letter-spacing:0.4px;line-height:1.8;';
+                    loadingScreen.appendChild(label);
                 }
+                label.innerHTML = '<span>Reconectando</span>'
+                    + '<br><span style="font-size:11px;color:#888">Tentativas de ' + _retryCount + '/' + MAX_RETRIES + '</span>';
 
                 showSpinner();
                 _clearStall();
 
+                // Aguarda RETRY_DELAY antes de tentar de novo
                 _retryTimer = setTimeout(function() {
-                    // Recarrega a mesma URL do zero
-                    videoPlayer.pause();
-                    videoPlayer.removeAttribute('src');
-                    videoPlayer.load();
-                    setTimeout(function() {
-                        videoPlayer.src = _currentUrl;
-                        videoPlayer.load();
-                        videoPlayer.play().catch(function() {
-                            videoPlayer.muted = true;
-                            videoPlayer.play().then(function() { videoPlayer.muted = false; }).catch(function() {});
-                        });
-                    }, 200);
+                    _applyUrl(_currentUrl);   // reutiliza a mesma função do load inicial
                 }, RETRY_DELAY);
             }
 
@@ -608,9 +598,9 @@
                 if (_retryCount < MAX_RETRIES) {
                     _doRetry();
                 } else {
-                    // Esgotou as tentativas: mostra erro e limpa label de retry
+                    // Esgotou as tentativas: remove label e mostra tela de erro
                     _isRetrying = false;
-                    const label = loadingScreen.querySelector('.retry-label');
+                    var label = loadingScreen.querySelector('.retry-label');
                     if (label) label.remove();
                     showUnavailableScreen();
                 }
@@ -626,9 +616,17 @@
                 _clearStall();
                 _clearRetry();
                 _resetRetryCount();
+
+                // DESMUTE GARANTIDO — ponto mais confiável do ciclo de vida do vídeo
+                // Funciona mesmo que o play tenha começado mutado por restrição de autoplay
+                ensureAudio();
+
                 // Remove label de retry se ainda estiver visível
-                const label = loadingScreen.querySelector('.retry-label');
+                var label = loadingScreen.querySelector('.retry-label');
                 if (label) label.remove();
+
+
+
                 hideSpinner();
                 hideAllErrorScreens();
                 document.getElementById('progress-divider').classList.add('show');
