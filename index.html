@@ -226,14 +226,14 @@
             <div class="player-error-screen unavailable" id="player-error-unavailable">
                 <div class="player-error-icon">📡</div>
                 <div class="player-error-title">Sem conexão com o servidor!</div>
-                <div class="player-error-subtitle">Estamos trabalhando para restabelecer este canal — por favor, tente novamente mais tarde.</div>
+                <div class="player-error-subtitle">Estamos trabalhando para restabelecer este canal — por favor, desculpe a inconveniência.</div>
             </div>
             <div class="progress-divider" id="progress-divider">
                 <div class="progress-divider-fill" id="progress-divider-fill"></div>
                 <div class="progress-divider-ball" id="progress-divider-ball"></div>
             </div>
         </div>
-        <div class="info-text">De filmes a jogos, o G-Hub TV oferece diversão gratuita para toda a família, com canais sempre atualizados.</div>
+        <div class="info-text">De filmes a jogos, o G-Hub TV oferece diversão para todos, com canais sempre atualizados e totalmente de graça livre de anúncios.</div>
         <div class="channels-section" id="channels-section">
             <div class="channels-list" id="channels-list"><div class="loading">Carregando canais...</div></div>
         </div>
@@ -334,11 +334,17 @@
 
             // ===== loadMediaUrl =====
             // Garante que só inicia se URL for válida.
+            // Reseta o contador de retry sempre que um novo canal/URL é carregado.
             function loadMediaUrl(realUrl) {
                 if (!realUrl) {
                     showUnavailableScreen();
                     return;
                 }
+
+                // Salva URL atual para o sistema de retry poder recarregar a mesma URL
+                _currentUrl = realUrl;
+                _resetRetryCount();
+
                 showSpinner();
                 hideAllErrorScreens();
                 document.getElementById('progress-divider').classList.remove('show');
@@ -358,9 +364,7 @@
                         videoPlayer.muted = true;
                         videoPlayer.play().then(function() {
                             videoPlayer.muted = false;
-                        }).catch(function() {
-                            // Falha total: mostra erro após 3s se não houver progresso
-                        });
+                        }).catch(function() {});
                     });
                 }, 80);
             }
@@ -540,22 +544,91 @@
             function hideAllErrorScreens() { playerErrorUnavailable.classList.remove('show'); }
             function showUnavailableScreen() { hideSpinner(); playerErrorUnavailable.classList.add('show'); }
 
-            // ===== STALL DETECTOR =====
-            // Tempo estendido para conexões lentas (45s). 
-            // Só inicia APÓS spinner aparecer (ou seja, após canal ser selecionado).
-            const STALL_LIMIT = 45000;
-            let _stallTimer = null;
-            function _clearStall() { if (_stallTimer) { clearTimeout(_stallTimer); _stallTimer = null; } }
+            // ===== RETRY AUTOMÁTICO =====
+            // Antes de mostrar a tela de erro, o player tenta recarregar até MAX_RETRIES vezes.
+            // Cada tentativa aguarda RETRY_DELAY ms antes de recarregar.
+            // Se todas as tentativas falharem, aí sim exibe a tela de erro.
+            const MAX_RETRIES  = 4;       // quantas vezes vai tentar antes de desistir
+            const RETRY_DELAY  = 3000;    // ms entre cada tentativa
+            const STALL_LIMIT  = 20000;   // ms sem progresso para considerar travado
+
+            let _retryCount    = 0;
+            let _currentUrl    = '';      // URL sendo reproduzida no momento
+            let _retryTimer    = null;
+            let _stallTimer    = null;
+            let _isRetrying    = false;
+
+            function _clearStall() { if (_stallTimer)  { clearTimeout(_stallTimer);  _stallTimer  = null; } }
+            function _clearRetry() { if (_retryTimer)  { clearTimeout(_retryTimer);  _retryTimer  = null; } }
+
+            function _resetRetryCount() { _retryCount = 0; _isRetrying = false; _clearRetry(); }
+
+            function _doRetry() {
+                // Sem URL registrada ou canal inválido: desiste direto
+                if (!_currentUrl || currentChannelIndex < 0) { showUnavailableScreen(); return; }
+
+                _retryCount++;
+                _isRetrying = true;
+
+                // Atualiza texto do spinner para informar a tentativa
+                const spinnerEl = loadingScreen.querySelector('.spinner');
+                if (spinnerEl) {
+                    let label = loadingScreen.querySelector('.retry-label');
+                    if (!label) {
+                        label = document.createElement('div');
+                        label.className = 'retry-label';
+                        label.style.cssText = 'margin-top:14px;font-size:12px;color:#aaa;letter-spacing:0.3px;';
+                        loadingScreen.appendChild(label);
+                    }
+                    label.textContent = `Reconectando… (${_retryCount}/${MAX_RETRIES})`;
+                }
+
+                showSpinner();
+                _clearStall();
+
+                _retryTimer = setTimeout(function() {
+                    // Recarrega a mesma URL do zero
+                    videoPlayer.pause();
+                    videoPlayer.removeAttribute('src');
+                    videoPlayer.load();
+                    setTimeout(function() {
+                        videoPlayer.src = _currentUrl;
+                        videoPlayer.load();
+                        videoPlayer.play().catch(function() {
+                            videoPlayer.muted = true;
+                            videoPlayer.play().then(function() { videoPlayer.muted = false; }).catch(function() {});
+                        });
+                    }, 200);
+                }, RETRY_DELAY);
+            }
+
+            function _triggerError() {
+                _clearStall();
+                _clearRetry();
+                if (_retryCount < MAX_RETRIES) {
+                    _doRetry();
+                } else {
+                    // Esgotou as tentativas: mostra erro e limpa label de retry
+                    _isRetrying = false;
+                    const label = loadingScreen.querySelector('.retry-label');
+                    if (label) label.remove();
+                    showUnavailableScreen();
+                }
+            }
+
             function _startStall() {
                 _clearStall();
                 _stallTimer = setTimeout(_triggerError, STALL_LIMIT);
             }
-            function _triggerError() { _clearStall(); showUnavailableScreen(); }
 
             // ===== EVENTOS DO VÍDEO =====
-            // Registrados uma única vez; controlam spinner e erros para todos os canais.
             videoPlayer.addEventListener('playing', function() {
                 _clearStall();
+                _clearRetry();
+                _resetRetryCount();
+                // Remove label de retry se ainda estiver visível
+                const label = loadingScreen.querySelector('.retry-label');
+                if (label) label.remove();
                 hideSpinner();
                 hideAllErrorScreens();
                 document.getElementById('progress-divider').classList.add('show');
@@ -563,7 +636,8 @@
             });
 
             videoPlayer.addEventListener('timeupdate', function() {
-                // Confirma que frames estão avançando — cancela qualquer stall timer
+                // Frames avançando: cancela stall e reseta contagem de retry
+                if (_isRetrying) return; // evita reset prematuro durante retry
                 _clearStall();
                 if (videoPlayer.duration && isFinite(videoPlayer.duration)) {
                     progressDividerFill.style.width = (videoPlayer.currentTime / videoPlayer.duration * 100) + '%';
@@ -571,30 +645,26 @@
             });
 
             videoPlayer.addEventListener('waiting', function() {
-                // Buffer vazio: mostra spinner e inicia timer de stall
+                // Buffer vazio: mostra spinner e inicia stall timer
+                if (currentChannelIndex < 0) return;
                 showSpinner();
                 _startStall();
             });
 
             videoPlayer.addEventListener('stalled', function() {
-                // Stream parada: inicia timer de stall (sem mostrar spinner novamente se já visível)
+                // Stream paralisada: inicia stall timer
+                if (currentChannelIndex < 0) return;
                 _startStall();
             });
 
             videoPlayer.addEventListener('error', function() {
-                // Erro real de mídia: mostra tela de erro imediatamente
                 _clearStall();
-                if (currentChannelIndex >= 0) {
-                    // Só mostra erro se um canal já estava carregando
-                    _triggerError();
-                } else {
-                    // Erro antes de qualquer canal: apenas oculta spinner silenciosamente
-                    hideSpinner();
-                }
+                if (currentChannelIndex < 0) { hideSpinner(); return; }
+                // Erro de mídia: tenta retry antes de mostrar erro
+                _triggerError();
             });
 
             videoPlayer.addEventListener('loadstart', function() {
-                // Início do carregamento: garante spinner visível
                 if (currentChannelIndex >= 0) {
                     showSpinner();
                     _startStall();
@@ -602,7 +672,6 @@
             });
 
             videoPlayer.addEventListener('canplay', function() {
-                // Dados suficientes para iniciar: cancela stall timer provisoriamente
                 _clearStall();
             });
             
