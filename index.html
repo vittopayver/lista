@@ -772,8 +772,18 @@
                 controlsVisible = true; videoHeader.classList.add('show'); videoControls.classList.add('show');
                 if (hideControlsTimeout) clearTimeout(hideControlsTimeout);
                 hideControlsTimeout = setTimeout(hideControls, 3000);
+                // Rola a lista principal até o canal ativo
+                scrollToActiveChannel();
             }
             function hideControls() { controlsVisible = false; videoHeader.classList.remove('show'); videoControls.classList.remove('show'); }
+
+            function scrollToActiveChannel() {
+                const activeItem = channelsList.querySelector('.channel-item.active');
+                const channelsSection = document.getElementById('channels-section');
+                if (activeItem && channelsSection) {
+                    activeItem.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+            }
             
             clickOverlay.addEventListener('click', function(e) {
                 if (chatDrawer.classList.contains('open')) { closeChat(); return; }
