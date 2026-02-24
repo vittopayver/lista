@@ -84,7 +84,7 @@
         .chat-close-btn:active { transform: scale(0.9); }
         .chat-content { flex: 1; overflow-y: auto; padding: 12px 16px; }
         .affiliates-list { display: flex; flex-direction: column; gap: 10px; }
-        .affiliate-item { display: flex; align-items: center; gap: 14px; background: #252525; border: 1.5px solid #333; border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s; position: relative; }
+        .affiliate-item { display: flex; align-items: flex-start; gap: 12px; background: #252525; border: 1.5px solid #333; border-radius: 10px; padding: 8px 14px; cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s; position: relative; }
         .affiliate-item:hover { background: #2e2e2e; border-color: #555; }
         .affiliate-item:active { transform: scale(0.98); }
         .affiliate-item.active-affiliate { border-color: #4ecb00; background: #0d2200; }
@@ -97,6 +97,9 @@
         .affiliate-item.active-affiliate .affiliate-play-icon { color: #4ecb00; }
         .no-affiliates { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; height: 100%; }
         .no-affiliates-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.5; }
+        /* UPDATED: Larger gray logo for no-affiliates state */
+        .no-affiliates-logo { width: 96px; height: 96px; object-fit: contain; border-radius: 14px; background: transparent; padding: 8px; margin-bottom: 18px; filter: grayscale(100%) brightness(0.55); opacity: 0.85; }
+        body.light-theme .no-affiliates-logo { filter: grayscale(100%) brightness(0.45); }
         .no-affiliates-title { font-size: 16px; font-weight: 600; color: #f1f1f1; margin-bottom: 6px; }
         .no-affiliates-text { font-size: 13px; color: #888; line-height: 1.5; }
         .video-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 40px 16px 12px; z-index: 6; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
@@ -121,7 +124,7 @@
         .thumbnail-plays-badge { display: none; }
         .channel-name-row { display: flex; align-items: flex-start; gap: 6px; justify-content: space-between; }
         .channel-name { font-size: 14px; font-weight: 500; color: #f1f1f1; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; flex: 1; }
-        .channel-plays-badge { background: #4ecb00; color: #ffffff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.3px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .channel-plays-badge { background: #4ecb00; color: #ffffff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.3px; }
         .affiliate-logo-wrap { width: 72px; height: 48px; border-radius: 8px; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0; }
         .affiliate-logo-img { width: 64px; height: 48px; object-fit: contain; flex-shrink: 0; filter: brightness(0.5) invert(1); }
         body.light-theme .affiliate-logo-img { filter: brightness(0.5); }
@@ -322,6 +325,25 @@
             const playerErrorUnavailable  = document.getElementById('player-error-unavailable');
             
             const playlistUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ZpdHRvcGF5dmVyL3R2L3JlZnMvaGVhZHMvbWFpbi9saXN0YS5tM3U4');
+
+            // ===== ÚLTIMO CANAL (localStorage) =====
+            const LAST_CHANNEL_KEY = 'ghub_last_channel';
+            const LAST_AFFILIATE_KEY = 'ghub_last_affiliate';
+
+            function saveLastChannel(channelName, affiliateIdx) {
+                try {
+                    localStorage.setItem(LAST_CHANNEL_KEY, channelName);
+                    localStorage.setItem(LAST_AFFILIATE_KEY, String(affiliateIdx || 0));
+                } catch(e) {}
+            }
+
+            function getLastChannelName() {
+                try { return localStorage.getItem(LAST_CHANNEL_KEY) || ''; } catch(e) { return ''; }
+            }
+
+            function getLastAffiliateIndex() {
+                try { return parseInt(localStorage.getItem(LAST_AFFILIATE_KEY) || '0', 10); } catch(e) { return 0; }
+            }
             
             let channels = [];
             let currentChannelIndex = -1;
@@ -473,21 +495,40 @@
                     affiliateBadge.classList.remove('show');
                 }
                 if (affiliates.length === 0) {
-                    chatContent.innerHTML = `<div class="no-affiliates">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:transparent;padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}<div class="no-affiliates-title">Streaming Similar</div><div class="no-affiliates-text">Este canal não possui streamings similares.</div></div>`;
+                    // UPDATED: larger gray logo in no-affiliates state
+                    chatContent.innerHTML = `<div class="no-affiliates">${channel.logo
+                        ? `<img src="${channel.logo}" alt="${channel.name}" class="no-affiliates-logo">`
+                        : '<div class="no-affiliates-icon">📡</div>'
+                    }<div class="no-affiliates-title">Streaming Similar</div><div class="no-affiliates-text">Este canal não possui streamings similares.</div></div>`;
                     return;
                 }
                 chatContent.innerHTML = '';
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
                 const allItems = [
-                    { token: channel.url, label: channel.name || 'Ao vivo', isMain: true },
-                    ...affiliates.map(af => ({ token: af.token, label: af.name || 'Ao vivo', isMain: false }))
+                    { logo: channel.logo, label: channel.name || 'Ao vivo', group: channel.group, isMain: true, token: channel.url },
+                    ...affiliates.map(af => ({ logo: af.logo !== undefined ? af.logo : channel.logo, label: af.name || 'Ao vivo', group: af.group !== undefined ? af.group : channel.group, isMain: false, token: af.token }))
                 ];
+                let activeItemEl = null;
                 allItems.forEach((entry, idx) => {
                     const isActive = idx === currentAffiliateIndex;
                     const item = document.createElement('div');
                     item.className = 'affiliate-item' + (isActive ? ' active-affiliate' : '');
-                    item.innerHTML = `<div class="affiliate-logo-wrap">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" class="affiliate-logo-img">` : `<div class="affiliate-logo-fallback">${channel.name.charAt(0)}</div>`}</div><div class="affiliate-info"><div class="affiliate-label">${entry.label}</div><div class="affiliate-sublabel">Ao vivo</div></div><div class="affiliate-live-dot"></div><div class="affiliate-play-icon">${isActive ? '▶' : '○'}</div>`;
+                    item.innerHTML = `
+                        <div class="channel-thumbnail">
+                            ${entry.logo ? `<img src="${entry.logo}" alt="${entry.label}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+                            <div class="thumbnail-placeholder" style="${entry.logo ? 'display:none' : ''}">${entry.label.charAt(0)}</div>
+                        </div>
+                        <div class="channel-info">
+                            <div class="channel-name-row">
+                                <div class="channel-name">${entry.label}</div>
+                            </div>
+                            <div class="channel-meta">
+                                <div class="live-indicator"><div class="live-dot"></div><span>Ao vivo</span></div>
+                                <div class="channel-category">${entry.group || 'Geral'}</div>
+                            </div>
+                        </div>`;
+                    if (isActive) activeItemEl = item;
                     item.addEventListener('click', function(e) {
                         e.stopPropagation();
                         if (idx === 0) { playChannel(channelIndex, true); currentAffiliateIndex = 0; renderAffiliates(channelIndex, channel.name); }
@@ -496,6 +537,12 @@
                     list.appendChild(item);
                 });
                 chatContent.appendChild(list);
+                // Rola até o item ativo na gaveta
+                if (activeItemEl) {
+                    setTimeout(function() {
+                        activeItemEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    }, 120);
+                }
             }
 
             function playAffiliate(channelIndex, affiliateIdx) {
@@ -510,6 +557,8 @@
                 const affiliateName = affiliates[affiliateIdx].name || channel.name;
                 videoTitle.textContent = affiliateName;
                 drawerTitle.textContent = affiliateName;
+                // Salva canal e índice do afiliado no localStorage
+                saveLastChannel(channel.name, currentAffiliateIndex);
                 loadMediaUrl(deobfuscateUrl(affiliates[affiliateIdx].token));
                 renderAffiliates(channelIndex, affiliateName);
             }
@@ -773,7 +822,7 @@
                                 grouped.set(key, { name: entryName, url: obfuscateUrl(url), affiliates: [], logo, group });
                                 order.push(key);
                             } else {
-                                grouped.get(key).affiliates.push({ name: entryName, token: obfuscateUrl(url) });
+                                grouped.get(key).affiliates.push({ name: entryName, token: obfuscateUrl(url), logo, group });
                             }
                         }
                         i = j; continue;
@@ -795,7 +844,45 @@
                     item.addEventListener('click', e => { e.stopPropagation(); playChannel(index); });
                     channelsList.appendChild(item);
                 });
-                if (channels.length > 0) playChannel(0);
+
+                // ===== RESTAURAR ÚLTIMO CANAL ASSISTIDO =====
+                const lastName = getLastChannelName();
+                const lastAffiliate = getLastAffiliateIndex();
+                let startIndex = 0;
+                if (lastName) {
+                    const found = channels.findIndex(ch => ch.name === lastName);
+                    if (found >= 0) startIndex = found;
+                    // Se não encontrou, continua com 0 (padrão)
+                }
+
+                // Restaura o afiliado ativo antes de reproduzir
+                const startChannel = channels[startIndex];
+                const maxAffiliate = startChannel ? (startChannel.affiliates || []).length : 0;
+                const restoredAffiliate = (lastAffiliate > 0 && lastAffiliate <= maxAffiliate) ? lastAffiliate : 0;
+
+                if (restoredAffiliate > 0) {
+                    // Reproduz o afiliado salvo diretamente
+                    currentChannelIndex = startIndex;
+                    currentAffiliateIndex = restoredAffiliate;
+                    document.querySelectorAll('.channel-item').forEach((el, i) => { el.classList.toggle('active', i === startIndex); });
+                    videoTitle.textContent = startChannel.affiliates[restoredAffiliate - 1].name || startChannel.name;
+                    drawerTitle.textContent = videoTitle.textContent;
+                    const affCount = (startChannel.affiliates || []).length;
+                    if (affCount > 0) { affiliateBadge.textContent = affCount + 1; affiliateBadge.classList.add('show'); }
+                    loadMediaUrl(deobfuscateUrl(startChannel.affiliates[restoredAffiliate - 1].token));
+                } else {
+                    playChannel(startIndex);
+                }
+
+                // Rola a lista até o canal ativo ficar visível
+                if (startIndex > 0) {
+                    setTimeout(function() {
+                        const activeItem = channelsList.querySelector('.channel-item.active');
+                        if (activeItem) {
+                            activeItem.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        }
+                    }, 150);
+                }
             }
 
             // ===== REPRODUÇÃO =====
@@ -810,6 +897,8 @@
                 videoTitle.textContent = channel.name;
                 drawerTitle.textContent = channel.name;
                 currentChannelIndex = index;
+                // Salva o canal atual e afiliado (0 = principal) no localStorage
+                saveLastChannel(channel.name, 0);
                 const affCount = (channel.affiliates || []).length;
                 if (affCount > 0) { affiliateBadge.textContent = affCount + 1; affiliateBadge.classList.add('show'); }
                 else { affiliateBadge.classList.remove('show'); }
