@@ -508,10 +508,10 @@
                 const list = document.createElement('div');
                 list.className = 'affiliates-list';
                 const allItems = [
-                    { logo: channel.logo, label: channel.name || 'Ao vivo', group: channel.group, isMain: true, token: channel.url },
-                    ...affiliates.map(af => ({ logo: af.logo !== undefined ? af.logo : channel.logo, label: af.name || 'Ao vivo', group: af.group !== undefined ? af.group : channel.group, isMain: false, token: af.token }))
+                    { logo: channel.logo, label: channel.name || 'Streaming', group: channel.group, isMain: true, token: channel.url },
+                    ...affiliates.map(af => ({ logo: af.logo !== undefined ? af.logo : channel.logo, label: af.name || 'Streaming', group: af.group !== undefined ? af.group : channel.group, isMain: false, token: af.token }))
                 ];
-                let activeItemEl = null;
+                let activeItemEl = null; 
                 allItems.forEach((entry, idx) => {
                     const isActive = idx === currentAffiliateIndex;
                     const item = document.createElement('div');
@@ -526,7 +526,7 @@
                                 <div class="channel-name">${entry.label}</div>
                             </div>
                             <div class="channel-meta">
-                                <div class="live-indicator"><div class="live-dot"></div><span>Ao vivo</span></div>
+                                <div class="live-indicator"><div class="live-dot"></div><span>Streaming</span></div>
                                 <div class="channel-category">${entry.group || 'Geral'}</div>
                             </div>
                         </div>`;
