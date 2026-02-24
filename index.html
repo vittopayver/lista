@@ -16,26 +16,30 @@
         body.light-theme .channels-section { background: #f5f5f5; }
         body.light-theme .channel-item { border-left: 3px solid transparent; }
         body.light-theme .channel-item:hover { background: #e8e8e8; }
-        body.light-theme .channel-item.active { background: #e8e8e8; border-left-color: #a000ff; }
-        body.light-theme .channel-thumbnail { background: linear-gradient(135deg, #a000ff, #2d5bff); }
+        body.light-theme .channel-item.active { background: #e8e8e8; border-left-color: #4ecb00; }
+        body.light-theme .channel-thumbnail { background: transparent; }
         body.light-theme .channel-name { color: #0f0f0f; }
         body.light-theme .channel-category, body.light-theme .live-indicator { color: #606060; }
         body.light-theme .info-text { background: #ffffff; color: #606060; }
         body.light-theme .chat-drawer { background: #f5f5f5; }
         body.light-theme .chat-header { background: #ffffff; border-bottom: 1px solid #e0e0e0; }
-        body.light-theme .chat-title { background: linear-gradient(135deg, #a000ff, #2d5bff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        body.light-theme .chat-title { background: linear-gradient(135deg, #4ecb00, #1a8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         body.light-theme .chat-close-btn { color: #606060; }
         body.light-theme .chat-close-btn:hover { background: rgba(0, 0, 0, 0.05); }
         body.light-theme .chat-header::before { background: #d0d0d0; }
         body.light-theme .affiliate-item { background: #ffffff; border: 1px solid #e0e0e0; }
         body.light-theme .affiliate-item:hover { background: #f0f0f0; }
-        body.light-theme .affiliate-item.active-affiliate { border-color: #a000ff; background: #f5eeff; }
-        body.light-theme .affiliate-number { background: linear-gradient(135deg, #a000ff, #2d5bff); }
-        body.light-theme .affiliate-label { color: #0f0f0f; }
-        body.light-theme .affiliate-sublabel { color: #606060; }
+        body.light-theme .affiliate-item.active-affiliate { border-color: #4ecb00; background: #f0ffea; }
+        
+        body.light-theme .affiliate-label { color: #0f0f0f !important; }
+        body.light-theme .affiliate-sublabel { color: #444444 !important; }
+        body.light-theme .affiliates-list .affiliate-item { background: #ffffff; border-color: #d0d0d0; }
+        body.light-theme .affiliates-list .affiliate-item:hover { background: #f0f0f0; }
+        body.light-theme .affiliates-list .affiliate-item.active-affiliate { background: #e8ffe0; border-color: #4ecb00; }
+        body.light-theme .no-affiliates-title { color: #0f0f0f; }
         body.light-theme .no-affiliates-text { color: #606060; }
         body.light-theme .loading, body.light-theme .error { color: #606060; }
-        body.light-theme .error { color: #a000ff; }
+        body.light-theme .error { color: #4ecb00; }
         body.light-theme ::-webkit-scrollbar-track { background: #f5f5f5; }
         body.light-theme ::-webkit-scrollbar-thumb { background: #c0c0c0; }
         body.light-theme ::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
@@ -46,10 +50,10 @@
         .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: visible; flex-shrink: 0; }
         #video-player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
         .video-wrapper.transitioning { visibility: hidden; }
-        .progress-divider { width: 100%; height: 2px; background: linear-gradient(to right, #a000ff, #2d5bff); position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-divider { width: 100%; height: 2px; background: linear-gradient(to right, #4ecb00, #1a8c00); position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; opacity: 0; transition: opacity 0.3s ease; }
         .progress-divider.show { opacity: 1; }
-        .progress-divider-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: linear-gradient(to right, #a000ff, #2d5bff); transition: width 0.1s linear; position: relative; }
-        .progress-divider-ball { position: absolute; top: 50%; right: 0; transform: translateY(-50%); width: 10px; height: 10px; background: #2d5bff; border-radius: 50%; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+        .progress-divider-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: linear-gradient(to right, #4ecb00, #1a8c00); transition: width 0.1s linear; position: relative; }
+        .progress-divider-ball { position: absolute; top: 50%; right: 0; transform: translateY(-50%); width: 10px; height: 10px; background: #1a8c00; border-radius: 50%; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
         body.is-landscape .channels-section { display: none !important; }
         body.is-landscape .progress-divider { display: none !important; }
         body.is-landscape .info-text { display: none !important; }
@@ -62,7 +66,7 @@
         .chat-btn:hover { background: rgba(255,255,255,0.15); }
         .chat-btn:active { transform: scale(0.95); }
         .chat-btn svg { width: 20px; height: 20px; }
-        .affiliate-badge { position: absolute; top: 4px; right: 4px; background: linear-gradient(135deg, #a000ff, #2d5bff); color: white; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1; display: none; }
+        .affiliate-badge { position: absolute; top: 4px; right: 4px; background: #4ecb00; color: white; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1; display: none; }
         .affiliate-badge.show { display: flex; }
         .player-container.fullscreen .chat-btn { display: none !important; }
         .chat-drawer { position: fixed; bottom: 0; left: 0; right: 0; height: 56vh; background: #1a1a1a; transform: translateY(100%); transition: transform 0.3s ease, height 0.3s ease; z-index: 1000; display: flex; flex-direction: column; border-top-left-radius: 10px; border-top-right-radius: 10px; box-shadow: 0 -4px 12px rgba(0,0,0,0.3); touch-action: none; }
@@ -72,9 +76,9 @@
         .chat-drawer.expanded .chat-header { border-top-left-radius: 10px; border-top-right-radius: 10px; }
         .chat-header:active { cursor: grabbing; }
         .chat-header::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: #444; border-radius: 2px; }
-        .chat-title { font-size: 17px; font-weight: 600; background: linear-gradient(135deg, #a000ff, #2d5bff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 8px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chat-title { font-size: 17px; font-weight: 600; background: linear-gradient(135deg, #4ecb00, #1a8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 8px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .chat-header-right { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-        .affiliate-count-badge { background: linear-gradient(135deg, #a000ff, #2d5bff); color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .affiliate-count-badge { background: #4ecb00; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
         .chat-close-btn { background: none; border: none; color: #aaa; font-size: 32px; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; line-height: 1; }
         .chat-close-btn:hover { background: rgba(255,255,255,0.1); }
         .chat-close-btn:active { transform: scale(0.9); }
@@ -83,14 +87,14 @@
         .affiliate-item { display: flex; align-items: center; gap: 14px; background: #252525; border: 1.5px solid #333; border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s; position: relative; }
         .affiliate-item:hover { background: #2e2e2e; border-color: #555; }
         .affiliate-item:active { transform: scale(0.98); }
-        .affiliate-item.active-affiliate { border-color: #a000ff; background: #1e0030; }
+        .affiliate-item.active-affiliate { border-color: #4ecb00; background: #0d2200; }
         .affiliate-info { flex: 1; min-width: 0; }
         .affiliate-label { font-size: 14px; font-weight: 500; color: #f1f1f1; margin-bottom: 2px; }
         .affiliate-sublabel { font-size: 11px; color: #888; }
-        .affiliate-live-dot { width: 7px; height: 7px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+        .affiliate-live-dot { width: 7px; height: 7px; background: #4ecb00; border-radius: 50%; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
         .affiliate-item.active-affiliate .affiliate-live-dot { background: #00e676; }
         .affiliate-play-icon { color: #666; font-size: 18px; flex-shrink: 0; }
-        .affiliate-item.active-affiliate .affiliate-play-icon { color: #a000ff; }
+        .affiliate-item.active-affiliate .affiliate-play-icon { color: #4ecb00; }
         .no-affiliates { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; height: 100%; }
         .no-affiliates-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.5; }
         .no-affiliates-title { font-size: 16px; font-weight: 600; color: #f1f1f1; margin-bottom: 6px; }
@@ -102,29 +106,31 @@
         .control-btn:active { transform: scale(0.9); }
         .spacer { flex: 1; }
         .live-badge { background: transparent; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: 500; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-        .live-badge-dot { width: 7px; height: 7px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        .live-badge-dot { width: 7px; height: 7px; background: #4ecb00; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
         .info-text { width: 100%; text-align: center; margin: 0; padding: 10px 30px; font-size: 10px; color: #888; background: #0f0f0f; line-height: 1.4; }
         .channels-section { flex: 1; background: #0f0f0f; overflow-y: auto; padding: 0; }
         .channels-list { padding: 8px 0; }
         .channel-item { display: flex; padding: 8px 16px; cursor: pointer; transition: background 0.2s; gap: 12px; align-items: flex-start; border-left: 3px solid transparent; }
         .channel-item:hover { background: #272727; }
-        .channel-item.active { background: #272727; border-left-color: #a000ff; }
-        .channel-thumbnail { width: 120px; height: 70px; border-radius: 8px; background: linear-gradient(135deg, #a000ff, #2d5bff); flex-shrink: 0; position: relative; overflow: hidden; }
-        .channel-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+        .channel-item.active { background: #272727; border-left-color: #4ecb00; }
+        .channel-thumbnail { width: 80px; height: 70px; border-radius: 8px; background: transparent; flex-shrink: 0; position: relative; overflow: hidden; }
+        .channel-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 6px; filter: brightness(0) invert(1); }
+        body.light-theme .channel-thumbnail img { filter: brightness(0); }
         .channel-thumbnail::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; }
-        .thumbnail-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: 700; color: #a000ff; }
+        .thumbnail-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: 700; color: #4ecb00; }
         .thumbnail-plays-badge { display: none; }
         .channel-name-row { display: flex; align-items: flex-start; gap: 6px; justify-content: space-between; }
         .channel-name { font-size: 14px; font-weight: 500; color: #f1f1f1; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; flex: 1; }
-        .channel-plays-badge { background: linear-gradient(135deg, #a000ff, #2d5bff); color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.3px; }
-        .affiliate-logo-wrap { width: 100px; height: 60px; border-radius: 8px; background: linear-gradient(135deg, #a000ff, #2d5bff); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0; }
-        .affiliate-logo-img { width: 90px; height: 65px; object-fit: contain; flex-shrink: 0; }
+        .channel-plays-badge { background: #4ecb00; color: #ffffff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.3px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .affiliate-logo-wrap { width: 72px; height: 48px; border-radius: 8px; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 0; }
+        .affiliate-logo-img { width: 64px; height: 48px; object-fit: contain; flex-shrink: 0; filter: brightness(0) invert(1); }
+        body.light-theme .affiliate-logo-img { filter: brightness(0); }
         .affiliate-logo-fallback { font-size: 28px; font-weight: 700; color: white; }
         .channel-info { flex: 1; min-width: 0; padding-top: 2px; }
         .channel-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
         .channel-category { font-size: 12px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .live-indicator { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #aaa; }
-        .live-dot { width: 6px; height: 6px; background: #a000ff; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        .live-dot { width: 6px; height: 6px; background: #4ecb00; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.8); } }
 
         /* === SPINNER: oculto por padrão, aparece só quando necessário === */
@@ -136,16 +142,16 @@
         }
         .loading-screen.visible { opacity: 1; }
 
-        .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #a000ff; border-right-color: #2d5bff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #4ecb00; border-right-color: #1a8c00; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading, .error { text-align: center; padding: 32px 16px; color: #aaa; font-size: 14px; }
-        .error { color: #a000ff; }
+        .error { color: #4ecb00; }
         .player-error-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 20px; text-align: center; }
         .player-error-screen.show { opacity: 1; pointer-events: none; }
         .player-error-icon { font-size: 40px; margin-bottom: 12px; line-height: 1; opacity: 0.5; }
         .player-error-title { font-size: 15px; font-weight: 600; color: #f1f1f1; margin-bottom: 6px; line-height: 1.4; }
         .player-error-subtitle { font-size: 12px; color: #888; margin-bottom: 18px; line-height: 1.5; max-width: 260px; }
-        .player-error-btn { background: linear-gradient(135deg, #a000ff, #2d5bff); color: #fff; border: none; padding: 10px 28px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.3px; }
+        .player-error-btn { background: linear-gradient(135deg, #4ecb00, #1a8c00); color: #fff; border: none; padding: 10px 28px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.3px; }
         .player-error-btn:hover { opacity: 0.85; }
         .player-error-btn:active { transform: scale(0.96); }
         .player-error-screen.unavailable .player-error-icon { opacity: 0.5; }
@@ -326,9 +332,6 @@
             let isLandscape = false;
 
             // ===== SPINNER =====
-            // Oculto por padrão (sem classe "visible").
-            // Aparece apenas quando um canal é realmente selecionado.
-            // Some quando o vídeo dispara "playing" (frames reais na tela).
             function showSpinner() { loadingScreen.classList.add('visible'); }
             function hideSpinner() { loadingScreen.classList.remove('visible'); }
 
@@ -343,7 +346,6 @@
                 _applyUrl(realUrl);
             }
 
-            // _applyUrl: aplica URL e inicia reprodução — usada no load inicial e no retry
             function _applyUrl(url) {
                 showSpinner();
                 hideAllErrorScreens();
@@ -354,19 +356,17 @@
                 videoPlayer.load();
 
                 setTimeout(function() {
-                    ensureAudio();           // garante sem mute antes de atribuir src
+                    ensureAudio();
                     videoPlayer.src = url;
                     videoPlayer.load();
 
                     var pp = videoPlayer.play();
                     if (pp !== undefined) {
                         pp.then(function() {
-                            ensureAudio();   // confirma áudio após play bem-sucedido
+                            ensureAudio();
                         }).catch(function() {
-                            // Autoplay bloqueado com áudio → muta só para iniciar
                             videoPlayer.muted = true;
                             videoPlayer.play().catch(function() {});
-                            // desmute ocorre no evento 'playing'
                         });
                     }
                 }, 100);
@@ -473,7 +473,7 @@
                     affiliateBadge.classList.remove('show');
                 }
                 if (affiliates.length === 0) {
-                    chatContent.innerHTML = `<div class="no-affiliates">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:linear-gradient(135deg,#a000ff,#2d5bff);padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}<div class="no-affiliates-title">Streaming Similar</div><div class="no-affiliates-text">Este canal não possui streamings similares.</div></div>`;
+                    chatContent.innerHTML = `<div class="no-affiliates">${channel.logo ? `<img src="${channel.logo}" alt="${channel.name}" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:transparent;padding:6px;margin-bottom:14px;opacity:0.7;">` : '<div class="no-affiliates-icon">📡</div>'}<div class="no-affiliates-title">Streaming Similar</div><div class="no-affiliates-text">Este canal não possui streamings similares.</div></div>`;
                     return;
                 }
                 chatContent.innerHTML = '';
@@ -548,15 +548,12 @@
             function showUnavailableScreen() { hideSpinner(); playerErrorUnavailable.classList.add('show'); }
 
             // ===== RETRY AUTOMÁTICO =====
-            // Antes de mostrar a tela de erro, o player tenta recarregar até MAX_RETRIES vezes.
-            // Cada tentativa aguarda RETRY_DELAY ms antes de recarregar.
-            // Se todas as tentativas falharem, aí sim exibe a tela de erro.
-            const MAX_RETRIES  = 4;       // quantas vezes vai tentar antes de desistir
-            const RETRY_DELAY  = 3000;    // ms entre cada tentativa
-            const STALL_LIMIT  = 20000;   // ms sem progresso para considerar travado
+            const MAX_RETRIES  = 4;
+            const RETRY_DELAY  = 3000;
+            const STALL_LIMIT  = 20000;
 
             let _retryCount    = 0;
-            let _currentUrl    = '';      // URL sendo reproduzida no momento
+            let _currentUrl    = '';
             let _retryTimer    = null;
             let _stallTimer    = null;
             let _isRetrying    = false;
@@ -572,7 +569,6 @@
                 _retryCount++;
                 _isRetrying = true;
 
-                // Exibe texto de reconexão no spinner (sem animação de pontos)
                 var label = loadingScreen.querySelector('.retry-label');
                 if (!label) {
                     label = document.createElement('div');
@@ -586,9 +582,8 @@
                 showSpinner();
                 _clearStall();
 
-                // Aguarda RETRY_DELAY antes de tentar de novo
                 _retryTimer = setTimeout(function() {
-                    _applyUrl(_currentUrl);   // reutiliza a mesma função do load inicial
+                    _applyUrl(_currentUrl);
                 }, RETRY_DELAY);
             }
 
@@ -598,7 +593,6 @@
                 if (_retryCount < MAX_RETRIES) {
                     _doRetry();
                 } else {
-                    // Esgotou as tentativas: remove label e mostra tela de erro
                     _isRetrying = false;
                     var label = loadingScreen.querySelector('.retry-label');
                     if (label) label.remove();
@@ -617,15 +611,10 @@
                 _clearRetry();
                 _resetRetryCount();
 
-                // DESMUTE GARANTIDO — ponto mais confiável do ciclo de vida do vídeo
-                // Funciona mesmo que o play tenha começado mutado por restrição de autoplay
                 ensureAudio();
 
-                // Remove label de retry se ainda estiver visível
                 var label = loadingScreen.querySelector('.retry-label');
                 if (label) label.remove();
-
-
 
                 hideSpinner();
                 hideAllErrorScreens();
@@ -634,8 +623,7 @@
             });
 
             videoPlayer.addEventListener('timeupdate', function() {
-                // Frames avançando: cancela stall e reseta contagem de retry
-                if (_isRetrying) return; // evita reset prematuro durante retry
+                if (_isRetrying) return;
                 _clearStall();
                 if (videoPlayer.duration && isFinite(videoPlayer.duration)) {
                     progressDividerFill.style.width = (videoPlayer.currentTime / videoPlayer.duration * 100) + '%';
@@ -643,14 +631,12 @@
             });
 
             videoPlayer.addEventListener('waiting', function() {
-                // Buffer vazio: mostra spinner e inicia stall timer
                 if (currentChannelIndex < 0) return;
                 showSpinner();
                 _startStall();
             });
 
             videoPlayer.addEventListener('stalled', function() {
-                // Stream paralisada: inicia stall timer
                 if (currentChannelIndex < 0) return;
                 _startStall();
             });
@@ -658,7 +644,6 @@
             videoPlayer.addEventListener('error', function() {
                 _clearStall();
                 if (currentChannelIndex < 0) { hideSpinner(); return; }
-                // Erro de mídia: tenta retry antes de mostrar erro
                 _triggerError();
             });
 
@@ -810,7 +795,6 @@
                     item.addEventListener('click', e => { e.stopPropagation(); playChannel(index); });
                     channelsList.appendChild(item);
                 });
-                // Inicia o primeiro canal automaticamente após render
                 if (channels.length > 0) playChannel(0);
             }
 
@@ -829,7 +813,6 @@
                 const affCount = (channel.affiliates || []).length;
                 if (affCount > 0) { affiliateBadge.textContent = affCount + 1; affiliateBadge.classList.add('show'); }
                 else { affiliateBadge.classList.remove('show'); }
-                // Spinner é iniciado dentro de loadMediaUrl → só aparece quando canal é selecionado
                 loadMediaUrl(deobfuscateUrl(channel.url));
             }
             
